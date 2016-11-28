@@ -32,10 +32,12 @@
 //   'test-e2e-run'
 //   'build-composer'
 //   'build-bower'
+//   'build-remove-test-fixtures'
 //   'build-minify'
 //   'build-changeGroup'
 //   'build-version'
 //   'build-productionConfig'
+//   'build-clearLocalCache'
 //   'build-upload'
 //   'build'
 //   'build-and-upload'
@@ -48,6 +50,7 @@
 //   Modules
 // -------------------------------------
 //
+// es6-shim          : ECMAScript 6 (Harmony) compatibility for legacy JavaScript engines
 // async             : Higher-order functions and common patterns for asynchronous code
 // child_process     : Call a child process with the ease of exec and safety of spawn
 // gulp              : The streaming build system
@@ -64,7 +67,9 @@
 // lodash.template   : The lodash method `_.template` exported as a module
 // karma             : Spectacular Test Runner for JavaScript
 // jshint-stylish    : Stylish reporter for JSHint
+// path              : Node.JS path module
 // yargs             : yargs the modern, pirate-themed, successor to optimist
+require('es6-shim');
 var async = require('async');
 var _execute = require('child_process').exec;
 var gulp = require('gulp');
@@ -82,6 +87,7 @@ var uglify = require('gulp-uglify');
 var gutil = require('gulp-util');
 var _template = require('lodash.template');
 var Server = require('karma').Server;
+var path = require('path');
 var stylish = require('jshint-stylish');
 
 var execute = function (command, options, callback) {
@@ -89,7 +95,7 @@ var execute = function (command, options, callback) {
     options = {};
   }
 
-  options.maxBuffer = 1024 * 500; // byte
+  options.maxBuffer = 1024 * 1000; // byte
 
   var template = _template(command);
   command = template(options);
@@ -107,6 +113,12 @@ var execute = function (command, options, callback) {
     callback(null);
   }
 };
+
+// Determine the path to test/app from a given destination.
+// Truncate the remote prefix of the destination
+function getTestCwd(dest) {
+  return (dest) ? path.join(dest.replace(/^(.)*:/, ''), 'test/app') : './test/app';
+}
 
 // Globals
 var srcPatterns = [
@@ -349,11 +361,12 @@ gulp.task('test-e2e-setupTestEnvironment', function (cb) {
     .option('dest', {
       demand: false,
       describe: 'destination of test environment',
-      type: 'string' }).argv;
+      type: 'string' })
+    .argv;
   var options = {
     dryRun: false,
     silent: false,
-    cwd: (params.dest) ? params.dest + '/test/app' : './test/app'
+    cwd: getTestCwd(params.dest)
   };
   execute(
     'sudo -u www-data php setupTestEnvironment.php ' + params.webserverHost,
@@ -370,11 +383,12 @@ gulp.task('test-e2e-teardownTestEnvironment', function (cb) {
     .option('dest', {
       demand: false,
       describe: 'destination of test environment',
-      type: 'string' }).argv;
+      type: 'string' })
+    .argv;
   var options = {
     dryRun: false,
     silent: false,
-    cwd: (params.dest) ? params.dest + '/test/app' : './test/app'
+    cwd: getTestCwd(params.dest)
   };
   execute(
     'sudo -u www-data php teardownTestEnvironment.php',
@@ -408,15 +422,16 @@ gulp.task('test-e2e-env', function () {
     .option('webserverHost', {
       demand: false,
       default: 'languageforge.local',
-      type: 'string' }).argv;
-  var base = (params.dest) ? params.dest + '/test/app' : './test/app';
+      type: 'string' })
+    .argv;
+  var cwd = getTestCwd(params.dest);
   var src = [
     'setupTestEnvironment.php',
     'teardownTestEnvironment.php',
     'e2eTestConfig.php',
     'testConstants.json'];
 
-  return gulp.src(src, { cwd: base })
+  return gulp.src(src, { cwd: cwd })
 
     // e2eTestConfig.php
     .pipe(replace('src/', 'htdocs/'))
@@ -431,7 +446,7 @@ gulp.task('test-e2e-env', function () {
     .pipe(replace(
       /(\s*\"baseUrl\"\s*:\s*\").*$/m,
       '$1http://' + params.webserverHost + '",'))
-    .pipe(gulp.dest(base));
+    .pipe(gulp.dest(cwd));
 });
 
 // -------------------------------------
@@ -463,7 +478,8 @@ gulp.task('test-e2e-doTest', function (cb) {
     .example('$0 test-e2e-run --webserverHost languageforge.local',
       'Runs all the E2E tests for languageforge')
     .example('$0 test-e2e-run --webserverHost scriptureforge.local --specs projectSettingsPage',
-      'Runs the scriptureforge E2E test for projectSettingsPage').argv;
+      'Runs the scriptureforge E2E test for projectSettingsPage')
+    .argv;
 
   var protocol =
     (params.webserverHost == 'jamaicanpsalms.scriptureforge.local') ? 'https://' : 'http://';
@@ -557,6 +573,27 @@ gulp.task('build-bower', function (cb) {
 });
 
 // -------------------------------------
+//   Task: Build Remove test fixtures (directives) in HTML only on live build
+// -------------------------------------
+gulp.task('build-remove-test-fixtures', function () {
+  var params = require('yargs')
+    .option('dest', {
+      demand: false,
+      default: 'root@localhost:/var/www/virtual/languageforge.org',
+      type: 'string' })
+    .argv;
+  var base = './src/angular-app';
+  var glob = path.join(base, '**/*.html');
+
+  if (!params.dest.includes('/var/www/virtual/') &&
+    (params.dest.endsWith('forge.org') || params.dest.endsWith('forge.org/'))) {
+    return gulp.src(glob, { base: base })
+      .pipe(replace(/^.*<pui-mock-upload.*$/m, '\n'))
+      .pipe(gulp.dest(base));
+  }
+});
+
+// -------------------------------------
 //   Task: Build (Concat and ) Minify
 // -------------------------------------
 gulp.task('build-minify', function () {
@@ -566,7 +603,8 @@ gulp.task('build-minify', function () {
       type: 'string' })
     .option('doNoCompression', {
       demand: false,
-      type: 'boolean' }).argv;
+      type: 'boolean' })
+    .argv;
   var minifySrc = [
     'src/angular-app/**/*.js',
     '!src/angular-app/**/*.min.js',
@@ -593,7 +631,8 @@ gulp.task('build-version', function () {
   var params = require('yargs')
     .option('buildNumber', {
       demand: true,
-      type: 'string' }).argv;
+      type: 'string' })
+    .argv;
   console.log('version =', params.buildNumber);
   return gulp.src('src/version.php')
     .pipe(replace(
@@ -607,14 +646,15 @@ gulp.task('build-version', function () {
 // -------------------------------------
 gulp.task('build-changeGroup', function (cb) {
   execute(
-    'sudo chgrp -R www-data src; sudo chgrp -R www-data test',
+    'sudo chgrp -R www-data src; sudo chgrp -R www-data test; ' +
+    'sudo chmod -R g+w src; sudo chmod -R g+w test',
     null,
     cb
   );
 });
 
 gulp.task('build-changeGroup').description =
-  'Ensure www-data is the group for src and test folder';
+  'Ensure www-data is the group and can write for src and test folder';
 
 // -------------------------------------
 //   Task: Build Production Config
@@ -622,14 +662,15 @@ gulp.task('build-changeGroup').description =
 gulp.task('build-productionConfig', function () {
   var defaultMongodbConnection = 'localhost:27017';
   var params = require('yargs')
-  .option('mongodbConnection', {
-    demand: false,
-    default: defaultMongodbConnection,
-    type: 'string' })
-  .option('secret', {
-    demand: false,
-    default: 'not_a_secret',
-    type: 'string' }).argv;
+    .option('mongodbConnection', {
+      demand: false,
+      default: defaultMongodbConnection,
+      type: 'string' })
+    .option('secret', {
+      demand: false,
+      default: 'not_a_secret',
+      type: 'string' })
+    .argv;
   var configSrc = [
     './src/config.php',
     './scripts/scriptsConfig.php',
@@ -649,6 +690,25 @@ gulp.task('build-productionConfig', function () {
 });
 
 // -------------------------------------
+//   Task: Build Clear Local Cache
+// -------------------------------------
+gulp.task('build-clearLocalCache', function (cb) {
+  var options = {
+    dryRun: false,
+    silent: false,
+    cwd: 'src/cache/'
+  };
+  execute(
+    'git clean -d -x -f',
+    options,
+    cb
+  );
+});
+
+gulp.task('build-clearLocalCache').description =
+  'Clear all subdirectories of local cache/';
+
+// -------------------------------------
 //   Task: Build Upload to destination
 // -------------------------------------
 gulp.task('build-upload', function (cb) {
@@ -657,22 +717,24 @@ gulp.task('build-upload', function (cb) {
       demand: true,
       type: 'string' })
     .option('uploadCredentials', {
-      demand: false,
-      type: 'string' }).argv;
+      demand: true,
+      type: 'string' })
+    .argv;
   var options = {
     dryRun: false,
     silent: false,
-    includeFile: 'upload-include.txt',
-    excludeFile: 'upload-exclude.txt',
-    rsh: (params.uploadCredentials) ? '--rsh=ssh -v -i ' + params.uploadCredentials : '',
+    includeFile: 'upload-include.txt',  // read include patterns from FILE
+    excludeFile: 'upload-exclude.txt',  // read exclude patterns from FILE
+    rsh: '--rsh="ssh -v -i ' + params.uploadCredentials + '"',
     src: 'src/',
-    dest: params.dest + '/htdocs'
+    dest: path.join(params.dest, 'htdocs')
   };
 
   execute(
-    'rsync -rzlt --chmod=Dug=rwx,Fug=rw,o-rwx --group ' +
+    'rsync -progzlt --chmod=Dug=rwx,Fug=rw,o-rwx ' +
     '--delete-during --stats --rsync-path="sudo rsync" <%= rsh %> ' +
-    '--include-from="<%= includeFile %>" --exclude-from="<%= excludeFile %>" ' +
+    '--include-from="<%= includeFile %>" ' +
+    '--exclude-from="<%= excludeFile %>" ' +
     '<%= src %> <%= dest %>',
     options,
     cb
@@ -681,12 +743,11 @@ gulp.task('build-upload', function (cb) {
   // For E2E tests, upload test dir to destination
   if (params.dest.includes('e2etest')) {
     options.src = 'test/app/';
-    options.dest = params.dest + '/test/app';
+    options.dest = path.join(params.dest, '/test/app');
 
     execute(
-      'rsync -rzlt --chmod=Dug=rwx,Fug=rw,o-rwx --group ' +
-      '--delete-during --stats --rsync-path="sudo rsync" ' +
-      '--exclude="htdocs/" ' +
+      'rsync -progzlt --chmod=Dug=rwx,Fug=rw,o-rwx ' +
+      '--delete-during --stats --rsync-path="sudo rsync" <%= rsh %> ' +
       '<%= src %> <%= dest %>',
       options,
       cb
@@ -703,7 +764,9 @@ gulp.task('build',
       'build-composer',
       'build-bower',
       'build-version',
-      'build-productionConfig'),
+      'build-productionConfig',
+      'build-clearLocalCache',
+      'build-remove-test-fixtures'),
     'build-minify',
     'build-changeGroup')
 );
@@ -766,4 +829,3 @@ gulp.task('markdown').description = 'Generate helps markdown files';
 // -------------------------------------
 
 gulp.task('default', gulp.series('build'));
-
