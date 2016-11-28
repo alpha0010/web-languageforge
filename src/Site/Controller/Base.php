@@ -11,17 +11,16 @@ use Api\Model\Shared\Rights\Operation;
 use Api\Model\Shared\Rights\Domain;
 use Api\Model\Shared\UserModel;
 use Silex\Application;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 require_once APPPATH."version.php";
 
-class Base
+abstract class Base
 {
     public function __construct() {
         $this->website = Website::get();
-        $this->_isLoggedIn = false;
         $this->_showHelp = false;
-        $this->data['isLoggedIn'] = $this->_isLoggedIn;
         $this->data['isAdmin'] = false;
         $this->data['projects'] = array();
         $this->data['smallAvatarUrl'] = '';
@@ -36,7 +35,10 @@ class Base
         $this->data['vendorFilesJs'] = array();
         $this->data['vendorFilesMinJs'] = array();
         $this->data['isBootstrap4'] = false;
+
     }
+
+    abstract public function view(Request $request, Application $app, string $appName, string $secondToken);
 
     /** @var array data used to render templates */
     public $data;
@@ -59,11 +61,27 @@ class Base
     /** @var string */
     protected $_projectId;
 
+    // all child classes should call this method first to setup base variables
+    protected function setupBaseVariables(Application $app) {
+        $this->_isLoggedIn = $this->isLoggedIn($app);
+        $this->data['isLoggedIn'] = $this->_isLoggedIn;
+        if ($this->_isLoggedIn) {
+            try {
+                $this->_userId = SilexSessionHelper::getUserId($app);
+
+                if ($this->_userId) {
+                    $this->_user = new UserModel($this->_userId);
+                } else {
+                    //TODO: load anonymous user here
+                }
+            } catch (\Exception $e) {
+                return $app->redirect('/app/logout');
+            }
+        }
+    }
+
     // all child classes should use this method to render their pages
     protected function renderPage(Application $app, $viewName) {
-        if ($viewName == 'favicon.ico') {
-            $viewName = 'container';
-        }
 
         if ($this->data['isBootstrap4']) {
             $this->addCssFiles("vendor_bower/bootstrap");
@@ -71,22 +89,6 @@ class Base
         } else {
             $this->addCssFiles("Site/views/shared/cssBootstrap2");
             $this->addCssFiles($this->getThemePath()."/cssBootstrap2");
-        }
-
-        $this->_isLoggedIn = $this->isLoggedIn($app);
-        if ($this->_isLoggedIn) {
-            try {
-                if (!$this->_userId) {
-                    $this->_userId = SilexSessionHelper::getUserId($app);
-                }
-                $this->_user = new UserModel($this->_userId);
-                if (!$this->_projectId) {
-                    $this->_projectId = SilexSessionHelper::getProjectId($app, $this->website);
-                }
-            } catch (\Exception $e) {
-//                error_log("User $userId not found, logged out.\n" . $e->getMessage());
-                return $app->redirect('/app/logout');
-            }
         }
 
         // Add general Angular app dependencies
@@ -111,7 +113,7 @@ class Base
         try {
             return $app['twig']->render($viewName.'.html.twig', $this->data);
         } catch (\Twig_Error_Loader $e) {
-            $app->abort(404, "Page not found: $viewName.twig\n" . $e->getRawMessage() . "\n" . $e->getTraceAsString());
+            $app->abort(404, "Page not found: $viewName.twig\n" . $e->getMessage() . "\n" . $e->getTraceAsString());
         }
 
         return new Response('Should not get here', 500);
@@ -160,12 +162,20 @@ class Base
         return 'Site/views/'.$this->website->base.'/theme/'.$theme;
     }
 
-    protected function addJavascriptFiles($dir, $exclude = array()) {
-        self::addFiles('js', $dir, $this->data['jsFiles'], $exclude);
+    protected function addJavascriptFilesToBeMinified($folder, $exclude = array()) {
+        self::addFiles('js', $folder, $this->data['jsFiles'], $exclude);
     }
 
-    protected function addJavascriptNotMinifiedFiles($dir, $exclude = array()) {
-        self::addFiles('js', $dir, $this->data['jsNotMinifiedFiles'], $exclude);
+    protected function addJavascriptFilesNotMinified($folder, $exclude = array()) {
+        self::addFiles('js', $folder, $this->data['jsNotMinifiedFiles'], $exclude);
+    }
+
+    protected function addJavascriptFiles($folder, $excludedFromMinification = array()) {
+        $this->addJavascriptFilesToBeMinified($folder, $excludedFromMinification);
+        foreach ($excludedFromMinification as $excludeFolder) {
+            $notMinifiedPath = "$folder/$excludeFolder";
+            $this->addJavascriptFilesNotMinified($notMinifiedPath);
+        }
     }
 
     protected function addCssFiles($dir) {
@@ -290,6 +300,5 @@ class Base
         }
         return array("js" => $jsFilesToReturn, "min" => $jsMinFilesToReturn, "css" => $cssFilesToReturn);
     }
-
 
 }

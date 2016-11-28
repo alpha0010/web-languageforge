@@ -117,6 +117,11 @@ if (defined('ENVIRONMENT')) {
 $app->register(new Silex\Provider\TwigServiceProvider(), array(
     'twig.path' => array(
 
+        __DIR__,
+
+        // angular-app
+        __DIR__.'/angular-app',
+
         // pages
         __DIR__.'/Site/views/'.$WEBSITE->base.'/theme/'.$WEBSITE->theme.'/page',
         __DIR__.'/Site/views/'.$WEBSITE->base.'/theme/'.$WEBSITE->theme,
@@ -126,9 +131,6 @@ $app->register(new Silex\Provider\TwigServiceProvider(), array(
         __DIR__.'/Site/views/'.$WEBSITE->base,
         __DIR__.'/Site/views/shared/page',
         __DIR__.'/Site/views/shared',
-
-        // angular-app
-        __DIR__.'/angular-app',
 
         // errors
         __DIR__.'/Site/views/'.$WEBSITE->base.'/error',
@@ -207,8 +209,8 @@ $app->post('/upload/{appType}/{mediaType}', 'Site\Controller\Upload::receive');
 
 $app->get('/app/{appName}/{projectId}/',    'Site\Controller\App::view');
 $app->get('/app/{appName}/{projectId}',     'Site\Controller\App::view');
-$app->get('/app/{appName}/',    'Site\Controller\App::view')->value('appName', 'projects');
-$app->get('/app/{appName}',     'Site\Controller\App::view')->value('appName', 'projects');
+//$app->get('/app/{appName}/',    'Site\Controller\App::view')->value('appName', 'projects');
+//$app->get('/app/{appName}',     'Site\Controller\App::view')->value('appName', 'projects');
 $app->get('/script/{folder}/{scriptName}/{runType}', 'Site\Controller\Script::view');
 $app->get('/script/{folder}/{scriptName}/', 'Site\Controller\Script::view');
 $app->get('/script/{folder}/{scriptName}',  'Site\Controller\Script::view');
@@ -217,17 +219,24 @@ $app->get('/script',  'Site\Controller\Script::view');
 
 //public
 $app->post('/api/{apiName}',    'Site\Controller\Api::service');
-$app->post('/auth/forgot_password', 'Site\Controller\Auth::forgotPassword')->bind('auth_forgot_password');
+
+$app->get('/public/{appName}/{projectId}/', 'Site\Controller\App::view');
+$app->get('/public/{appName}/{projectId}', 'Site\Controller\App::view');
+$app->get('/public/{appName}/', 'Site\Controller\App::view');
+$app->get('/public/{appName}', 'Site\Controller\App::view');
 
 $app->get('/validate/{validateKey}', 'Site\Controller\Validate::check');
 $app->get('/auth/reset_password/{resetPasswordKey}', 'Site\Controller\Auth::view')->value('appName', 'reset_password');
+$app->get('/auth/{appName}',    'Site\Controller\Auth::view')->value('appName', 'login');
+$app->post('/auth/forgot_password', 'Site\Controller\Auth::forgotPassword')->bind('auth_forgot_password');
+
 $app->get('/download/assets/{appName}/{projectSlug}/audio/{filename}', 'Site\Controller\Download::assets');
 $app->get('/download/assets/{appName}/{projectSlug}/{filename}', 'Site\Controller\Download::assets');
-$app->get('/signup',            'Site\Controller\PublicApp::view')->value('appName', 'signup');
-$app->get('/registration',      'Site\Controller\PublicApp::view')->value('appName', 'registration');
-$app->get('/login',             'Site\Controller\Auth::view')->value('appName', 'login');
-$app->get('/auth/{appName}',    'Site\Controller\Auth::view')->value('appName', 'login');
-$app->get('/{pageName}',        'Site\Controller\Page::view')->value('pageName', 'home');
+//$app->get('/app/signup',            'Site\Controller\App::view')->value('appName', 'signup');
+//$app->get('/app/registration',      'Site\Controller\App::view')->value('appName', 'registration');
+//$app->get('/login',             'Site\Controller\Auth::view')->value('appName', 'login');
+$app->get('/{pageName}',        'Site\Controller\Page::view');
+$app->get('/',        'Site\Controller\Page::view')->value('pageName', 'home');
 
 /*--------------------------------------------------------------------
  * And away we go...
