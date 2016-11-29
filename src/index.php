@@ -158,7 +158,7 @@ $app['security.firewalls'] = array(
         'anonymous' => true,
         'form' => array('login_path' => '/auth/login', 'check_path' => '/app/login_check'),
         'remember_me' => array('key' => REMEMBER_ME_SECRET),
-        'logout' => array('logout_path' => '/app/logout', 'target_url' => '/auth/login', 'invalidate_session' => true),
+        'logout' => array('logout_path' => '/auth/logout', 'target_url' => '/auth/login', 'invalidate_session' => true),
         'users' => $app->share(function() use ($WEBSITE) {
             return new \Site\Provider\AuthUserProvider($WEBSITE);
         }),
@@ -209,8 +209,8 @@ $app->post('/upload/{appType}/{mediaType}', 'Site\Controller\Upload::receive');
 
 $app->get('/app/{appName}/{projectId}/',    'Site\Controller\App::view');
 $app->get('/app/{appName}/{projectId}',     'Site\Controller\App::view');
-//$app->get('/app/{appName}/',    'Site\Controller\App::view')->value('appName', 'projects');
-//$app->get('/app/{appName}',     'Site\Controller\App::view')->value('appName', 'projects');
+$app->get('/app/{appName}/',    'Site\Controller\App::view')->value('appName', 'projects');
+$app->get('/app/{appName}',     'Site\Controller\App::view')->value('appName', 'projects');
 $app->get('/script/{folder}/{scriptName}/{runType}', 'Site\Controller\Script::view');
 $app->get('/script/{folder}/{scriptName}/', 'Site\Controller\Script::view');
 $app->get('/script/{folder}/{scriptName}',  'Site\Controller\Script::view');
@@ -232,11 +232,8 @@ $app->post('/auth/forgot_password', 'Site\Controller\Auth::forgotPassword')->bin
 
 $app->get('/download/assets/{appName}/{projectSlug}/audio/{filename}', 'Site\Controller\Download::assets');
 $app->get('/download/assets/{appName}/{projectSlug}/{filename}', 'Site\Controller\Download::assets');
-//$app->get('/app/signup',            'Site\Controller\App::view')->value('appName', 'signup');
-//$app->get('/app/registration',      'Site\Controller\App::view')->value('appName', 'registration');
-//$app->get('/login',             'Site\Controller\Auth::view')->value('appName', 'login');
-$app->get('/{pageName}',        'Site\Controller\Page::view');
-$app->get('/',        'Site\Controller\Page::view')->value('pageName', 'home');
+$app->get('/{pageName}/',        'Site\Controller\Page::view')->value('pageName', 'home');
+$app->get('/{pageName}',        'Site\Controller\Page::view')->value('pageName', 'home');
 
 /*--------------------------------------------------------------------
  * And away we go...

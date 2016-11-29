@@ -57,14 +57,14 @@
                             <li><a href="/app/userprofile">My Profile</a></li>
                             <li><a href="/app/activity">My Activity</a></li>
                             <li><a href="/app/changepassword">Change Password</a></li>
-                            <li><a href="/app/logout">Logout</a></li>
+                            <li><a href="/auth/logout">Logout</a></li>
                         </ul>
                     </li>
                 </ul>
             </div>
         {% else %}
             <div id="account" class="pull-right">
-                <input type="button" value="Login" style="position:relative; top:-3px" class="login-btn left" onclick="window.location='/auth/login'"/> &nbsp; or &nbsp; <a href="/app/signup">Create an Account</a>
+                <input type="button" value="Login" style="position:relative; top:-3px" class="login-btn left" onclick="window.location='/auth/login'"/> &nbsp; or &nbsp; <a href="/public/signup">Create an Account</a>
             </div>
         {% endif %}
 
@@ -124,14 +124,14 @@
                                 <li><a href="/app/userprofile">My Profile</a></li>
                                 <li><a href="/app/activity">My Activity</a></li>
                                 <li><a href="/app/changepassword">Change Password</a></li>
-                                <li><a href="/app/logout">Logout</a></li>
+                                <li><a href="/auth/logout">Logout</a></li>
                             </ul>
                         </li>
                     </ul>
                 </div>
             {% else %}
                 <div id="account" class="pull-right">
-                    <input type="button" value="Login" style="position:relative; top:-3px" class="login-btn left" onclick="window.location='/auth/login'"/> &nbsp; or &nbsp; <a href="/app/signup">Create an Account</a>
+                    <input type="button" value="Login" style="position:relative; top:-3px" class="login-btn left" onclick="window.location='/auth/login'"/> &nbsp; or &nbsp; <a href="/public/signup">Create an Account</a>
                 </div>
             {% endif %}
 

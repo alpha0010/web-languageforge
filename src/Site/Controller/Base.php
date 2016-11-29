@@ -75,7 +75,7 @@ abstract class Base
                     //TODO: load anonymous user here
                 }
             } catch (\Exception $e) {
-                return $app->redirect('/app/logout');
+                return $app->redirect('/auth/logout');
             }
         }
     }

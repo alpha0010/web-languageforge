@@ -2,7 +2,7 @@
 
 var SignupPage = function() {
   this.get = function() {
-    browser.get(browser.baseUrl + '/app/signup');
+    browser.get(browser.baseUrl + '/public/signup');
   };
 
   this.signupForm = element(by.tagName('form'));
