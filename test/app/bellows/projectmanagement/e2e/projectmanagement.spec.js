@@ -21,6 +21,7 @@ describe('E2E Project Management App', function () {
     projectsPage.clickOnProject(constants.testProjectName);
     managementPage.get();
     expect(managementPage.noticeList.count()).toBe(0);
+
     // Archive tab currently disabled
     /*
     managementPage.tabs.archive.click();
@@ -66,9 +67,12 @@ describe('E2E Project Management App', function () {
       .toContain(constants.managerUsername);
   });
 
-  // For JP, only system admin's can delete projects.  Project Manager is an ordinary user, so this test is stubbed out for JP.
+  // For Jamaican Psalms, only system admin's can delete projects.
+  // Project Manager is an ordinary user, so this test is ignored for Jamaican Psalms.
   it('Manager can delete if owner', function () {
-    if (!browser.baseUrl.startsWith("https://jamaicanpsalms")) {
+    if (!browser.baseUrl.startsWith('http://jamaicanpsalms') &&
+      !browser.baseUrl.startsWith('https://jamaicanpsalms')
+    ) {
       projectsPage.get();
       projectsPage.clickOnProject(constants.fourthProjectName);
       managementPage.get();
@@ -76,7 +80,7 @@ describe('E2E Project Management App', function () {
       managementPage.tabs.remove.click();
       expect(managementPage.deleteTab.deleteButton.isDisplayed()).toBe(true);
       expect(managementPage.deleteTab.deleteButton.isEnabled()).toBe(false);
-      managementPage.deleteTab.deleteBoxText.sendKeys("DELETE");
+      managementPage.deleteTab.deleteBoxText.sendKeys('DELETE');
       expect(managementPage.deleteTab.deleteButton.isEnabled()).toBe(true);
       managementPage.deleteTab.deleteButton.click();
       util.clickModalButton('Delete');
@@ -97,7 +101,7 @@ describe('E2E Project Management App', function () {
     managementPage.archiveTab.archiveButton.click();
     util.clickModalButton('Archive');
     expect(projectsPage.projectsList.count()).toBe(2);
-  });
+  }).pend('Archive tab is currently disabled');
 
   xit('System Admin can re-publish project', function () {
     loginPage.loginAsAdmin();
@@ -114,7 +118,7 @@ describe('E2E Project Management App', function () {
     siteAdminPage.tabs.archivedProjects.republishButton.click();
     projectsPage.get();
     expect(projectsPage.projectsList.count()).toBe(3);
-  });
+  }).pend('Archive tab is currently disabled');
 
   xit('System Admin can archive', function () {
     projectsPage.get();
@@ -127,7 +131,7 @@ describe('E2E Project Management App', function () {
     managementPage.archiveTab.archiveButton.click();
     util.clickModalButton('Archive');
     expect(projectsPage.projectsList.count()).toBe(2);
-  });
+  }).pend('Archive tab is currently disabled');
 
   xit('System Admin can re-publish project', function () {
     siteAdminPage.get();
@@ -143,6 +147,6 @@ describe('E2E Project Management App', function () {
     siteAdminPage.tabs.archivedProjects.republishButton.click();
     projectsPage.get();
     expect(projectsPage.projectsList.count()).toBe(3);
-  });
+  }).pend('Archive tab is currently disabled');
 
 });
