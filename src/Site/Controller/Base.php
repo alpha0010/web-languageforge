@@ -16,7 +16,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 require_once APPPATH."version.php";
 
-abstract class Base
+class Base
 {
     public function __construct() {
         $this->website = Website::get();
@@ -38,7 +38,8 @@ abstract class Base
 
     }
 
-    abstract public function view(Request $request, Application $app, string $appName, string $secondToken);
+    // method example intended to be overwritten by child classes if they want a "view method"
+    public function view(Request $request, Application $app, string $appName, string $secondToken) {}
 
     /** @var array data used to render templates */
     public $data;
@@ -84,11 +85,13 @@ abstract class Base
     protected function renderPage(Application $app, $viewName) {
 
         if ($this->data['isBootstrap4']) {
-            $this->addCssFiles("vendor_bower/bootstrap");
-            $this->addCssFiles($this->getThemePath()."/cssBootstrap4");
+            $this->addCssFiles($this->getThemePath()."/cssBootstrap4", false);
+            array_unshift($this->data['cssFiles'], "vendor_bower/bootstrap/dist/css/bootstrap.css");
+            array_unshift($this->data['cssFiles'], "vendor_bower/bootstrap/dist/css/bootstrap-flex.css");
         } else {
-            $this->addCssFiles("Site/views/shared/cssBootstrap2");
-            $this->addCssFiles($this->getThemePath()."/cssBootstrap2");
+            $this->addCssFiles($this->getThemePath()."/cssBootstrap2", array(), false);
+            $this->addCssFiles("Site/views/shared/cssBootstrap2", array('bootstrap.css'), false);
+            array_unshift($this->data['cssFiles'], "Site/views/shared/cssBootstrap2/bootstrap.css");
         }
 
         // Add general Angular app dependencies
@@ -163,11 +166,11 @@ abstract class Base
     }
 
     protected function addJavascriptFilesToBeMinified($folder, $exclude = array()) {
-        self::addFiles('js', $folder, $this->data['jsFiles'], $exclude);
+        self::addFiles('js', $folder, $this->data['jsFiles'], $exclude, true);
     }
 
     protected function addJavascriptFilesNotMinified($folder, $exclude = array()) {
-        self::addFiles('js', $folder, $this->data['jsNotMinifiedFiles'], $exclude);
+        self::addFiles('js', $folder, $this->data['jsNotMinifiedFiles'], $exclude, true);
     }
 
     protected function addJavascriptFiles($folder, $excludedFromMinification = array()) {
@@ -178,15 +181,15 @@ abstract class Base
         }
     }
 
-    protected function addCssFiles($dir) {
-        self::addFiles('css', $dir, $this->data['cssFiles'], array());
+    protected function addCssFiles($dir, $exclude = array(), $atEnd = true) {
+        self::addFiles('css', $dir, $this->data['cssFiles'], $exclude, $atEnd);
     }
 
     private static function ext($filename) {
         return pathinfo($filename, PATHINFO_EXTENSION);
     }
 
-    private static function addFiles($ext, $dir, &$result, $exclude) {
+    private static function addFiles($ext, $dir, &$result, $exclude, $atEnd) {
         array_push($exclude, 'excluded/');
         if (is_dir($dir)) {
             $files = scandir($dir);
@@ -199,10 +202,14 @@ abstract class Base
                 }
                 if (is_file($filepath)) {
                     if (self::ext($file) == $ext) {
-                        $result[] = $filepath;
+                        if ($atEnd) {
+                            array_push($result, $filepath);
+                        } else {
+                            array_unshift($result, $filepath);
+                        }
                     }
                 } elseif ($file != '..' && $file != '.') {
-                    self::addFiles($ext, $filepath, $result, $exclude);
+                    self::addFiles($ext, $filepath, $result, $exclude, $atEnd);
                 }
             }
         }
