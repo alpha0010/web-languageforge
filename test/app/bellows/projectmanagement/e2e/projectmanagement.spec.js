@@ -10,17 +10,15 @@ describe('E2E Project Management App', function () {
 
   it('Normal user cannot manage project of which the user is a member', function () {
     loginPage.loginAsMember();
-    managementPage.get();
-    expect(managementPage.noticeList.count()).toBe(1);
-    expect(managementPage.noticeList.first().getText())
-      .toContain('You don\'t have sufficient privileges.');
-    managementPage.expectConsoleError();
-    managementPage.firstNoticeCloseButton.click();
-    expect(managementPage.noticeList.count()).toBe(0);
+    projectsPage.get();
+    projectsPage.clickOnProject(constants.testProjectName);
+    expect(managementPage.settingsMenuLink.isDisplayed()).toBe(false);
   });
 
   it('System Admin can manage project', function () {
     loginPage.loginAsAdmin();
+    projectsPage.get();
+    projectsPage.clickOnProject(constants.testProjectName);
     managementPage.get();
     expect(managementPage.noticeList.count()).toBe(0);
     // Archive tab currently disabled
@@ -34,7 +32,7 @@ describe('E2E Project Management App', function () {
     expect(managementPage.deleteTab.deleteButton.isEnabled()).toBe(false);
   });
 
-  it('confirm Manager is not owner of test project', function () {
+  it('verify: Manager is not owner of test project', function () {
     loginPage.loginAsManager();
     projectsPage.get();
     projectsPage.clickOnProject(constants.testProjectName);
@@ -46,19 +44,15 @@ describe('E2E Project Management App', function () {
       .not.toContain(constants.managerUsername);
   });
 
-  it('Manager cannot view archive tab if not owner', function () {
-    managementPage.get();
-    expect(managementPage.noticeList.count()).toBe(0);
-    expect(managementPage.tabs.archive.isPresent()).toBe(false);
+  it('Manager cannot view project management app', function () {
+    projectsPage.get();
+    projectsPage.clickOnProject(constants.testProjectName);
+    expect(managementPage.settingsMenuLink.isDisplayed()).toBe(true);
+    managementPage.settingsMenuLink.click();
+    expect(managementPage.projectManagementLink.isPresent()).toBe(false);
   });
 
-  it('Manager cannot view delete tab if not owner', function () {
-    managementPage.get();
-    expect(managementPage.noticeList.count()).toBe(0);
-    expect(managementPage.tabs.remove.isPresent()).toBe(false);
-  });
-
-  it('confirm Manager is owner of fourth project', function () {
+  it('verify: Manager is owner of fourth project', function () {
     loginPage.loginAsManager();
 
     projectsPage.get();
@@ -75,6 +69,8 @@ describe('E2E Project Management App', function () {
   // For JP, only system admin's can delete projects.  Project Manager is an ordinary user, so this test is stubbed out for JP.
   it('Manager can delete if owner', function () {
     if (!browser.baseUrl.startsWith("https://jamaicanpsalms")) {
+      projectsPage.get();
+      projectsPage.clickOnProject(constants.fourthProjectName);
       managementPage.get();
       expect(managementPage.noticeList.count()).toBe(0);
       managementPage.tabs.remove.click();
@@ -91,6 +87,8 @@ describe('E2E Project Management App', function () {
 
   // Since Archive tab is now disabled, ignoring Archive / re-publish tests
   xit('Manager can archive if owner', function () {
+    projectsPage.get();
+    projectsPage.clickOnProject(constants.testProjectName);
     managementPage.get();
     expect(managementPage.noticeList.count()).toBe(0);
     managementPage.tabs.archive.click();
@@ -119,6 +117,8 @@ describe('E2E Project Management App', function () {
   });
 
   xit('System Admin can archive', function () {
+    projectsPage.get();
+    projectsPage.clickOnProject(constants.testProjectName);
     managementPage.get();
     expect(managementPage.noticeList.count()).toBe(0);
     managementPage.tabs.archive.click();
