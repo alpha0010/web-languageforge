@@ -38,9 +38,6 @@ class Base
 
     }
 
-    // method example intended to be overwritten by child classes if they want a "view method"
-    public function view(Request $request, Application $app, string $appName, string $secondToken) {}
-
     /** @var array data used to render templates */
     public $data;
 
