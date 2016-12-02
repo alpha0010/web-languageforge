@@ -25,15 +25,11 @@ if (json_last_error() != JSON_ERROR_NONE) {
 $className = $input['className'];
 $methodName = $input['methodName'];
 $parameters = $input['parameters'];
-$isTest = false;
+$IS_TEST = false;
 if (array_key_exists('isTest', $input)) {
-    $isTest = $input['isTest'];
+    $IS_TEST = $input['isTest'];
 }
 
-if ($isTest) {
-    define('TestMode', true);
-    define('SF_DATABASE', 'scriptureforge_test');
-}
 require_once APPPATH . 'config.php';
 
 $output = call_user_func_array("$className::$methodName", $parameters);

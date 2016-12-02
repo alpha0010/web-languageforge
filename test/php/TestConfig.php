@@ -5,17 +5,17 @@ use Api\Library\Shared\Website;
 $rootPath = realpath(__DIR__ . '/../..') . DIRECTORY_SEPARATOR;
 
 // Fake app path define
-if (! defined('APPPATH')) {
+if (!defined('APPPATH')) {
     define('APPPATH', $rootPath . 'src/');
 }
 
-if (! defined('ENVIRONMENT')) {
+if (!defined('ENVIRONMENT')) {
     define('ENVIRONMENT', 'development');
 }
 
 require_once APPPATH . 'vendor/autoload.php';
 
-define('TestMode', true);
+$IS_TEST = true;
 
 define('TestPath', $rootPath . 'test/');
 define('TestPhpPath', $rootPath . 'test/php/');

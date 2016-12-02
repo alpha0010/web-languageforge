@@ -16,7 +16,8 @@ class CommunicateDelivery implements DeliveryInterface
      */
     public function sendEmail($from, $to, $subject, $content, $htmlContent = '')
     {
-        if (!defined('TestMode')) {
+        global $IS_TEST;
+        if (!$IS_TEST) {
             Email::send($from, $to, $subject, $content, $htmlContent);
         }
     }
@@ -39,7 +40,8 @@ class CommunicateHelper
      */
     public static function templateFromFile($fileName)
     {
-        if (defined('TestMode')) {
+        global $IS_TEST;
+        if ($IS_TEST) {
             $options = array();
         } else {
             $options = array(
@@ -60,7 +62,8 @@ class CommunicateHelper
      */
     public static function templateFromString($templateCode)
     {
-        if (defined('TestMode')) {
+        global $IS_TEST;
+        if ($IS_TEST) {
             $options = array();
         } else {
             $options = array(

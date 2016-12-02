@@ -27,31 +27,37 @@ if (! defined('ENVIRONMENT')) {
  *---------------------------------------------------------------
  */
 
-if (! defined('SF_DATABASE')) {
+if (!isset($IS_TEST)) {
+    $IS_TEST = false;
+}
+
+if ($IS_TEST) {
+    define('SF_DATABASE', 'scriptureforge_test');
+} else {
     define('SF_DATABASE', 'scriptureforge');
 }
 
-if (! defined('MONGODB_CONN')) {
+if (!defined('MONGODB_CONN')) {
     define('MONGODB_CONN', 'mongodb://localhost:27017');
 }
 
-if (! defined('USE_MINIFIED_JS')) {
-    if (defined('ENVIRONMENT') and ENVIRONMENT === 'development') {
+if (!defined('USE_MINIFIED_JS')) {
+    if (defined('ENVIRONMENT') && ENVIRONMENT === 'development') {
         define('USE_MINIFIED_JS', false);
     } else {
         define('USE_MINIFIED_JS', true);
     }
 }
 
-if (! defined('USE_CDN')) {
-    if (defined('ENVIRONMENT') and ENVIRONMENT === 'development') {
+if (!defined('USE_CDN')) {
+    if (defined('ENVIRONMENT') && ENVIRONMENT === 'development') {
         define('USE_CDN', false);
     } else {
         define('USE_CDN', true);
     }
 }
 
-if (! defined('REMEMBER_ME_SECRET')) {
+if (!defined('REMEMBER_ME_SECRET')) {
     define('REMEMBER_ME_SECRET', 'not_a_secret');
 }
 

@@ -321,32 +321,26 @@ gulp.task('test-e2e-webdriver_update', webdriverUpdate);
 // -------------------------------------
 gulp.task('test-e2e-webdriver_standalone', webdriverStandalone);
 
-function copy(src, dest) {
-  return gulp.src(src)
-    .pipe(rename(dest.file))
-    .pipe(gulp.dest(dest.path));
-}
-
 // -------------------------------------
 //   Task: E2E Test: Use Test Config
 // -------------------------------------
 gulp.task('test-e2e-useTestConfig', function () {
-  var src = 'src/config.php.fortest';
-  var dest = {
-    file: 'config.php',
-    path: 'src/' };
-  return copy(src, dest);
+  var base = './src';
+  var glob = path.join(base, 'config.php');
+  return gulp.src([glob])
+    .pipe(replace(/^(\s*\$IS_TEST =).*;$/m, '$1 true;'))
+    .pipe(gulp.dest(base));
 });
 
 // -------------------------------------
 //   Task: E2E Test: Use Live Config
 // -------------------------------------
 gulp.task('test-e2e-useLiveConfig', function () {
-  var src = 'src/config.php.live';
-  var dest = {
-    file: 'config.php',
-    path: 'src/' };
-  return copy(src, dest);
+  var base = './src';
+  var glob = path.join(base, 'config.php');
+  return gulp.src([glob])
+    .pipe(replace(/^(\s*\$IS_TEST =).*;$/m, '$1 false;'))
+    .pipe(gulp.dest(base));
 });
 
 // -------------------------------------
@@ -530,7 +524,6 @@ gulp.task('test-e2e-doTest', function (cb) {
 gulp.task('test-e2e-run',
   gulp.series(
     'test-e2e-useTestConfig',
-    'test-restart-webserver',
     'test-e2e-setupTestEnvironment',
     'test-e2e-doTest')
 );
