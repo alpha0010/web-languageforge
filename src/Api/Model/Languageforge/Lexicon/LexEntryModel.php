@@ -13,9 +13,21 @@ use Api\Model\Shared\ProjectModel;
 use LazyProperty\LazyPropertiesTrait;
 use Palaso\Utilities\CodeGuard;
 
-function generateSense()
+function generateSense($data)
 {
-    return new LexSense();
+    if ($data == null) {
+        $data = array();
+    }
+    CodeGuard::checkTypeAndThrow($data, 'array');
+    $liftId = '';
+    $guid = '';
+    if (array_key_exists('liftId', $data)) {
+        $liftId = $data['liftId'];
+    }
+    if (array_key_exists('guid', $data)) {
+        $guid = $data['guid'];
+    }
+    return new LexSense($liftId, $guid);
 }
 
 function generateCustomField($data)

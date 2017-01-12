@@ -209,7 +209,7 @@ angular.module('lexicon.editor', ['ui.router', 'ui.bootstrap', 'bellows.services
     };
 
     function prepEntryForUpdate(entry) {
-      var entryForUpdate = recursiveRemoveProperties(angular.copy(entry), ['guid', 'mercurialSha',
+      var entryForUpdate = recursiveRemoveProperties(angular.copy(entry), ['mercurialSha',
         'authorInfo', 'dateCreated', 'dateModified', 'liftId', '$$hashKey']);
       entryForUpdate = prepCustomFieldsForUpdate(entryForUpdate);
       return entryForUpdate;

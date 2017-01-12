@@ -50,6 +50,9 @@ class JsonDecoder
             if ($value === false) {
                 $value = $model->{$property}; // To force the lazy evaluation to create the property.
             }
+            if (is_a($model, 'Api\Model\Languageforge\Lexicon\LexSense')) {
+                $go = 'here';
+            }
             if (is_a($value, 'Api\Model\Shared\Mapper\IdReference')) {
                 $this->decodeIdReference($property, $model, $values);
             } elseif (is_a($value, 'Api\Model\Shared\Mapper\ArrayOf')) {
@@ -121,6 +124,9 @@ class JsonDecoder
         CodeGuard::checkTypeAndThrow($data, 'array');
         $propertiesToKeep = array();
 
+        if (($key == 'senses') && (get_class($this) != 'Api\Model\Shared\Mapper\MongoDecoder')) {
+            $go = 'here';
+        }
         // check if array item class has any private, read-only or recursive properties
         if (get_class($this) != 'Api\Model\Shared\Mapper\MongoDecoder' && $model->hasGenerator()) {
             $arrayItem = $model->generate();
@@ -134,11 +140,10 @@ class JsonDecoder
                 $object = $model->generate($item);
 
                 // put back private, read-only and recursive properties into new object that was just generated
-                foreach ($propertiesToKeep as $property) {
-                    if (array_key_exists($index, $oldModelArray)) {
-                        $object->{$property} = $oldModelArray[$index]->{$property};
-                    }
+                if ((count($oldModelArray) > 0) && (count($propertiesToKeep) > 0)) {
+                    $this->restoreProperties($object, $oldModelArray, $index, $propertiesToKeep);
                 }
+
                 $this->_decode($object, $item, '');
                 $model[] = $object;
             } else {
@@ -191,6 +196,34 @@ class JsonDecoder
                     throw new \Exception("Must not decode array for value type '$key'");
                 }
                 $model[$itemKey] = $item;
+            }
+        }
+    }
+
+    /**
+     * Put back private, read-only and recursive properties into new object that was just generated
+     * @param array $object
+     * @param array $oldModelArray
+     * @param $index
+     * @param array $propertiesToKeep
+     * @throws \Exception
+     */
+    public function restoreProperties(&$object, $oldModelArray, $index, $propertiesToKeep) {
+        CodeGuard::checkTypeAndThrow($object, 'array');
+        CodeGuard::checkTypeAndThrow($oldModelArray, 'array');
+
+        // Attempt to match the index by guid
+        if (array_key_exists('guid', $object) && (count($oldModelArray) > 0)) {
+            $index = array_search($object->guid, array_column($oldModelArray, 'guid'));
+            if ($index === false) {
+                return;
+            }
+        }
+
+        // TODO: what to do if guid not found?  Old way was copy by index...
+        foreach ($propertiesToKeep as $property) {
+            if (array_key_exists($index, $oldModelArray)) {
+                $object->{$property} = $oldModelArray[$index]->{$property};
             }
         }
     }
