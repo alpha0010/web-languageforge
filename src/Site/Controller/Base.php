@@ -11,8 +11,8 @@ use Api\Model\Shared\Rights\SystemRoles;
 use Api\Model\Shared\Rights\Operation;
 use Api\Model\Shared\Rights\Domain;
 use Api\Model\Shared\UserModel;
+use Detection\MobileDetect;
 use Silex\Application;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Acl\Exception\Exception;
 
@@ -39,6 +39,15 @@ class Base
         $this->data['vendorFilesMinJs'] = array();
         $this->data['isBootstrap4'] = false;
         $this->data['isAngular2'] = false;
+
+        $device = new MobileDetect;
+        if ($device->isTablet()) {
+            $this->data['deviceType'] = 'tablet';
+        } else if ($device->isMobile()) {
+            $this->data['deviceType'] = 'mobile';
+        } else {
+            $this->data['deviceType'] = 'desktop';
+        }
     }
 
     /** @var array data used to render templates */
