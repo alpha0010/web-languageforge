@@ -108,7 +108,7 @@ class Communicate
         $userModel->setValidation(7);
         $userModel->write();
 
-        $to = array($userModel->emailPending => $userModel->name);
+        $to = array($userModel->email => $userModel->name);
 
         $subject = $website->name . ' account signup validation';
 
@@ -134,14 +134,15 @@ class Communicate
         $toUserModel->setValidation(7);
         $toUserModel->write();
 
-        $to = array($toUserModel->emailPending => $toUserModel->name);
+        $to = array($toUserModel->email => $toUserModel->name);
 
         $subject = $website->name . ' account signup validation';
 
         $vars = array(
             'user' => $inviterUserModel,
             'project' => $projectModel,
-            'link' => $website->baseUrl() . '/app/registration#/?v=' . $toUserModel->validationKey,
+            'link' => $website->baseUrl() . '/public/signup#/?v='. $toUserModel->validationKey .
+                '?e=' . $toUserModel->email,
         );
 
         self::sendTemplateEmail($to, $subject, 'InvitationValidate', $vars, $website, $delivery);
@@ -258,9 +259,9 @@ class Communicate
         $user->write();
 
         $to = array($admin->email => $admin->name);
-    
+
         $subject = $user->name . ' join request';
-    
+
         $vars = array(
             'user' => $user,
             'admin' => $admin,
@@ -270,7 +271,7 @@ class Communicate
 
         self::sendTemplateEmail($to, $subject, 'JoinRequest', $vars, $website, $delivery);
     }
-    
+
     /**
      *
      * @param UserModel $user

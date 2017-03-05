@@ -1,16 +1,117 @@
 {% verbatim %}
 <div data-ng-controller="SignupCtrl" class="content container" data-ng-cloak>
-    <!-- views will be injected here -->
-    <div data-ui-view></div>
-
-    <div class="row">
-        <div class="col-md-8 offset-md-2">
-            <div class="text-xs-center">
-                <br/>
-                <small data-translate="powered by"></small>
-                <p>{{'Sign-on Identification List' | translate}}</p>
-            </div>
-        </div>
+    <div class="text-xs-center">
+        <h1>Create an account for {{location.hostname}}</h1>
+        <sil-notices></sil-notices>
+        <hr />
     </div>
+
+    <form class="form-horizontal" data-ng-submit="processForm()" id="signupForm" name="signupForm">
+        <fieldset>
+            <div class="text-xs-center">
+                <h3 translate="Register your details..."></h3>
+            </div>
+            <div class="card card-default col-md-6 offset-md-3">
+                <div class="card-block">
+                    <div class="form-group row">
+                        <label class="control-label col-md-4 text-md-right" for="email" translate="Email Address"></label>
+                        <div class="controls col-md-8">
+                            <div class="input-group">
+                                <input class="form-control" id="email" autofocus
+                                   required type="email" name="email"
+                                   placeholder="{{'your email' | translate}}"
+                                   data-ng-blur="validateEmail()"
+                                   data-ng-model="record.email"/>
+                                <span class="input-group-addon alert-danger" data-ng-show="!emailValid || emailExists">
+                                    <i class="fa fa-times"></i></span>
+                            </div>
+                            <span role="alert" class="text-danger" id="emailInvalid" data-ng-show="!emailValid">Please enter a valid email address. An example of an email address: john@doe.com</span>
+                            <span role="alert" class="text-danger" id="emailTaken" data-ng-show="emailExists">{{takenEmail}} is taken. Please try another</span>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="control-label col-md-4 text-md-right" for="name" translate="Name"></label>
+                        <div class="controls col-md-8">
+                            <div class="input-group">
+                                <input class="form-control" id="name"
+                                       required type="text" name="name"
+                                       placeholder="{{'your name' | translate}}"
+                                       data-ng-model="record.name"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div data-ng-show="showPassword">
+                        <div class="form-group row">
+                            <label class="control-label col-md-4 text-md-right" for="visiblePassword" translate="Password"></label>
+                            <div class="controls col-md-8">
+                                <div class="input-group">
+                                    <input class="form-control" id="visiblePassword"
+                                           required type="text" name="visiblePassword"
+                                           placeholder="minimum 7 characters"
+                                           data-ng-blur="validatePassword()"
+                                           data-ng-model="record.password"/>
+                                    <span class="input-group-addon alert-danger" data-ng-show="!passwordValid">
+                                        <i class="fa fa-times"></i>
+                                    </span>
+                                </div>
+                                <span role="alert" class="text-danger" id="visiblePasswordInvalid" data-ng-show="!passwordValid">Passwords must be at least 7 characters</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div data-ng-hide="showPassword">
+                        <div class="form-group row">
+                            <label class="control-label col-md-4 text-md-right" for="password" translate="Password"></label>
+                            <div class="controls col-md-8">
+                                <div class="input-group">
+                                    <input class="form-control" id="password"
+                                           required type="password" name="password"
+                                           placeholder="minimum 7 characters"
+                                           data-ng-blur="validatePassword()"
+                                           data-ng-model="record.password"/>
+                                    <span class="input-group-addon alert-danger" data-ng-show="!passwordValid">
+                                        <i class="fa fa-times"></i>
+                                    </span>
+                                </div>
+                                <span role="alert" class="text-danger" id="passwordInvalid" data-ng-show="!passwordValid">Passwords must be at least 7 characters</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="controls col-md-8 offset-md-4">
+                            <label class="checkbox"><input type="checkbox" data-ng-model="showPassword"/> {{'Show password' |
+                                translate}}</label>
+                        </div>
+                    </div>
+                    <div class="form-group form-group-last row">
+                        <div class="controls col-md-8 offset-md-4">
+                            <pui-captcha data-pui-items="captchaData.items" data-pui-expected-item-name="captchaData.expectedItemName"
+                                         data-pui-selected="record.captcha"></pui-captcha>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 offset-md-3">
+                    <button class="btn btn-primary pull-right" type="submit" id="submit"
+                            data-ng-disabled="signupForm.$invalid || (record.password.length < 7)">
+                        {{'Sign Up' | translate}}
+                        <span data-ng-show="submissionInProgress">
+                            <i class="fa fa-spinner fa-spin"></i>
+                        </span>
+                        <span data-ng-show="!submissionInProgress">
+                            <i class="fa fa-thumbs-o-up"></i>
+                        </span>
+                    </button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="text-xs-center">
+                    <br/>
+                    <small data-translate="powered by"></small>
+                    <p>{{'Sign-on Identification List' | translate}}</p>
+                </div>
+            </div>
+        </fieldset>
+    </form>
 </div>
 {% endverbatim %}

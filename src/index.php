@@ -220,6 +220,7 @@ $app->get('/script',  'Site\Controller\Script::run');
 //public
 $app->post('/api/{apiName}',    'Site\Controller\Api::service');
 
+$app->get('/public/signup/{validateKey}', 'Site\Controller\App::view');
 $app->get('/public/{appName}/{projectId}/', 'Site\Controller\App::view');
 $app->get('/public/{appName}/{projectId}', 'Site\Controller\App::view');
 $app->get('/public/{appName}/', 'Site\Controller\App::view');

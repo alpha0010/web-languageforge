@@ -183,13 +183,15 @@ class UserCommands
     }
 
     /**
-     * Utility to lowercase the characters in a username and replace spaces with periods.
-     * @param $username
+     * Utility to sanitize user input:
+     * - lowercase the characters
+     * - replace spaces with periods.
+     * @param $field
      * @return string
      */
-    public static function standardizedUsername($username)
+    public static function sanitizeInput($field)
     {
-        return strtolower(str_replace(' ', '.', $username));
+        return strtolower(str_replace(' ', '.', $field));
     }
 
     /**
@@ -249,9 +251,7 @@ class UserCommands
         }
 
         // Check for unique updated email address
-        if (($identityCheck->emailExists) &&
-            (!$identityCheck->emailMatchesAccount)
-        ) {
+        if ($identityCheck->emailExists) {
             throw new \Exception('This email is already associated with another account');
         }
     }
@@ -265,11 +265,15 @@ class UserCommands
      */
     public static function checkIdentity($username, $email = '', $website = null)
     {
+        CodeGuard::checkEmptyAndThrow($username, 'username');
+
+        $username = UserCommands::sanitizeInput($username);
+        $email = UserCommands::sanitizeInput($email);
+
         $identityCheck = new IdentityCheck();
         $user = new UserModel();
         $emailUser = new UserModel();
-        $identityCheck->usernameExists = $user->readByUserName(
-            UserCommands::standardizedUsername($username));
+        $identityCheck->usernameExists = $user->readByUserName($username);
         // This utility assumes username matches the account
         $identityCheck->usernameMatchesAccount = true;
         if ($website) {
@@ -307,9 +311,13 @@ class UserCommands
         CodeGuard::checkNullAndThrow($website, 'website');
         $identityCheck = self::checkIdentity($username, $email, $website);
         if ($website->allowSignupFromOtherSites &&
-            $identityCheck->usernameExists && !$identityCheck->usernameExistsOnThisSite &&
-            ($identityCheck->emailIsEmpty || $identityCheck->emailMatchesAccount)
+            ($identityCheck->emailExists ||
+            ($identityCheck->usernameExists && !$identityCheck->usernameExistsOnThisSite &&
+            ($identityCheck->emailIsEmpty || $identityCheck->emailMatchesAccount)))
         ) {
+            $flashbag = $app['session']->getFlashbag();
+            $flashbag->get('infoMessage');
+            $flashbag->add('infoMessage', 'An account with this email ' . $email . ' already exists on related site.  Simply login to activate');
             $user = new PasswordModel();
             if ($user->readByProperty('username', $username)) {
                 if ($user->verifyPassword($password)) {
@@ -377,19 +385,19 @@ class UserCommands
     public static function createSimple($username, $projectId, $currentUserId, $website)
     {
         $user = new UserModel();
+        $username = UserCommands::sanitizeInput($username);
         $user->name = $username;
-        $updatedUsername = UserCommands::standardizedUsername($username);
-        UserCommands::assertUniqueIdentity($user, $updatedUsername, '', $website);
-        $user->username = $updatedUsername;
+        UserCommands::assertUniqueIdentity($user, $username, '', $website);
+        $user->username = $username;
         $user->role = SystemRoles::USER;
         $user->siteRole[$website->domain] = $website->userDefaultSiteRole;
         $user->active = true;
         $userId = $user->write();
 
-        // Make 4 digit password
+        // Make 7 digit password
         $characters = 'ABCDEFGHIJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789';
         $password = '';
-        while (strlen($password) < 4) {
+        while (strlen($password) < 7) {
             $password .= substr($characters, rand() % (strlen($characters)), 1);
         }
         $userWithPassword = new UserModelWithPassword($userId);
@@ -407,32 +415,48 @@ class UserCommands
     }
 
     /**
-     * Public: Register a new user
+     * Public: Register a new user. If user already exists on related site, attempt to
+     * activate them for $website
      * @param array $params
-     * @param string $captcha_info
      * @param Website $website
+     * @param Application $app
      * @param DeliveryInterface $delivery
      * @throws \Exception
-     * @return string $userId
+     * @return array [IdentityCheck identityCheck, string $userId] or false if Captcha fail
      */
-    public static function register($params, $captcha_info, $website, DeliveryInterface $delivery = null)
+    public static function register($params, $website, $app, DeliveryInterface $delivery = null)
     {
+        CodeGuard::checkEmptyAndThrow($params['username'], 'username');
+        CodeGuard::checkEmptyAndThrow($params['email'], 'email');
+
+        $captcha_info = $app['session']->get('captcha_info');
         if (strtolower($captcha_info['code']) != strtolower($params['captcha'])) {
             return false;  // captcha does not match
         }
 
         $user = new UserModel();
+        $params['username'] = UserCommands::sanitizeInput($params['username']);
+        $params['email'] = UserCommands::sanitizeInput($params['email']);
         $user->setProperties(UserModel::PUBLIC_ACCESSIBLE, $params);
-        UserCommands::assertUniqueIdentity($user, $params['username'], $params['email'], $website);
-        $user->active = false;
+
+        // If account exists on other site, attempt to activate
+        $identityCheck = self::checkIdentity($params['username'], $params['email'], $website);
+        $userId = self::activate($params['username'], $params['password'], $params['email'], $website, $app, $delivery);
+        if ($userId) {
+            return array($identityCheck, $userId);
+        }
+
+        // Assert unique account
+        if ($identityCheck->usernameExists || $identityCheck->emailExists) {
+            return array($identityCheck, null);
+        }
+        //UserCommands::assertUniqueIdentity($user, $params['username'], $params['email'], $website);
+        // Otherwise create new account
+        $user->active = true;
         $user->role = SystemRoles::USER;
         $user->siteRole[$website->domain] = $website->userDefaultSiteRole;
         if (!$user->emailPending) {
-            if (!$user->email) {
-                throw new \Exception("Error: no email set for user signup.");
-            }
             $user->emailPending = $user->email;
-            $user->email = '';
         }
         $userId = $user->write();
 
@@ -441,7 +465,7 @@ class UserCommands
         $userPassword->setPassword($params['password']);
         $userPassword->write();
 
-        // if website has a default project then add them to that project
+        // If website has a default project then add them to that project
         $project = ProjectModel::getDefaultProject($website);
         if ($project) {
             $project->addUser($user->id->asString(), ProjectRoles::CONTRIBUTOR);
@@ -450,9 +474,12 @@ class UserCommands
             $user->write();
         }
 
+        $flashbag = $app['session']->getFlashbag();
+        $flashbag->get('infoMessage');
+        $flashbag->add('infoMessage', 'Successfully created user ' . $user->email);
         Communicate::sendSignup($user, $website, $delivery);
 
-        return $userId;
+        return array($identityCheck, $userId);
     }
 
     public static function getCaptchaData(Session $session)
@@ -490,7 +517,7 @@ class UserCommands
     }
 
     /**
-     * Sends an email to invite emailee to join the project
+     * Sends an email to $toEmail to join the site.
      * @param string $projectId
      * @param string $inviterUserId
      * @param Website $website
@@ -509,10 +536,14 @@ class UserCommands
         $newUser = new UserModel();
         $inviterUser = new UserModel($inviterUserId);
         $project = new ProjectModel($projectId);
+        $toEmail = UserCommands::sanitizeInput($toEmail);
+
+        $newUser->username = $toEmail;
+        $newUser->email = $toEmail;
         $newUser->emailPending = $toEmail;
 
         // Check if email already exists in an account
-        $identityCheck = UserCommands::checkIdentity('', $toEmail, $website);
+        $identityCheck = UserCommands::checkIdentity($newUser->username, $newUser->email, $website);
         if ($identityCheck->emailExists) {
             $newUser->readByProperty('email', $toEmail);
         }

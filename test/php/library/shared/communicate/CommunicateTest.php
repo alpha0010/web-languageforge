@@ -198,7 +198,7 @@ class CommunicateTest extends PHPUnit_Framework_TestCase
         // What's in the delivery?
         $senderEmail = 'no-reply@' . self::$environ->website->domain;
         $expectedFrom = array($senderEmail => self::$environ->website->name);
-        $expectedTo = array($user->emailPending => $user->name);
+        $expectedTo = array($user->email => $user->name);
         $this->assertEquals($expectedFrom, $delivery->from);
         $this->assertEquals($expectedTo, $delivery->to);
         $this->assertNotRegExp('/' . SF_TESTPROJECT . '/', $delivery->subject);
@@ -223,7 +223,7 @@ class CommunicateTest extends PHPUnit_Framework_TestCase
 
         // What's in the delivery?
         $senderEmail = 'no-reply@' . self::$environ->website->domain;
-        $expectedTo = array($user->emailPending => $user->name);
+        $expectedTo = array($user->email => $user->name);
         $this->assertRegExp('/' . self::$environ->website->name . '/', $delivery->from[$senderEmail]);
         $this->assertEquals($expectedTo, $delivery->to);
         $this->assertRegExp('/' . self::$environ->website->name . '/', $delivery->subject);
@@ -238,7 +238,7 @@ class CommunicateTest extends PHPUnit_Framework_TestCase
         $inviterUser = new UserModel($inviterUserId);
         $toUserId = self::$environ->createUser('touser', 'To Name', '');
         $toUser = new UserModel($toUserId);
-        $toUser->emailPending = 'toname@example.com';
+        $toUser->email = 'toname@example.com';
         $toUser->write();
         $project = self::$environ->createProjectSettings(SF_TESTPROJECTCODE);
         $delivery = new MockCommunicateDelivery();
@@ -248,12 +248,12 @@ class CommunicateTest extends PHPUnit_Framework_TestCase
         // What's in the delivery?
         $senderEmail = 'no-reply@' . self::$environ->website->domain;
         $expectedFrom = array($senderEmail => self::$environ->website->name);
-        $expectedTo = array($toUser->emailPending => $toUser->name);
+        $expectedTo = array($toUser->email => $toUser->name);
         $this->assertEquals($expectedFrom, $delivery->from);
         $this->assertEquals($expectedTo, $delivery->to);
         $this->assertRegExp('/account signup validation/', $delivery->subject);
         $this->assertRegExp('/Inviter User/', $delivery->content);
-        $this->assertRegExp('/' . self::$environ->website->domain . '\/app\/registration/', $delivery->content);
+        $this->assertRegExp('/' . self::$environ->website->domain . '\/public\/signup/', $delivery->content);
     }
 
     public function testSendNewUserInProject_PropertiesFromToBodyOk()

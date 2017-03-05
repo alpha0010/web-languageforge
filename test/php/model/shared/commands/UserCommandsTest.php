@@ -6,7 +6,11 @@ use Api\Model\Shared\PasswordModel;
 use Api\Model\Shared\ProjectModel;
 use Api\Model\Shared\Rights\SystemRoles;
 use Api\Model\Shared\UserModel;
-//use PHPUnit\Framework\TestCase;
+use Silex\Application;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBag;
+use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\Attribute\AttributeBag;
+use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 
 class MockUserCommandsDelivery implements DeliveryInterface
 {
@@ -30,6 +34,23 @@ class MockUserCommandsDelivery implements DeliveryInterface
     {
         $this->smsModel = $smsModel;
     }
+}
+
+class MockApp extends Application
+{
+    public function MockApp($validCode = '')
+    {
+        $storage = new MockArraySessionStorage();
+        $session = new Session($storage, new AttributeBag(), new FlashBag());
+
+        $captchaData = UserCommands::getCaptchaData($session);
+        $captchaData['expectedItemName'] = array('code' => $validCode);
+        $session->set('captcha_info', $captchaData);
+        $values = array('session' => $session);
+        $app = new Application($values);
+        return $app;
+    }
+
 }
 
 class UserCommandsTest extends PHPUnit_Framework_TestCase
@@ -75,17 +96,12 @@ class UserCommandsTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($newUserId, $userId);
     }
 
-    public function testCheckIdentity_userDoesNotExistNoEmail_defaults()
+    /**
+     * @expectedException Exception
+     */
+    public function testCheckIdentity_userDoesNotExist_Exception()
     {
         $identityCheck = UserCommands::checkIdentity('', '', null);
-
-        $this->assertFalse($identityCheck->usernameExists);
-        $this->assertFalse($identityCheck->usernameExistsOnThisSite);
-        $this->assertTrue($identityCheck->usernameMatchesAccount);
-        $this->assertFalse($identityCheck->allowSignupFromOtherSites);
-        $this->assertFalse($identityCheck->emailExists);
-        $this->assertTrue($identityCheck->emailIsEmpty);
-        $this->assertFalse($identityCheck->emailMatchesAccount);
     }
 
     public function testCheckUniqueIdentity_userExistsNoEmail_UsernameExistsEmailEmpty()
@@ -215,6 +231,25 @@ class UserCommandsTest extends PHPUnit_Framework_TestCase
         $this->assertFalse($identityCheck->emailMatchesAccount);
     }
 
+    public function testCheckUniqueIdentity_caseInsensitiveEmail_userExist()
+    {
+        self::$environ->clean();
+
+        $user1Id = self::$environ->createUser('jsmith', 'joe smith','joe@smith.com');
+        new UserModel($user1Id);
+        $user2Id = self::$environ->createUser('zedUser', 'zed user','zed@example.com');
+        $zedUser = new UserModel($user2Id);
+
+        $identityCheck = UserCommands::checkUniqueIdentity($zedUser, 'jsmith', 'ZED@example.com', self::$environ->website);
+
+        $this->assertTrue($identityCheck->usernameExists);
+        $this->assertTrue($identityCheck->usernameExistsOnThisSite);
+        $this->assertFalse($identityCheck->usernameMatchesAccount);
+        $this->assertTrue($identityCheck->emailExists);
+        $this->assertFalse($identityCheck->emailIsEmpty);
+        $this->assertFalse($identityCheck->emailMatchesAccount);
+    }
+
     public function testCreateSimple_CreateUser_PasswordAndJoinProject()
     {
         self::$environ->clean();
@@ -235,7 +270,7 @@ class UserCommandsTest extends PHPUnit_Framework_TestCase
 
         // user created and password created, user joined to project
         $this->assertEquals('username', $user->username);
-        $this->assertEquals(4, strlen($dto['password']));
+        $this->assertEquals(7, strlen($dto['password']));
         $projectUser = $sameProject->listUsers()->entries[0];
         $this->assertEquals('username', $projectUser['username']);
         $userProject = $user->listProjects(self::$environ->website->domain)->entries[0];
@@ -281,11 +316,14 @@ class UserCommandsTest extends PHPUnit_Framework_TestCase
                 'password' => 'somepassword',
                 'captcha' => $validCode
         );
-        $captcha_info = array('code' => $validCode);
+
+
         $delivery = new MockUserCommandsDelivery();
 
-        $userId = UserCommands::register($params, $captcha_info, self::$environ->website, $delivery);
+        $mockApp = new MockApp($validCode);
+        $result = UserCommands::register($params, self::$environ->website, $mockApp, $delivery);
 
+        $userId = $result[1];
         $user = new UserModel($userId);
         $this->assertEquals($params['username'], $user->username);
         $this->assertEquals(0, $user->listProjects(self::$environ->website->domain)->count);
@@ -452,7 +490,7 @@ class UserCommandsTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expectedTo, $delivery->to);
         $this->assertRegExp('/Inviter Name/', $delivery->content);
         $this->assertRegExp('/Test Project/', $delivery->content);
-        $this->assertRegExp('/' . $toUser->validationKey . '/', $delivery->content);
+        $this->assertRegExp('/' . self::$environ->website->domain . '\/public\/signup/', $delivery->content);
     }
 
     public function testChangePassword_SystemAdminChangeOtherUser_Succeeds()

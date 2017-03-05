@@ -156,12 +156,12 @@ class Sf
 
     /**
      *
-     * @param string $userName
+     * @param string $username
      * @return CreateSimpleDto
      */
-    public function user_createSimple($userName)
+    public function user_createSimple($username)
     {
-        return UserCommands::createSimple($userName, $this->projectId, $this->userId, $this->website);
+        return UserCommands::createSimple($username, $this->projectId, $this->userId, $this->website);
     }
 
     // TODO Pretty sure this is going to want some paging params
@@ -225,7 +225,7 @@ class Sf
      */
     public function user_register($params)
     {
-        return UserCommands::register($params, $this->app['session']->get('captcha_info'), $this->website);
+        return UserCommands::register($params, $this->website, $this->app);
     }
 
     public function user_create($params)
@@ -251,7 +251,7 @@ class Sf
     {
         return UserCommands::sendInvite($this->projectId, $this->userId, $this->website, $toEmail);
     }
-    
+
     // ---------------------------------------------------------------
     // GENERAL PROJECT API
     // ---------------------------------------------------------------
@@ -260,8 +260,8 @@ class Sf
     {
         return UserCommands::sendJoinRequest($projectID, $this->userId, $this->website);
     }
-    
-    
+
+
     /**
      *
      * @param string $projectName
@@ -352,12 +352,12 @@ class Sf
     {
         return ProjectCommands::updateUserRole($projectId, $this->userId, $role);
     }
-    
+
     public function project_usersDto()
     {
         return ProjectCommands::usersDto($this->projectId);
     }
-    
+
     public function project_getJoinRequests()
     {
         return ProjectCommands::getJoinRequests($this->projectId);
@@ -421,14 +421,14 @@ class Sf
     {
         return ProjectCommands::updateUserRole($this->projectId, $userId, $role);
     }
-    
-    public function project_acceptJoinRequest($userId, $role) 
+
+    public function project_acceptJoinRequest($userId, $role)
     {
          UserCommands::acceptJoinRequest($this->projectId, $userId, $this->website, $role);
          ProjectCommands::removeJoinRequest($this->projectId, $userId);
     }
-    
-    public function project_denyJoinRequest($userId) 
+
+    public function project_denyJoinRequest($userId)
     {
         ProjectCommands::removeJoinRequest($this->projectId, $userId);
     }
@@ -819,14 +819,14 @@ class Sf
 
     /*
      * --------------------------------------------------------------- SEMANTIC DOMAIN TRANSLATION MANAGER API ---------------------------------------------------------------
-     */    
+     */
     public function semdom_editor_dto($browserId, $lastFetchTime = null)
     {
         $sessionLabel = 'lexDbeFetch_' . $browserId;
         $this->app['session']->set($sessionLabel, time());
         if ($lastFetchTime) {
             $lastFetchTime = $lastFetchTime - 5; // 5 second buffer
-    
+
             return SemDomTransEditDto::encode($this->projectId, $this->userId, $lastFetchTime);
         } else {
             return SemDomTransEditDto::encode($this->projectId, $this->userId);
@@ -836,32 +836,32 @@ class Sf
     public function semdom_get_open_projects() {
         return SemDomTransProjectCommands::getOpenSemdomProjects($this->userId);
     }
-    
+
     public function semdom_item_update($data) {
         return SemDomTransItemCommands::update($data, $this->projectId);
     }
-    
+
     public function semdom_project_exists($languageIsoCode) {
         return SemDomTransProjectCommands::checkProjectExists($languageIsoCode);
     }
-    
+
     public function semdom_workingset_update($data) {
         return SemDomTransWorkingSetCommands::update($data, $this->projectId);
     }
-    
+
     public function semdom_export_project() {
         return $this->website->domain . "/" . SemDomTransProjectCommands::exportProject($this->projectId);
     }
-    
+
     // 2015-04 CJH REVIEW: this method should be moved to the semdom project commands (and a test should be written around it).  This method should also assert that a project with that code does not already exist
-    public function semdom_create_project($languageIsoCode, $languageName, $useGoogleTranslateData) {        
+    public function semdom_create_project($languageIsoCode, $languageName, $useGoogleTranslateData) {
         return SemDomTransProjectCommands::createProject($languageIsoCode, $languageName, $useGoogleTranslateData, $this->userId, $this->website);
     }
-    
+
     public function semdom_does_googletranslatedata_exist($languageIsoCode) {
         return SemDomTransProjectCommands::doesGoogleTranslateDataExist($languageIsoCode);
-    }    
-    
+    }
+
     // -------------------------------- Project Management App Api ----------------------------------
     public function project_management_dto() {
         return ProjectManagementDto::encode($this->projectId);
