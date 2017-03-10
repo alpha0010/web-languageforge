@@ -36,7 +36,7 @@ angular.module('signup', ['bellows.services', 'ui.bootstrap', 'ngAnimate', 'ui.r
     };
 
     // signup app should only show when no user is present (not logged in)
-    if (angular.isDefined(sessionService.currentUserId)) {
+    if (angular.isDefined(sessionService.currentUserId())) {
       $window.location.href = '/app/projects';
     }
 
