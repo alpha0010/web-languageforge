@@ -317,11 +317,11 @@ class Communicate
         $senderEmail = 'no-reply@' . $website->domain;
         $from = array($senderEmail => $website->name);
 
-        $templatePath = APPPATH . 'Site/views/' . $website->base . '/theme/' . $website->theme . '/email/en';
-        if (! file_exists($templatePath . "/$templateName.twig" )) {
-            $templatePath = APPPATH . 'Site/views/' . $website->base . '/theme/default/email/en';
-            if (! file_exists($templatePath . "/$templateName.twig" )) {
-                $templatePath = APPPATH . 'Site/views/shared/email/en';
+        $templatePath = $website->base . '/theme/' . $website->theme . '/email/en';
+        if (! file_exists(APPPATH . 'Site/views/' . "$templatePath/$templateName.twig" )) {
+            $templatePath = $website->base . '/theme/default/email/en';
+            if (! file_exists(APPPATH . 'Site/views/' . "$templatePath/$templateName.twig" )) {
+                $templatePath = 'shared/email/en';
             }
         }
 
@@ -329,7 +329,7 @@ class Communicate
         $content = $template->render($vars);
 
         $htmlContent = '';
-        if (file_exists("$templatePath/$templateName.html.twig")) {
+        if (file_exists(APPPATH . 'Site/views/' . "$templatePath/$templateName.html.twig")) {
             $template = CommunicateHelper::templateFromFile("$templatePath/$templateName.html.twig");
             $htmlContent = $template->render($vars);
         }

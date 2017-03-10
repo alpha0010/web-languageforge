@@ -6,11 +6,6 @@ use Api\Model\Shared\PasswordModel;
 use Api\Model\Shared\ProjectModel;
 use Api\Model\Shared\Rights\SystemRoles;
 use Api\Model\Shared\UserModel;
-use Silex\Application;
-use Symfony\Component\HttpFoundation\Session\Flash\FlashBag;
-use Symfony\Component\HttpFoundation\Session\Session;
-use Symfony\Component\HttpFoundation\Session\Attribute\AttributeBag;
-use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 
 class MockUserCommandsDelivery implements DeliveryInterface
 {
@@ -34,23 +29,6 @@ class MockUserCommandsDelivery implements DeliveryInterface
     {
         $this->smsModel = $smsModel;
     }
-}
-
-class MockApp extends Application
-{
-    public function MockApp($validCode = '')
-    {
-        $storage = new MockArraySessionStorage();
-        $session = new Session($storage, new AttributeBag(), new FlashBag());
-
-        $captchaData = UserCommands::getCaptchaData($session);
-        $captchaData['expectedItemName'] = array('code' => $validCode);
-        $session->set('captcha_info', $captchaData);
-        $values = array('session' => $session);
-        $app = new Application($values);
-        return $app;
-    }
-
 }
 
 class UserCommandsTest extends PHPUnit_Framework_TestCase
@@ -316,19 +294,85 @@ class UserCommandsTest extends PHPUnit_Framework_TestCase
                 'password' => 'somepassword',
                 'captcha' => $validCode
         );
+        $captcha_info = array('code' => $validCode);
 
+        $this->assertFalse(UserModel::userExists($params['email']));
 
         $delivery = new MockUserCommandsDelivery();
+        UserCommands::register($params, self::$environ->website, $captcha_info, $delivery);
 
-        $mockApp = new MockApp($validCode);
-        $result = UserCommands::register($params, self::$environ->website, $mockApp, $delivery);
-
-        $userId = $result[1];
-        $user = new UserModel($userId);
-        $this->assertEquals($params['username'], $user->username);
+        $user = new UserModel();
+        $user->readByEmail($params['email']);
+        $this->assertEquals($params['email'], $user->email);
         $this->assertEquals(0, $user->listProjects(self::$environ->website->domain)->count);
     }
 
+    public function testRegister_InvalidCaptcha_CaptchaFail()
+    {
+        self::$environ->clean();
+
+        $validCode = 'validCode';
+        $invalidCode = 'invalidCode';
+        $params = array(
+            'id' => '',
+            'username' => 'someusername',
+            'name' => 'Some Name',
+            'email' => 'someone@example.com',
+            'password' => 'somepassword',
+            'captcha' => $invalidCode
+        );
+        $captcha_info = array('code' => $validCode);
+
+        $delivery = new MockUserCommandsDelivery();
+        $result = UserCommands::register($params, self::$environ->website, $captcha_info, $delivery);
+
+        $this->assertEquals($result, 'captchaFail');
+    }
+
+    public function testRegister_EmailInUse_EmailNotAvailable()
+    {
+        self::$environ->clean();
+
+        $validCode = 'validCode';
+        $params = array(
+            'id' => '',
+            'username' => 'someusername',
+            'name' => 'Some Name',
+            'email' => 'someone@example.com',
+            'password' => 'somepassword',
+            'captcha' => $validCode
+        );
+        $captcha_info = array('code' => $validCode);
+        $userId = self::$environ->createUser('anotherusername', 'Another Name', 'someone@example.com');
+
+        $delivery = new MockUserCommandsDelivery();
+        $result = UserCommands::register($params, self::$environ->website, $captcha_info, $delivery);
+
+        $this->assertEquals($result, 'emailNotAvailable');
+    }
+
+    public function testRegister_NewUser_Login()
+    {
+        self::$environ->clean();
+
+        $validCode = 'validCode';
+        $params = array(
+            'id' => '',
+            'username' => 'anotherusername',
+            'name' => 'Another Name',
+            'email' => 'another@example.com',
+            'password' => 'anotherpassword',
+            'captcha' => $validCode
+        );
+        $captcha_info = array('code' => $validCode);
+        $userId = self::$environ->createUser('someusername', 'Some Name', 'someone@example.com');
+
+        $delivery = new MockUserCommandsDelivery();
+        $result = UserCommands::register($params, self::$environ->website, $captcha_info, $delivery);
+
+        $this->assertEquals($result, 'login');
+
+    }
     public function testReadForRegistration_ValidKey_ValidUserModel()
     {
         self::$environ->clean();

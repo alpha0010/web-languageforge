@@ -174,6 +174,40 @@ class UserModelTest extends PHPUnit_Framework_TestCase
         );
     }
 
+    public function testUserExists_usernameFound_UserExists()
+    {
+        $environ = new MongoTestEnvironment();
+        $environ->clean();
+
+        $environ->createUser('jsmith', 'joe smith', 'joe@smith.com');
+
+        $user = new UserModel();
+        $this->assertTrue($user->userExists('jsmith'));
+    }
+
+    public function testUserExists_emailFound_UserExists()
+    {
+        $environ = new MongoTestEnvironment();
+        $environ->clean();
+
+        $environ->createUser('jsmith', 'joe smith', 'joe@smith.com');
+
+        $user = new UserModel();
+        $this->assertTrue($user->userExists('joe@smith.com'));
+    }
+
+    public function testUserExists_emailUsernameNotFound_UserNoExists()
+    {
+        $environ = new MongoTestEnvironment();
+        $environ->clean();
+
+        $environ->createUser('jsmith', 'joe smith', 'joe@smith.com');
+
+        $user = new UserModel();
+        $this->assertFalse($user->userExists('anotheruser'));
+        $this->assertFalse($user->userExists('another@example.com'));
+    }
+
     public function testReadByUserName_userFound_UserModelPopulated()
     {
         $environ = new MongoTestEnvironment();

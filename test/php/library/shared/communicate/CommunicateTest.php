@@ -393,12 +393,13 @@ class CommunicateTest extends PHPUnit_Framework_TestCase
         $senderEmail = 'no-reply@' . self::$environ->website->domain;
         $expectedFrom = array($senderEmail => self::$environ->website->name);
         $expectedTo = array($user->email => $user->name);
+        $expectedLink = self::$environ->website->domain . '\/app\/' . self::$environ->project->appName;
         $this->assertEquals($expectedFrom, $delivery->from);
         $this->assertEquals($expectedTo, $delivery->to);
         $this->assertRegExp('/' . SF_TESTPROJECT . '/', $delivery->subject);
         $this->assertRegExp('/' . self::$environ->website->name . '/', $delivery->subject);
         $this->assertRegExp('/' . SF_TESTPROJECT . '/', $delivery->content);
         $this->assertRegExp('/has been accepted/', $delivery->content);
-        $this->assertRegExp('/' . self::$environ->website->domain . '\/app\/semdomtrans/', $delivery->content);
+        $this->assertRegExp("/$expectedLink/", $delivery->content);
     }
 }

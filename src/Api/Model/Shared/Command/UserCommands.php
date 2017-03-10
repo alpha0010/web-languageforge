@@ -419,10 +419,10 @@ class UserCommands
      *
      * @param array $params (email, name, password, captcha)
      * @param Website $website
-     * @param Application $app
+     * @param string $captchaInfo
      * @param DeliveryInterface $delivery
      * @throws \Exception
-     * @return array [IdentityCheck identityCheck, string $userId] or false if Captcha fail
+     * @return string {captchaFail, login, emailNotAvailable}
      */
     public static function register($params, $website, $captchaInfo, DeliveryInterface $delivery = null)
     {
