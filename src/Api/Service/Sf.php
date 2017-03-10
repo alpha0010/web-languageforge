@@ -225,7 +225,11 @@ class Sf
      */
     public function user_register($params)
     {
-        return UserCommands::register($params, $this->website, $this->app);
+        $result = UserCommands::register($params, $this->website, $this->app['session']->get('captcha_info'));
+        if ($result == 'login') {
+            Auth::login($this->app, UserCommands::sanitizeInput($params['email']), $params['password']);
+        }
+        return $result;
     }
 
     public function user_create($params)

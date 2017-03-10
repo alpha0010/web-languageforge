@@ -340,7 +340,7 @@ class UserCommands
                     }
 
                     if ($identityCheck->emailIsEmpty) {
-                        Communicate::sendSignup($user, $website, $delivery);
+                        Communicate::sendVerifyEmail($user, $website, $delivery);
                     }
                     if ($identityCheck->emailMatchesAccount) {
                         Auth::login($app, $username, $password);
@@ -415,49 +415,53 @@ class UserCommands
     }
 
     /**
-     * Public: Register a new user. If user already exists on related site, attempt to
-     * activate them for $website
-     * @param array $params
+     * Public: Register a new user and activate them if they already exist on a new site.
+     *
+     * @param array $params (email, name, password, captcha)
      * @param Website $website
      * @param Application $app
      * @param DeliveryInterface $delivery
      * @throws \Exception
      * @return array [IdentityCheck identityCheck, string $userId] or false if Captcha fail
      */
-    public static function register($params, $website, $app, DeliveryInterface $delivery = null)
+    public static function register($params, $website, $captchaInfo, DeliveryInterface $delivery = null)
     {
-        CodeGuard::checkEmptyAndThrow($params['username'], 'username');
-        CodeGuard::checkEmptyAndThrow($params['email'], 'email');
+        $email = self::sanitizeInput($params['email']);
+        $username = $email;
+        CodeGuard::checkEmptyAndThrow($email, 'email');
 
-        $captcha_info = $app['session']->get('captcha_info');
-        if (strtolower($captcha_info['code']) != strtolower($params['captcha'])) {
-            return false;  // captcha does not match
+        if (strtolower($captchaInfo['code']) != strtolower($params['captcha'])) {
+            return "captchaFail";
+        }
+
+        if (UserModel::userExists($email)) {
+            $user = new PasswordModel();
+            $user->readByProperty('email', $username);
+            if ($user->verifyPassword($params['password'])) {
+                $userId = $user->id->asString();
+                $user = new UserModel($userId);
+                if ($user->hasRoleOnSite($website)) {
+                    return "login";
+                } else {
+                    if ($website->allowSignupFromOtherSites) {
+                        $user->siteRole[$website->domain] = $website->userDefaultSiteRole;
+                        $user->write();
+
+                        UserCommands::addUserToDefaultProject($user->id->asString(), $website);
+                        Communicate::sendWelcomeToWebsite($user, $website, $delivery);
+                        return "login";
+                    }
+                }
+            }
+            return "emailNotAvailable";
         }
 
         $user = new UserModel();
-        $params['username'] = UserCommands::sanitizeInput($params['username']);
-        $params['email'] = UserCommands::sanitizeInput($params['email']);
-        $user->setProperties(UserModel::PUBLIC_ACCESSIBLE, $params);
-
-        // If account exists on other site, attempt to activate
-        $identityCheck = self::checkIdentity($params['username'], $params['email'], $website);
-        $userId = self::activate($params['username'], $params['password'], $params['email'], $website, $app, $delivery);
-        if ($userId) {
-            return array($identityCheck, $userId);
-        }
-
-        // Assert unique account
-        if ($identityCheck->usernameExists || $identityCheck->emailExists) {
-            return array($identityCheck, null);
-        }
-        //UserCommands::assertUniqueIdentity($user, $params['username'], $params['email'], $website);
-        // Otherwise create new account
+        $user->email = $user->emailPending = $user->username = $email;
         $user->active = true;
+        $user->name = $user->displayName = $params['name'];
         $user->role = SystemRoles::USER;
         $user->siteRole[$website->domain] = $website->userDefaultSiteRole;
-        if (!$user->emailPending) {
-            $user->emailPending = $user->email;
-        }
         $userId = $user->write();
 
         // Write the password
@@ -465,7 +469,18 @@ class UserCommands
         $userPassword->setPassword($params['password']);
         $userPassword->write();
 
-        // If website has a default project then add them to that project
+        UserCommands::addUserToDefaultProject($userId, $website);
+        Communicate::sendWelcomeToWebsite($user, $website, $delivery);
+        Communicate::sendVerifyEmail($user, $website, $delivery);
+        return "login";
+    }
+
+    /**
+     * @param string $userId
+     * @param Website $website
+     */
+    public static function addUserToDefaultProject($userId, Website $website) {
+        $user = new UserModel($userId);
         $project = ProjectModel::getDefaultProject($website);
         if ($project) {
             $project->addUser($user->id->asString(), ProjectRoles::CONTRIBUTOR);
@@ -473,14 +488,8 @@ class UserCommands
             $project->write();
             $user->write();
         }
-
-        $flashbag = $app['session']->getFlashbag();
-        $flashbag->get('infoMessage');
-        $flashbag->add('infoMessage', 'Successfully created user ' . $user->email);
-        Communicate::sendSignup($user, $website, $delivery);
-
-        return array($identityCheck, $userId);
     }
+
 
     public static function getCaptchaData(Session $session)
     {

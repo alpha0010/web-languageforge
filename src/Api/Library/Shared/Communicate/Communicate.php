@@ -103,7 +103,7 @@ class Communicate
      * @param Website $website
      * @param DeliveryInterface $delivery
      */
-    public static function sendSignup($userModel, $website, DeliveryInterface $delivery = null)
+    public static function sendVerifyEmail($userModel, $website, DeliveryInterface $delivery = null)
     {
         $userModel->setValidation(7);
         $userModel->write();
@@ -119,6 +119,21 @@ class Communicate
         );
 
         self::sendTemplateEmail($to, $subject, 'SignupValidate', $vars, $website, $delivery);
+    }
+
+    public static function sendWelcomeToWebsite($userModel, $website, DeliveryInterface $delivery = null)
+    {
+        $to = array($userModel->email => $userModel->name);
+
+        $subject = 'Welcome to ' . $website->name;
+
+        $vars = array(
+            'user' => $userModel,
+            'link' => $website->baseUrl(),
+            'website' => $website,
+        );
+
+        self::sendTemplateEmail($to, $subject, 'WelcomeToWebsite', $vars, $website, $delivery);
     }
 
     /**

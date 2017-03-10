@@ -193,7 +193,7 @@ class CommunicateTest extends PHPUnit_Framework_TestCase
         $delivery = new MockCommunicateDelivery();
         $website = Website::get('scriptureforge.org');
 
-        Communicate::sendSignup($user, $website, $delivery);
+        Communicate::sendVerifyEmail($user, $website, $delivery);
 
         // What's in the delivery?
         $senderEmail = 'no-reply@' . self::$environ->website->domain;
@@ -219,7 +219,7 @@ class CommunicateTest extends PHPUnit_Framework_TestCase
         $website = Website::get('scriptureforge.org');
         $website->defaultProjectCode = 'test_project';
 
-        Communicate::sendSignup($user, $website, $delivery);
+        Communicate::sendVerifyEmail($user, $website, $delivery);
 
         // What's in the delivery?
         $senderEmail = 'no-reply@' . self::$environ->website->domain;

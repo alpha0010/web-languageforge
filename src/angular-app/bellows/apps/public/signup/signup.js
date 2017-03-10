@@ -23,7 +23,8 @@ angular.module('signup', ['bellows.services', 'ui.bootstrap', 'ngAnimate', 'ui.r
     $scope.record = {};
     $scope.record.id = '';
     $scope.captchaData = '';
-    $scope.location = $window.location;
+    $scope.captchaFailed = false;
+    $scope.hostname = $window.location.hostname;
 
     $scope.getCaptchaData = function () {
       sessionService.getCaptchaData(function (result) {
@@ -33,6 +34,11 @@ angular.module('signup', ['bellows.services', 'ui.bootstrap', 'ngAnimate', 'ui.r
         }
       });
     };
+
+    // signup app should only show when no user is present (not logged in)
+    if (angular.isDefined(sessionService.currentUserId)) {
+      $window.location.href = '/app/projects';
+    }
 
     $scope.validateEmail = function () {
       $scope.emailValid = $scope.signupForm.email.$dirty && !$scope.signupForm.$error.email;
@@ -47,43 +53,31 @@ angular.module('signup', ['bellows.services', 'ui.bootstrap', 'ngAnimate', 'ui.r
     $scope.getCaptchaData();
 
     $scope.processForm = function () {
-      // TODO: Using email address for usernames until we phase out usernames
-      $scope.record.username = $scope.record.email;
-
       registerUser(function (url) {
         $window.location.href = url;
       });
     };
 
     function registerUser(successCallback) {
+      $scope.captchaFailed = false;
       $scope.submissionInProgress = true;
       userService.register($scope.record, function (result) {
-        $scope.submissionInProgress = false;
         if (result.ok) {
-          if (!result.data) {
-            notice.push(notice.WARN, 'The image verification failed. Please try again');
-            $scope.getCaptchaData();
-          } else {
-            if (result.data[1] != null) {
-              (successCallback || angular.noop)($window.location.href = '/auth/login');
-            } else {
-              var identityCheck = result.data[0];
-              $scope.usernameExists = identityCheck.usernameExists;
-              $scope.usernameValid = !$scope.usernameExists;
-              $scope.usernameExistsOnThisSite = identityCheck.usernameExistsOnThisSite;
-              $scope.allowSignupFromOtherSites = identityCheck.allowSignupFromOtherSites;
-              $scope.emailExists = identityCheck.emailExists;
-              if ($scope.emailExists) {
-                $scope.takenEmail = $scope.record.email.toLowerCase();
-              }
-
-              $scope.emailIsEmpty = identityCheck.emailIsEmpty;
-              $scope.emailMatchesAccount = identityCheck.emailMatchesAccount;
-            }
-
-            $scope.submissionComplete = true;
+          switch (result.data) {
+            case 'captchaFail':
+              $scope.captchaFailed = true;
+              $scope.getCaptchaData();
+              break;
+            case 'emailNotAvailable':
+              $scope.emailExists = true;
+              $scope.takenEmail = $scope.record.email.toLowerCase();
+              break;
+            case 'login':
+              successCallback('/app/projects');
+              break;
           }
         }
+        $scope.submissionInProgress = false;
       });
     }
   }])

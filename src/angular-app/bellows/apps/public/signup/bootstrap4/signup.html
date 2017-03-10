@@ -1,7 +1,7 @@
 {% verbatim %}
 <div data-ng-controller="SignupCtrl" class="content container" data-ng-cloak>
     <div class="text-xs-center">
-        <h1>Create an account for {{location.hostname}}</h1>
+        <h1>Create an account for {{hostname}}</h1>
         <sil-notices></sil-notices>
         <hr />
     </div>
@@ -25,8 +25,6 @@
                                 <span class="input-group-addon alert-danger" data-ng-show="!emailValid || emailExists">
                                     <i class="fa fa-times"></i></span>
                             </div>
-                            <span role="alert" class="text-danger" id="emailInvalid" data-ng-show="!emailValid">Please enter a valid email address. An example of an email address: john@doe.com</span>
-                            <span role="alert" class="text-danger" id="emailTaken" data-ng-show="emailExists">{{takenEmail}} is taken. Please try another</span>
                         </div>
                     </div>
                     <div class="form-group row">
@@ -54,7 +52,6 @@
                                         <i class="fa fa-times"></i>
                                     </span>
                                 </div>
-                                <span role="alert" class="text-danger" id="visiblePasswordInvalid" data-ng-show="!passwordValid">Passwords must be at least 7 characters</span>
                             </div>
                         </div>
                     </div>
@@ -72,7 +69,6 @@
                                         <i class="fa fa-times"></i>
                                     </span>
                                 </div>
-                                <span role="alert" class="text-danger" id="passwordInvalid" data-ng-show="!passwordValid">Passwords must be at least 7 characters</span>
                             </div>
                         </div>
                     </div>
@@ -102,6 +98,10 @@
                             <i class="fa fa-thumbs-o-up"></i>
                         </span>
                     </button>
+                    <span role="alert" class="text-danger" id="captchaInvalid" ng-show="captchaFailed">The shape verification failed.  Please try again.</span>
+                    <span role="alert" class="text-danger" id="passwordInvalid" data-ng-show="!passwordValid">Passwords must be at least 7 characters</span>
+                    <span role="alert" class="text-danger" id="emailInvalid" data-ng-show="!emailValid">Please enter a valid email address. An example of an email address: john@doe.com</span>
+                    <span role="alert" class="text-danger" id="emailTaken" data-ng-show="emailExists">{{takenEmail}} is taken. Please try another</span>
                 </div>
             </div>
             <div class="row">
