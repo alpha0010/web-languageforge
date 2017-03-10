@@ -255,6 +255,7 @@ class Communicate
         $vars = array(
             'user' => $user,
             'project' => $projectModel,
+            'website' => $website
         );
 
         self::sendTemplateEmail($to, $subject, 'JoinRequestConfirmation', $vars, $website, $delivery);
@@ -282,6 +283,7 @@ class Communicate
             'admin' => $admin,
             'project' => $projectModel,
             'link' => $website->baseUrl() . '/app/usermanagement/' . $projectModel->id->asString() . '#/joinRequests',
+            'website' => $website
         );
 
         self::sendTemplateEmail($to, $subject, 'JoinRequest', $vars, $website, $delivery);
@@ -299,10 +301,12 @@ class Communicate
         $to = array($user->email => $user->name);
         $subject = 'You\'ve submitted a join request to the project ' . $projectModel->projectName . ' on ' . $website->name;
 
+
         $vars = array(
             'user' => $user,
             'project' => $projectModel,
-            'link' => $website->baseUrl() . '/app/semdomtrans/' . $projectModel->id->asString() . '#/edit',
+            'link' => $website->baseUrl() . "/app/{$projectModel->appName}/" . $projectModel->id->asString(),
+            'website' => $website
         );
 
         self::sendTemplateEmail($to, $subject, 'JoinRequestAccepted', $vars, $website, $delivery);
@@ -313,23 +317,20 @@ class Communicate
         $senderEmail = 'no-reply@' . $website->domain;
         $from = array($senderEmail => $website->name);
 
-        $templateFile = $website->base . '/theme/' . $website->theme . '/email/en/' . $templateName . '.twig';
-        if (! file_exists(APPPATH . 'Site/views/' . $templateFile)) {
-            $templateFile = $website->base . '/theme/default/email/en/' . $templateName . '.twig';
-        }
-        $template = CommunicateHelper::templateFromFile($templateFile);
-        $content = $template->render($vars);
-
-        $templateFile = $website->base . '/theme/' . $website->theme . '/email/en/' . $templateName . '.html.twig';
-        if (! file_exists(APPPATH . 'Site/views/' . $templateFile)) {
-            $templateFile = $website->base . '/theme/default/email/en/' . $templateName . '.html.twig';
-            if (! file_exists(APPPATH . 'Site/views/' . $templateFile)) {
-                $templateFile = '';
+        $templatePath = APPPATH . 'Site/views/' . $website->base . '/theme/' . $website->theme . '/email/en';
+        if (! file_exists($templatePath . "/$templateName.twig" )) {
+            $templatePath = APPPATH . 'Site/views/' . $website->base . '/theme/default/email/en';
+            if (! file_exists($templatePath . "/$templateName.twig" )) {
+                $templatePath = APPPATH . 'Site/views/shared/email/en';
             }
         }
+
+        $template = CommunicateHelper::templateFromFile("$templatePath/$templateName.twig");
+        $content = $template->render($vars);
+
         $htmlContent = '';
-        if ($templateFile) {
-            $template = CommunicateHelper::templateFromFile($templateFile);
+        if (file_exists("$templatePath/$templateName.html.twig")) {
+            $template = CommunicateHelper::templateFromFile("$templatePath/$templateName.html.twig");
             $htmlContent = $template->render($vars);
         }
 
