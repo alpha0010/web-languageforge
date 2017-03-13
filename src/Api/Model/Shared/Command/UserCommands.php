@@ -251,7 +251,9 @@ class UserCommands
         }
 
         // Check for unique updated email address
-        if ($identityCheck->emailExists) {
+        if (($identityCheck->emailExists) &&
+            (!$identityCheck->emailMatchesAccount)
+        ) {
             throw new \Exception('This email is already associated with another account');
         }
     }
