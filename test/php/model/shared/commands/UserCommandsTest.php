@@ -1,6 +1,7 @@
 <?php
 
 use Api\Library\Shared\Communicate\DeliveryInterface;
+use Api\Library\Shared\Website;
 use Api\Model\Shared\Command\UserCommands;
 use Api\Model\Shared\PasswordModel;
 use Api\Model\Shared\ProjectModel;
@@ -38,6 +39,8 @@ class UserCommandsTest extends PHPUnit_Framework_TestCase
 
     /** @var mixed[] Data storage between tests */
     private static $save;
+
+    const CROSS_SITE_DOMAIN = 'languageforge.org';
 
     public static function setUpBeforeClass()
     {
@@ -195,7 +198,7 @@ class UserCommandsTest extends PHPUnit_Framework_TestCase
         self::$environ->clean();
 
         $user1Id = self::$environ->createUser('jsmith', 'joe smith','joe@smith.com');
-        new UserModel($user1Id);
+        $joeUser = new UserModel($user1Id);
         $user2Id = self::$environ->createUser('zedUser', 'zed user','zed@example.com');
         $zedUser = new UserModel($user2Id);
 
@@ -214,7 +217,7 @@ class UserCommandsTest extends PHPUnit_Framework_TestCase
         self::$environ->clean();
 
         $user1Id = self::$environ->createUser('jsmith', 'joe smith','joe@smith.com');
-        new UserModel($user1Id);
+        $joeUser = new UserModel($user1Id);
         $user2Id = self::$environ->createUser('zedUser', 'zed user','zed@example.com');
         $zedUser = new UserModel($user2Id);
 
@@ -373,6 +376,36 @@ class UserCommandsTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($result, 'login');
 
     }
+
+    public function testRegister_CrossSiteEnabled_UserHasSiteRole()
+    {
+        self::$environ->clean();
+        $validCode = 'validCode';
+        $params = array(
+            'id' => '',
+            'username' => 'jsmith',
+            'name' => 'joe smith',
+            'email' => 'joe@smith.com',
+            'password' => 'somepassword',
+            'captcha' => $validCode
+        );
+        $website = Website::get(self::CROSS_SITE_DOMAIN);
+        $captcha_info = array('code' => $validCode);
+        $delivery = new MockUserCommandsDelivery();
+        // Register user to default website
+        $result = UserCommands::register($params, self::$environ->website, $captcha_info, $delivery);
+        $joeUser = new UserModel();
+        $joeUser->readByEmail('joe@smith.com');
+        $this->assertFalse($joeUser->hasRoleOnSite($website));
+
+        // Register user to cross-site
+        $result = UserCommands::register($params, $website, $captcha_info, $delivery);
+
+        $joeUser->readByEmail('joe@smith.com');
+        $this->assertEquals($result, 'login');
+        $this->assertTrue($joeUser->hasRoleOnSite($website));
+    }
+
     public function testReadForRegistration_ValidKey_ValidUserModel()
     {
         self::$environ->clean();
