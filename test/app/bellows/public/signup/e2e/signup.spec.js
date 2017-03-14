@@ -4,6 +4,7 @@ describe('E2E testing: Signup app', function () {
   var constants = require('../../../../testConstants.json');
   var page      = require('../../../pages/signupPage.js');
   var loginPage = require('../../../pages/loginPage.js');
+  var projectsPage = require('../../../pages/projectsPage.js');
   var expectedCondition = protractor.ExpectedConditions;
   var CONDITION_TIMEOUT = 3000;
 
@@ -69,8 +70,7 @@ describe('E2E testing: Signup app', function () {
     page.passwordInput.sendKeys(constants.passwordValid);
     page.captcha.setInvalidCaptcha();
     page.signupButton.click();
-    expect(page.noticeList.count()).toBe(1);
-    expect(page.noticeList.first().getText()).toContain('image verification failed');
+    expect(page.captchaInvalid.isDisplayed()).toBe(true);
   });
 
   it('finds the admin user (case insensitive) already exists', function () {
@@ -93,9 +93,18 @@ describe('E2E testing: Signup app', function () {
     expect(page.signupButton.isEnabled()).toBe(true);
     page.signupButton.click();
 
-    // Verify redirected to login page
-    browser.wait(expectedCondition.visibilityOf(loginPage.form),
+    // Verify new user logged in and redirected to projects page
+    browser.wait(expectedCondition.visibilityOf(projectsPage.createBtn),
       CONDITION_TIMEOUT);
-    expect(loginPage.infoMessages.first().isDisplayed()).toBe(true);
+    expect(projectsPage.createBtn.isDisplayed()).toBe(true);
+  });
+
+  it('redirects to projects page if already logged in', function () {
+    loginPage.logout();
+    loginPage.loginAsUser();
+    page.get();
+    browser.wait(expectedCondition.visibilityOf(projectsPage.createBtn),
+      CONDITION_TIMEOUT);
+    expect(projectsPage.createBtn.isDisplayed()).toBe(true);
   });
 });
