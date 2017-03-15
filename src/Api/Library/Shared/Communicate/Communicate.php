@@ -151,12 +151,13 @@ class Communicate
 
         $to = array($toUserModel->email => $toUserModel->name);
 
-        $subject = $website->name . ' account signup validation';
+        $subject = $website->name . ' invitation';
 
         $vars = array(
             'user' => $inviterUserModel,
             'project' => $projectModel,
-            'link' => $website->baseUrl() . '/public/signup#/?v='. $toUserModel->validationKey,
+            'link' => $website->baseUrl() . '/public/signup#/?e=' . $toUserModel->email,
+            'website' => $website,
         );
 
         self::sendTemplateEmail($to, $subject, 'InvitationValidate', $vars, $website, $delivery);

@@ -552,6 +552,7 @@ class UserCommands
         $newUser->username = $toEmail;
         $newUser->email = $toEmail;
         $newUser->emailPending = $toEmail;
+        $newUser->role = SystemRoles::USER;
 
         // Check if email already exists in an account
         $identityCheck = UserCommands::checkIdentity($newUser->username, $newUser->email, $website);

@@ -5,6 +5,7 @@ angular.module('signup', ['bellows.services', 'ui.bootstrap', 'ngAnimate', 'ui.r
   'pascalprecht.translate', 'palaso.util.model.transform', 'palaso.ui.captcha'])
   .config(['$urlRouterProvider', '$translateProvider',
   function ($urlRouterProvider, $translateProvider) {
+
     // configure interface language filepath
     $translateProvider.useStaticFilesLoader({
       prefix: '/angular-app/bellows/lang/',
@@ -14,14 +15,23 @@ angular.module('signup', ['bellows.services', 'ui.bootstrap', 'ngAnimate', 'ui.r
     $translateProvider.useSanitizeValueStrategy('escape');
 
   }])
-  .controller('SignupCtrl', ['$scope', '$state', '$window', 'userService', 'sessionService',
+  .controller('SignupCtrl', ['$scope', '$location', '$state', '$window', 'userService', 'sessionService',
     'silNoticeService',
-  function ($scope, $state, $window, userService, sessionService, notice) {
+  function ($scope, $location, $state, $window, userService, sessionService, notice) {
     $scope.showPassword = false;
     $scope.emailValid = true;
+    $scope.emailProvided = false;
     $scope.passwordValid = true;
     $scope.record = {};
     $scope.record.id = '';
+
+    // Parse for email if given
+    var email = $location.search().e;
+    if (email != undefined && email.length > 0) {
+      $scope.record.email = email;
+      $scope.emailProvided = true;
+    }
+
     $scope.captchaData = '';
     $scope.captchaFailed = false;
     $scope.hostname = $window.location.hostname;
@@ -40,11 +50,8 @@ angular.module('signup', ['bellows.services', 'ui.bootstrap', 'ngAnimate', 'ui.r
       $window.location.href = '/app/projects';
     }
 
-    $scope.validateEmail = function () {
+    $scope.validateForm = function () {
       $scope.emailValid = $scope.signupForm.email.$dirty && !$scope.signupForm.$error.email;
-    };
-
-    $scope.validatePassword = function () {
       $scope.passwordValid = ($scope.signupForm.password.$dirty ||
         $scope.signupForm.visiblePassword.$dirty) &&
         ($scope.record.password.length >= 7);
@@ -77,6 +84,7 @@ angular.module('signup', ['bellows.services', 'ui.bootstrap', 'ngAnimate', 'ui.r
               break;
           }
         }
+
         $scope.submissionInProgress = false;
       });
     }

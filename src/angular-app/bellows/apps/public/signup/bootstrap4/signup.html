@@ -20,7 +20,8 @@
                                 <input class="form-control" id="email" autofocus
                                    required type="email" name="email"
                                    placeholder="{{'your email' | translate}}"
-                                   data-ng-blur="validateEmail()"
+                                   data-ng-blur="validateForm()"
+                                   data-ng-disabled="emailProvided"
                                    data-ng-model="record.email"/>
                                 <span class="input-group-addon alert-danger" data-ng-show="!emailValid || emailExists">
                                     <i class="fa fa-times"></i></span>
@@ -46,7 +47,7 @@
                                     <input class="form-control" id="visiblePassword"
                                            required type="text" name="visiblePassword"
                                            placeholder="minimum 7 characters"
-                                           data-ng-blur="validatePassword()"
+                                           data-ng-blur="validateForm()"
                                            data-ng-model="record.password"/>
                                     <span class="input-group-addon alert-danger" data-ng-show="!passwordValid">
                                         <i class="fa fa-times"></i>
@@ -63,7 +64,7 @@
                                     <input class="form-control" id="password"
                                            required type="password" name="password"
                                            placeholder="minimum 7 characters"
-                                           data-ng-blur="validatePassword()"
+                                           data-ng-blur="validateForm()"
                                            data-ng-model="record.password"/>
                                     <span class="input-group-addon alert-danger" data-ng-show="!passwordValid">
                                         <i class="fa fa-times"></i>
@@ -98,10 +99,10 @@
                             <i class="fa fa-thumbs-o-up"></i>
                         </span>
                     </button>
-                    <span role="alert" class="text-danger" id="captchaInvalid" ng-show="captchaFailed">The shape verification failed.  Please try again.</span>
-                    <span role="alert" class="text-danger" id="passwordInvalid" data-ng-show="!passwordValid">Passwords must be at least 7 characters</span>
-                    <span role="alert" class="text-danger" id="emailInvalid" data-ng-show="!emailValid">Please enter a valid email address. An example of an email address: john@doe.com</span>
-                    <span role="alert" class="text-danger" id="emailTaken" data-ng-show="emailExists">{{takenEmail}} is taken. Please try another</span>
+                    <span role="alert" class="text-danger" id="captchaInvalid" ng-show="captchaFailed">The shape verification failed.  Please try again.<br></span>
+                    <span role="alert" class="text-danger" id="emailInvalid" data-ng-show="!emailValid">Please enter a valid email address. An example of an email address: john@doe.com<br></span>
+                    <span role="alert" class="text-danger" id="emailTaken" data-ng-show="emailExists">{{takenEmail}} is taken. Please try another<br></span>
+                    <span role="alert" class="text-danger" id="passwordInvalid" data-ng-show="!passwordValid">Passwords must be at least 7 characters.<br></span>
                 </div>
             </div>
             <div class="row">

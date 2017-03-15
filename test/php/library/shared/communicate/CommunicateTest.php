@@ -65,6 +65,7 @@ class CommunicateTest extends PHPUnit_Framework_TestCase
 
         // nothing runs in the current test function after an exception. IJH 2016-07
     }
+
     /**
      * @depends testCommunicateToUser_NoFromAddress_Exception
      */
@@ -96,6 +97,7 @@ class CommunicateTest extends PHPUnit_Framework_TestCase
 
         // nothing runs in the current test function after an exception. IJH 2016-07
     }
+
     /**
      * @depends testCommunicateToUser_NoToAddress_Exception
      */
@@ -251,9 +253,10 @@ class CommunicateTest extends PHPUnit_Framework_TestCase
         $expectedTo = array($toUser->email => $toUser->name);
         $this->assertEquals($expectedFrom, $delivery->from);
         $this->assertEquals($expectedTo, $delivery->to);
-        $this->assertRegExp('/account signup validation/', $delivery->subject);
+        $this->assertRegExp('/' . self::$environ->website->name . ' invitation/', $delivery->subject);
         $this->assertRegExp('/Inviter User/', $delivery->content);
-        $this->assertRegExp('/' . self::$environ->website->domain . '\/public\/signup/', $delivery->content);
+        $this->assertRegExp('/' . self::$environ->website->domain . '\/public\/signup#\/\?e=' . $toUser->email . '/', $delivery->content);
+        $this->assertRegExp('/The ' . self::$environ->website->name . ' Team/', $delivery->content);
     }
 
     public function testSendNewUserInProject_PropertiesFromToBodyOk()
