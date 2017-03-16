@@ -295,68 +295,6 @@ class UserCommands
         return $identityCheck;
     }
 
-    /**
-     * Activate a user on the specified site and validate email if it was empty, otherwise login
-     * @param string $username
-     * @param string $password
-     * @param string $email
-     * @param Website $website
-     * @param Application $app
-     * @param DeliveryInterface $delivery
-     * @return string|boolean $userId|false otherwise
-     */
-    public static function activate($username, $password, $email, $website, $app, DeliveryInterface $delivery = null)
-    {
-        CodeGuard::checkEmptyAndThrow($username, 'username');
-        CodeGuard::checkEmptyAndThrow($password, 'password');
-        CodeGuard::checkEmptyAndThrow($email, 'email');
-        CodeGuard::checkNullAndThrow($website, 'website');
-        $identityCheck = self::checkIdentity($username, $email, $website);
-        if ($website->allowSignupFromOtherSites &&
-            ($identityCheck->emailExists ||
-            ($identityCheck->usernameExists && !$identityCheck->usernameExistsOnThisSite &&
-            ($identityCheck->emailIsEmpty || $identityCheck->emailMatchesAccount)))
-        ) {
-            $flashbag = $app['session']->getFlashbag();
-            $flashbag->get('infoMessage');
-            $flashbag->add('infoMessage', 'An account with this email ' . $email . ' already exists on related site.  Simply login to activate');
-            $user = new PasswordModel();
-            if ($user->readByProperty('username', $username)) {
-                if ($user->verifyPassword($password)) {
-                    $user = new UserModel($user->id->asString());
-                    $user->siteRole[$website->domain] = $website->userDefaultSiteRole;
-                    if ($identityCheck->emailIsEmpty) {
-                        $user->emailPending = $email;
-                    }
-                    $user->write();
-
-                    // if website has a default project then add them to that project
-                    $project = ProjectModel::getDefaultProject($website);
-                    $url = '/app';
-                    if ($project) {
-                        $project->addUser($user->id->asString(), ProjectRoles::CONTRIBUTOR);
-                        $user->addProject($project->id->asString());
-                        $project->write();
-                        $user->write();
-                        $url = '/app/' . $project->appName . '/' . $project->id->asString();
-                    }
-
-                    if ($identityCheck->emailIsEmpty) {
-                        Communicate::sendVerifyEmail($user, $website, $delivery);
-                    }
-                    if ($identityCheck->emailMatchesAccount) {
-                        Auth::login($app, $username, $password);
-
-                        return Auth::result(Auth::LOGIN_SUCCESS, $url, 'location');
-                    }
-
-                    return Auth::result(Auth::LOGIN_FAIL_USER_UNAUTHORIZED, '', 'location');
-                }
-            }
-        }
-
-        return false;
-    }
 
     /**
      * System Admin: Create a user with default site role.
@@ -670,54 +608,6 @@ class UserCommands
         }
 
         return $admin;
-    }
-
-    /**
-     * @param string $validationKey
-     * @return array
-     * @throws \Exception
-     */
-    public static function readForRegistration($validationKey)
-    {
-        $user = new UserModel();
-        if (!$user->readByProperty('validationKey', $validationKey)) {
-            return array();
-        }
-        if (!$user->validate(false)) {
-            throw new \Exception("Sorry, your registration link has expired.");
-        }
-
-        return JsonEncoder::encode($user);
-    }
-
-    /**
-     * Public: Update user from registration email
-     * @param string $validationKey
-     * @param array $params
-     * @param Website $website
-     * @throws \Exception
-     * @return string $userId
-     */
-    public static function updateFromRegistration($validationKey, $params, $website)
-    {
-        $user = new UserModelWithPassword();
-        if (!$user->readByProperty('validationKey', $validationKey)) {
-            return false;
-        }
-
-        if (!$user->validate()) {
-            throw new \Exception("Sorry, your registration link has expired.");
-        }
-
-        $params['id'] = $user->id->asString();
-        $user->setProperties(UserModel::PUBLIC_ACCESSIBLE, $params);
-        $user->setPassword($params['password']);
-        $user->validate();
-        $user->role = SystemRoles::USER;
-        $user->siteRole[$website->domain] = $website->userDefaultSiteRole;
-        $user->active = true;
-
-        return $user->write();
     }
 }
 

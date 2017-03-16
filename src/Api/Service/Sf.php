@@ -212,11 +212,6 @@ class Sf
         return JsonEncoder::encode($identityCheck);
     }
 
-    public function user_activate($username, $password, $email)
-    {
-        return UserCommands::activate($username, $password, $email, $this->website, $this->app);
-    }
-
     /**
      * Register a new user with password and optionally add them to a project if allowed by permissions
      *
@@ -239,16 +234,6 @@ class Sf
 
     public function get_captcha_data() {
         return UserCommands::getCaptchaData($this->app['session']);
-    }
-
-    public function user_readForRegistration($validationKey)
-    {
-        return UserCommands::readForRegistration($validationKey);
-    }
-
-    public function user_updateFromRegistration($validationKey, $params)
-    {
-        return UserCommands::updateFromRegistration($validationKey, $params, $this->website);
     }
 
     public function user_sendInvite($toEmail)
