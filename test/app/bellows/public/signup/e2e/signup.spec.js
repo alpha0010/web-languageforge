@@ -84,6 +84,11 @@ describe('E2E testing: Signup app', function () {
     expect(page.emailTaken.isDisplayed()).toBe(true);
   });
 
+  it('can prefill email address that can\'t be changed', function () {
+    page.getPrefilledEmail(constants.unusedEmail);
+    expect(page.emailInput.isEnabled()).toBe(false);
+  });
+
   it('can signup a new user', function () {
     page.get();
     page.emailInput.sendKeys(constants.unusedEmail);

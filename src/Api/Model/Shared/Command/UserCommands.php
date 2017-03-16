@@ -438,8 +438,20 @@ class UserCommands
 
         if (UserModel::userExists($email)) {
             $user = new PasswordModel();
-            $user->readByProperty('email', $username);
-            if ($user->verifyPassword($params['password'])) {
+            $user->readByProperty('email', $email);
+            if (!$user->passwordExists()) {
+                // Write the password and names for invited users
+                $userPassword = new UserModelWithPassword($user->id->asString());
+                $userPassword->setPassword($params['password']);
+                $userId = $userPassword->write();
+
+                $user = new UserModel($userId);
+                $user->name = $user->displayName = $params['name'];
+                $userId = $user->write();
+
+                Communicate::sendWelcomeToWebsite($user, $website, $delivery);
+                return "login";
+            } else if ($user->verifyPassword($params['password'])) {
                 $userId = $user->id->asString();
                 $user = new UserModel($userId);
                 if ($user->hasRoleOnSite($website)) {

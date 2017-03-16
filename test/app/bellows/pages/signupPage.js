@@ -5,6 +5,10 @@ var SignupPage = function () {
     browser.get(browser.baseUrl + '/public/signup');
   };
 
+  this.getPrefilledEmail = function (email) {
+    browser.get(browser.baseUrl + '/public/signup#/?e=' + email);
+  };
+
   this.signupForm = element(by.tagName('form'));
   this.emailInput = element(by.id('email'));
   this.emailInvalid = element(by.id('emailInvalid'));
