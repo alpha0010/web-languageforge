@@ -25,21 +25,21 @@ function BellowsLoginPage() {
   };
 
   this.loginAsAdmin = function loginAsAdmin() {
-    this.login(constants.adminUsername, constants.adminPassword);
+    this.login(constants.adminEmail, constants.adminPassword);
   };
 
   this.loginAsManager = function loginAsManager() {
-    this.login(constants.managerUsername, constants.managerPassword);
+    this.login(constants.managerEmail, constants.managerPassword);
   };
 
   this.loginAsUser = function loginAsUser() {
-    this.login(constants.memberUsername, constants.memberPassword);
+    this.login(constants.memberEmail, constants.memberPassword);
   };
 
   this.loginAsMember = this.loginAsUser;
 
   this.loginAsObserver = function loginAsObserver() {
-    this.login(constants.observerUsername, constants.observerPassword);
+    this.login(constants.observerEmail, constants.observerPassword);
   };
 
   this.logout = function logout() {

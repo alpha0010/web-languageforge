@@ -51,7 +51,8 @@ angular.module('signup', ['bellows.services', 'ui.bootstrap', 'ngAnimate', 'ui.r
     }
 
     $scope.validateForm = function () {
-      $scope.emailValid = $scope.signupForm.email.$dirty && !$scope.signupForm.$error.email;
+      $scope.emailValid = ($scope.signupForm.email.$dirty || $scope.emailProvided) &&
+        !$scope.signupForm.$error.email;
       $scope.passwordValid = ($scope.signupForm.password.$dirty ||
         $scope.signupForm.visiblePassword.$dirty) &&
         ($scope.record.password.length >= 7);
@@ -78,6 +79,7 @@ angular.module('signup', ['bellows.services', 'ui.bootstrap', 'ngAnimate', 'ui.r
             case 'emailNotAvailable':
               $scope.emailExists = true;
               $scope.takenEmail = $scope.record.email.toLowerCase();
+              $scope.signupForm.email.$setPristine();
               break;
             case 'login':
               successCallback('/app/projects');

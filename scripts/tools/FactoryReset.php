@@ -302,14 +302,14 @@ class FactoryReset
             $this->Execute($runForReal, $cmd);
         } else {
             // No assets to restore so just create an account
-            print "\nCreating local user: admin@admin.com password: password\n";
+            print "\nCreating local user: admin@example.com password: password\n";
             if ($runForReal) {
                 $languageforgeWebsite = Website::get('languageforge.org');
                 $adminUser = UserCommands::createUser(array(
-                    'username' => 'admin@admin.com',
+                    'username' => 'admin@example.com',
                     'displayName' => 'admin',
                     'name' => 'Admin',
-                    'email' => 'admin@admin.com',
+                    'email' => 'admin@example.com',
                     'password' => 'password',
                     'role' => SystemRoles::SYSTEM_ADMIN,
                     'active' => true),

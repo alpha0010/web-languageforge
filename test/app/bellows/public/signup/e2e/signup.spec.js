@@ -16,8 +16,8 @@ describe('E2E testing: Signup app', function () {
   it('can verify required information filled', function () {
     page.get();
     expect(page.signupButton.isEnabled()).toBe(false);
-    page.emailInput.sendKeys(constants.notUsedEmail);
-    page.nameInput.sendKeys(constants.notUsedName);
+    page.emailInput.sendKeys(constants.unusedEmail);
+    page.nameInput.sendKeys(constants.unusedName);
     page.passwordInput.sendKeys(constants.passwordValid);
     page.captcha.setInvalidCaptcha();
     expect(page.signupButton.isEnabled()).toBe(true);
@@ -33,7 +33,7 @@ describe('E2E testing: Signup app', function () {
 
   it('cannot submit if password too short', function () {
     page.emailInput.clear();
-    page.emailInput.sendKeys(constants.notUsedEmail);
+    page.emailInput.sendKeys(constants.unusedEmail);
     expect(page.signupButton.isEnabled()).toBe(true);
     page.passwordInput.clear();
     page.passwordInput.sendKeys(constants.passwordTooShort);
@@ -57,16 +57,16 @@ describe('E2E testing: Signup app', function () {
 
   it('cannot submit if captcha not selected', function () {
     page.get();
-    page.emailInput.sendKeys(constants.notUsedEmail);
-    page.nameInput.sendKeys(constants.notUsedName);
+    page.emailInput.sendKeys(constants.unusedEmail);
+    page.nameInput.sendKeys(constants.unusedName);
     page.passwordInput.sendKeys(constants.passwordValid);
     expect(page.signupButton.isEnabled()).toBe(false);
   });
 
   it('can submit a user registration request and captcha is invalid', function () {
     page.get();
-    page.emailInput.sendKeys(constants.notUsedEmail);
-    page.nameInput.sendKeys(constants.notUsedName);
+    page.emailInput.sendKeys(constants.unusedEmail);
+    page.nameInput.sendKeys(constants.unusedName);
     page.passwordInput.sendKeys(constants.passwordValid);
     page.captcha.setInvalidCaptcha();
     page.signupButton.click();
@@ -76,7 +76,7 @@ describe('E2E testing: Signup app', function () {
   it('finds the admin user (case insensitive) already exists', function () {
     page.get();
     page.emailInput.sendKeys(constants.adminEmail.toUpperCase());
-    page.nameInput.sendKeys(constants.notUsedName);
+    page.nameInput.sendKeys(constants.unusedName);
     page.passwordInput.sendKeys(constants.passwordValid);
     page.captcha.setValidCaptcha();
     expect(page.signupButton.isEnabled()).toBe(true);
@@ -86,8 +86,8 @@ describe('E2E testing: Signup app', function () {
 
   it('can signup a new user', function () {
     page.get();
-    page.emailInput.sendKeys(constants.notUsedEmail);
-    page.nameInput.sendKeys(constants.notUsedName);
+    page.emailInput.sendKeys(constants.unusedEmail);
+    page.nameInput.sendKeys(constants.unusedName);
     page.passwordInput.sendKeys(constants.passwordValid);
     page.captcha.setValidCaptcha();
     expect(page.signupButton.isEnabled()).toBe(true);
