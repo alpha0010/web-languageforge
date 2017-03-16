@@ -2,7 +2,7 @@
 
 // Declare app level module which depends on filters, and services
 angular.module('signup', ['bellows.services', 'ui.bootstrap', 'ngAnimate', 'ui.router',
-  'pascalprecht.translate', 'palaso.util.model.transform', 'palaso.ui.captcha'])
+  'pascalprecht.translate', 'palaso.util.model.transform', 'palaso.ui.captcha', 'zxcvbn'])
   .config(['$urlRouterProvider', '$translateProvider',
   function ($urlRouterProvider, $translateProvider) {
 
@@ -24,6 +24,8 @@ angular.module('signup', ['bellows.services', 'ui.bootstrap', 'ngAnimate', 'ui.r
     $scope.passwordValid = true;
     $scope.record = {};
     $scope.record.id = '';
+    $scope.passwordIsWeak = false;
+    $scope.passwordStrength = {};
 
     // Parse for email if given
     var email = $location.search().e;
@@ -53,9 +55,13 @@ angular.module('signup', ['bellows.services', 'ui.bootstrap', 'ngAnimate', 'ui.r
     $scope.validateForm = function () {
       $scope.emailValid = ($scope.signupForm.email.$dirty || $scope.emailProvided) &&
         !$scope.signupForm.$error.email;
-      $scope.passwordValid = ($scope.signupForm.password.$dirty ||
-        $scope.signupForm.visiblePassword.$dirty) &&
-        ($scope.record.password.length >= 7);
+
+      $scope.passwordValid = ($scope.record.password) ? $scope.signupForm.password.$dirty && $scope.record.password.length >= 7 : false;
+      if ($scope.passwordStrength.score) {
+        $scope.passwordIsWeak = $scope.passwordStrength.score < 2;
+        console.log('passwordIsWeak = ', $scope.passwordIsWeak);
+        console.log('passwordStrength = ', $scope.passwordStrength.score);
+      }
     };
 
     $scope.getCaptchaData();
