@@ -89,6 +89,15 @@ describe('E2E testing: Signup app', function () {
     expect(page.emailInput.isEnabled()).toBe(false);
   });
 
+  it('can prefill email address that already exists', function () {
+    page.getPrefilledEmail(constants.adminEmail);
+    page.nameInput.sendKeys(constants.unusedName);
+    page.passwordInput.sendKeys(constants.passwordValid);
+    page.captcha.setValidCaptcha();
+    page.signupButton.click();
+    expect(page.emailTaken.isDisplayed()).toBe(true);
+  });
+
   it('can signup a new user', function () {
     page.get();
     page.emailInput.sendKeys(constants.unusedEmail);
