@@ -70,16 +70,17 @@ class MongoTestEnvironment
      * Writes a user to the users collection.
      *
      * @param string $username
+     * @param string displayName
      * @param string $name
      * @param string $email
      * @param string $role
      * @return string id
      */
-    public function createUser($username, $name, $email, $role = SystemRoles::USER)
+    public function createUser($username, $displayName, $name, $email, $role = SystemRoles::USER)
     {
         $userModel = new UserModel();
         $userModel->username = $username;
-        $userModel->displayName = $name;
+        $userModel->displayName = $displayName;
         $userModel->name = $name;
         $userModel->email = $email;
         $userModel->avatar_ref = $username . ".png";
@@ -324,11 +325,11 @@ class LexiconMongoTestEnvironment extends MongoTestEnvironment
         return $projectModel;
     }
 
-    public function getProjectMember($projectId, $userName)
+    public function getProjectMember($projectId, $username, $displayName, $name)
     {
         new UserModel();
 
-        $userId = $this->createUser($userName, $userName, 'user@example.com');
+        $userId = $this->createUser($username, $displayName, $name, 'user@example.com');
         $user = new UserModel($userId);
         $user->addProject($projectId);
         $user->write();

@@ -48,7 +48,7 @@ class UserVoteTestEnvironment
         $this->question->textRef->id = $textId;
         $this->question->write();
 
-        $this->userId = $environ->createUser('test_user', 'Test User', 'test_user@example.com');
+        $this->userId = $environ->createUser('test_user', 'test_user', 'Test User', 'test_user@example.com');
         $this->projectId = $this->project->id->asString();
         $this->questionId = $this->question->id->asString();
     }
@@ -216,8 +216,8 @@ class QuestionCommandsTest extends PHPUnit_Framework_TestCase
 
         $answer = new AnswerModel();
         $answer->content = 'the answer';
-        $user1Id = $environ->createUser('user1', 'user1', 'user1');
-        $user2Id = $environ->createUser('user2', 'user2', 'user2');
+        $user1Id = $environ->createUser('user1', 'user1', 'User 1', 'user1@example.com');
+        $user2Id = $environ->createUser('user2', 'user2', 'User 2', 'user2@example.com');
         $answer->userRef->id = $user1Id;
         $answerId = $question->writeAnswer($answer);
         $answerArray = array(
@@ -249,7 +249,7 @@ class QuestionCommandsTest extends PHPUnit_Framework_TestCase
 
         $answer = new AnswerModel();
         $answer->content = 'the answer';
-        $user1Id = $environ->createUser('user1', 'user1', 'user1');
+        $user1Id = $environ->createUser('user1', 'user1', 'User 1', 'user1@example.com');
         $answer->userRef->id = $user1Id;
         $answer->tags[] = 'originalTag';
         $answer->isToBeExported = true;
@@ -345,8 +345,8 @@ class QuestionCommandsTest extends PHPUnit_Framework_TestCase
         $question->textRef->id = $textId;
         $questionId = $question->write();
 
-        $user1Id = $environ->createUser('user1', 'user1', 'user1');
-        $user2Id = $environ->createUser('user2', 'user2', 'user2');
+        $user1Id = $environ->createUser('user1', 'user1', 'User 1', 'user1@example.com');
+        $user2Id = $environ->createUser('user2', 'user2', 'User 2', 'user2@example.com');
 
         $answer = new AnswerModel();
         $answer->content = 'the answer';

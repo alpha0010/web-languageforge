@@ -19,6 +19,7 @@ class LexProjectDtoEncoder extends JsonEncoder
 
                 return array(
                         'id' => $user->id->asString(),
+                        'displayName' => $user->displayName,
                         'username' => $user->username);
             } else {
                 return '';

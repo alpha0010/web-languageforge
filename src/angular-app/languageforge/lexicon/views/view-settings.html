@@ -43,7 +43,7 @@
                         <ul class="list-unstyled">
                             <li data-ng-click="selectUser(userId)" data-ng-repeat="(userId, userView) in configDirty.userViews"
                                 data-ng-class="{selected:currentUserId == userId}">
-                                {{usersWithSettings[userId].name}} ({{usersWithSettings[userId].username}})
+                                {{usersWithSettings[userId].name}} ({{usersWithSettings[userId].displayName}})
                                 <span data-ng-hide="isAtLeastOneSense(userView)">
                                     <i class="fa fa-exclamation-circle"
                                         title="{{'At least one Meaning field must be enabled!' | translate}}"

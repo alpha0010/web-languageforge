@@ -36,7 +36,7 @@
             <tbody>
             <tr data-ng-repeat="user in list.visibleUsers" data-ng-class="{active: isSelected(user)}" >
                 <td width="16px" align="center"><input data-ng-show="rights.remove" type="checkbox" data-ng-checked="isSelected(user)" data-ng-click="updateSelection($event, user)" /></td>
-                <td>{{user.username}}</td>
+                <td>{{user.displayName}}</td>
                 <td>{{user.name}}</td>
                 <td ng-show="user.id == project.ownerRef.id"><select class="custom-select" disabled="true"><option>Manager and Project Owner</option></select></td>
                 <td ng-hide="user.id == project.ownerRef.id"><select class="custom-select" data-ng-model="user.role" data-ng-disabled="!rights.changeRole" data-ng-change="onRoleChange(user)" data-ng-options="roleKey as roleName for (roleKey, roleName) in roles"></select></td>

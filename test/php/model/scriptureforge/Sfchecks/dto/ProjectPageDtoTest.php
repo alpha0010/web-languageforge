@@ -31,8 +31,8 @@ class ProjectPageDtoTest extends PHPUnit_Framework_TestCase
         $text2Id = $text2->write();
 
         // Answers are tied to specific users, so let's create some sample users
-        $user1Id = $environ->createUser('jcarter', 'John Carter', 'johncarter@example.com');
-        $user2Id = $environ->createUser('dthoris', 'Dejah Thoris', 'princess@example.com');
+        $user1Id = $environ->createUser('jcarter', 'john', 'John Carter', 'johncarter@example.com');
+        $user2Id = $environ->createUser('dthoris', 'Dejah', 'Dejah Thoris', 'princess@example.com');
 
         // Two questions for text 1...
         $question1 = new QuestionModel($project);

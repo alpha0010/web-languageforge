@@ -50,7 +50,7 @@ class CommunicateTest extends PHPUnit_Framework_TestCase
     public function testCommunicateToUser_NoFromAddress_Exception()
     {
         self::$environ->clean();
-        $userId = self::$environ->createUser('User', 'Name', 'name@example.com');
+        $userId = self::$environ->createUser('User', 'Name', 'User Name', 'name@example.com');
         $user = new UserModel($userId);
         $user->communicate_via = UserModel::COMMUNICATE_VIA_EMAIL;
         $project = self::$environ->createProjectSettings(SF_TESTPROJECTCODE);
@@ -82,7 +82,7 @@ class CommunicateTest extends PHPUnit_Framework_TestCase
     public function testCommunicateToUser_NoToAddress_Exception()
     {
         self::$environ->clean();
-        $userId = self::$environ->createUser('User', 'Name', '');
+        $userId = self::$environ->createUser('User', 'Name', 'User Name', '');
         $user = new UserModel($userId);
         $user->communicate_via = UserModel::COMMUNICATE_VIA_EMAIL;
         $project = self::$environ->createProjectSettings(SF_TESTPROJECTCODE);
@@ -110,7 +110,7 @@ class CommunicateTest extends PHPUnit_Framework_TestCase
     public function testCommunicateToUser_SendEmail_PropertiesToFromMessageOk()
     {
         self::$environ->clean();
-        $userId = self::$environ->createUser('User', 'Name', 'name@example.com');
+        $userId = self::$environ->createUser('User', 'Name', 'User Name', 'name@example.com');
         $user = new UserModel($userId);
         $user->communicate_via = UserModel::COMMUNICATE_VIA_EMAIL;
         $project = self::$environ->createProjectSettings(SF_TESTPROJECTCODE);
@@ -135,7 +135,7 @@ class CommunicateTest extends PHPUnit_Framework_TestCase
     public function testCommunicateToUser_SendSms_PropertiesToFromMessageProviderInfoOk()
     {
         self::$environ->clean();
-        $userId = self::$environ->createUser('User', 'Name', 'name@example.com');
+        $userId = self::$environ->createUser('User', 'Name', 'User Name', 'name@example.com');
         $user = new UserModel($userId);
         $user->communicate_via = UserModel::COMMUNICATE_VIA_SMS;
         $user->mobile_phone = '+66837610205';
@@ -164,7 +164,7 @@ class CommunicateTest extends PHPUnit_Framework_TestCase
     public function testCommunicateToUsers_SendEmail_BroadcastMessageStoredAndUnread()
     {
         self::$environ->clean();
-        $userId = self::$environ->createUser('User', 'Name', 'name@example.com');
+        $userId = self::$environ->createUser('User', 'Name', 'User Name', 'name@example.com');
         $user = new UserModel($userId);
         $user->communicate_via = UserModel::COMMUNICATE_VIA_EMAIL;
         $project = self::$environ->createProjectSettings(SF_TESTPROJECTCODE);
@@ -190,7 +190,7 @@ class CommunicateTest extends PHPUnit_Framework_TestCase
     public function testSendSignup_NoDefaultProject_PropertiesToFromBodyOk()
     {
         self::$environ->clean();
-        $userId = self::$environ->createUser('User', 'Name', 'name@example.com');
+        $userId = self::$environ->createUser('User', 'Name', 'User Name', 'name@example.com');
         $user = new UserModel($userId);
         $delivery = new MockCommunicateDelivery();
         $website = Website::get('scriptureforge.org');
@@ -212,7 +212,7 @@ class CommunicateTest extends PHPUnit_Framework_TestCase
     public function testSendSignup_WithProject_PropertiesToFromBodyOk()
     {
         self::$environ->clean();
-        $userId = self::$environ->createUser('User', 'Name', 'name@example.com');
+        $userId = self::$environ->createUser('User', 'Name', 'User Name', 'name@example.com');
         $user = new UserModel($userId);
         $project = self::$environ->createProject(SF_TESTPROJECT, SF_TESTPROJECTCODE);
         $project->projectCode = 'test_project';
@@ -236,9 +236,9 @@ class CommunicateTest extends PHPUnit_Framework_TestCase
     public function testSendInvite_PropertiesFromToBodyOk()
     {
         self::$environ->clean();
-        $inviterUserId = self::$environ->createUser('inviterUser', 'Inviter User', 'inviter@example.com');
+        $inviterUserId = self::$environ->createUser('inviterUser', 'inviterUser', 'Inviter User', 'inviter@example.com');
         $inviterUser = new UserModel($inviterUserId);
-        $toUserId = self::$environ->createUser('touser', 'To Name', '');
+        $toUserId = self::$environ->createUser('touser', 'ToName', 'To Name', '');
         $toUser = new UserModel($toUserId);
         $toUser->email = 'toname+test@example.com';
         $toUser->write();
@@ -254,7 +254,7 @@ class CommunicateTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expectedFrom, $delivery->from);
         $this->assertEquals($expectedTo, $delivery->to);
         $this->assertRegExp('/' . self::$environ->website->name . ' invitation/', $delivery->subject);
-        $this->assertRegExp('/Inviter User/', $delivery->content);
+        $this->assertRegExp('/inviterUser/', $delivery->content);
         $this->assertRegExp('/' . self::$environ->website->domain . '\/public\/signup#\/\?e=' .
             urlencode($toUser->email) . '/', $delivery->content);
         $this->assertRegExp('/The ' . self::$environ->website->name . ' Team/', $delivery->content);
@@ -263,7 +263,7 @@ class CommunicateTest extends PHPUnit_Framework_TestCase
     public function testSendNewUserInProject_PropertiesFromToBodyOk()
     {
         self::$environ->clean();
-        $toUserId = self::$environ->createUser('touser', 'To Name', 'toname@example.com');
+        $toUserId = self::$environ->createUser('touser', 'ToName', 'To Name', 'toname@example.com');
         $toUser = new UserModel($toUserId);
         $newUserName = 'newusername';
         $newUserPassword = 'password';
@@ -286,9 +286,9 @@ class CommunicateTest extends PHPUnit_Framework_TestCase
     public function testSendAddedToProject_PropertiesFromToBodyOk()
     {
         self::$environ->clean();
-        $inviterUserId = self::$environ->createUser('inviterUser', 'Inviter User', 'inviter@example.com');
+        $inviterUserId = self::$environ->createUser('inviterUser', 'inviterUser', 'Inviter User', 'inviter@example.com');
         $inviterUser = new UserModel($inviterUserId);
-        $toUserId = self::$environ->createUser('touser', 'To Name', 'toname@example.com');
+        $toUserId = self::$environ->createUser('touser', 'touser', 'To Name', 'toname@example.com');
         $toUser = new UserModel($toUserId);
         $project = self::$environ->createProjectSettings(SF_TESTPROJECTCODE);
         $delivery = new MockCommunicateDelivery();
@@ -311,7 +311,7 @@ class CommunicateTest extends PHPUnit_Framework_TestCase
     public function testSendForgotPasswordVerification_PropertiesFromToBodyOk()
     {
         self::$environ->clean();
-        $userId = self::$environ->createUser('User', 'Name', 'name@example.com');
+        $userId = self::$environ->createUser('User', 'Name', 'User Name', 'name@example.com');
         $user = new UserModel($userId);
         $delivery = new MockCommunicateDelivery();
 
@@ -336,7 +336,7 @@ class CommunicateTest extends PHPUnit_Framework_TestCase
     {
         self::$environ = new LexiconMongoTestEnvironment();
         self::$environ->clean();
-        $userId = self::$environ->createUser('User', 'Name', 'name@example.com');
+        $userId = self::$environ->createUser('User', 'Name', 'User Name', 'name@example.com');
         $user = new UserModel($userId);
         $project = self::$environ->createProject(SF_TESTPROJECT, SF_TESTPROJECTCODE);
         $delivery = new MockCommunicateDelivery();
@@ -359,9 +359,9 @@ class CommunicateTest extends PHPUnit_Framework_TestCase
     {
         self::$environ = new LexiconMongoTestEnvironment();
         self::$environ->clean();
-        $adminId = self::$environ->createUser('admin', 'Admin', 'admin@example.com');
+        $adminId = self::$environ->createUser('admin', 'Admin', 'Admin User', 'admin@example.com');
         $admin = new UserModel($adminId);
-        $userId = self::$environ->createUser('User', 'Name', 'name@example.com');
+        $userId = self::$environ->createUser('User', 'Name', 'User Name', 'name@example.com');
         $user = new UserModel($userId);
         $project = self::$environ->createProject(SF_TESTPROJECT, SF_TESTPROJECTCODE);
         $delivery = new MockCommunicateDelivery();
@@ -386,7 +386,7 @@ class CommunicateTest extends PHPUnit_Framework_TestCase
     {
         self::$environ = new LexiconMongoTestEnvironment();
         self::$environ->clean();
-        $userId = self::$environ->createUser('User', 'Name', 'name@example.com');
+        $userId = self::$environ->createUser('User', 'Name', 'User Name', 'name@example.com');
         $user = new UserModel($userId);
         $project = self::$environ->createProject(SF_TESTPROJECT, SF_TESTPROJECTCODE);
         $delivery = new MockCommunicateDelivery();

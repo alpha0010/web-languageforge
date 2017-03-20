@@ -54,9 +54,9 @@ class ApiCrudTestEnvironment extends MongoTestEnvironment
         return QuestionCommands::updateQuestion($projectId, $model);
     }
 
-    public function getProjectMember($projectId, $userName)
+    public function getProjectMember($projectId, $username, $displayName, $name)
     {
-        $userId = $this->createUser($userName, $userName, 'user@example.com');
+        $userId = $this->createUser($username, $displayName, $name, 'user@example.com');
         $user = new UserModel($userId);
         $user->addProject($projectId);
         $user->write();
@@ -72,7 +72,7 @@ class ApiCrudTest extends PHPUnit_Framework_TestCase
 {
     /** @var ApiCrudTestEnvironment */
     public static $environ;
-    
+
     public function setUp()
     {
         self::$environ = new ApiCrudTestEnvironment();
@@ -81,7 +81,7 @@ class ApiCrudTest extends PHPUnit_Framework_TestCase
 
     public function testProjectCRUD_CRUDOK()
     {
-        $userId = self::$environ->createUser('userName', 'User Name', 'user@example.com', SystemRoles::SYSTEM_ADMIN);
+        $userId = self::$environ->createUser('username', 'displayName', 'User Name', 'user@example.com', SystemRoles::SYSTEM_ADMIN);
         $id = ProjectCommands::createProject(SF_TESTPROJECT, SF_TESTPROJECTCODE, 'sfchecks', $userId, self::$environ->website);
         $this->assertNotNull($id);
         $this->assertEquals (24, strlen($id));
@@ -109,7 +109,7 @@ class ApiCrudTest extends PHPUnit_Framework_TestCase
         $project = new ProjectModel($projectId);
 
         // create an user and add to the project
-        $userId = self::$environ->getProjectMember($projectId, 'user1');
+        $userId = self::$environ->getProjectMember($projectId, 'user1', 'user1', 'User 1');
 
         // create text
         $textId = self::$environ->makeText($projectId, "test text 1");
@@ -210,7 +210,7 @@ class ApiCrudTest extends PHPUnit_Framework_TestCase
         $projectId = self::$environ->makeProject();
         $project = new ProjectModel($projectId);
 
-        $userId = self::$environ->getProjectMember($projectId, 'user1');
+        $userId = self::$environ->getProjectMember($projectId, 'user1', 'user1', 'User 1');
 
         // Initial List
         $result = self::$environ->fixJson(ProjectPageDto::encode($projectId, $userId));
@@ -263,7 +263,7 @@ class ApiCrudTest extends PHPUnit_Framework_TestCase
         $count = $result['count'];
 
         // Create
-        $userId = self::$environ->createUser('someuser', 'SomeUser','some@example.com');
+        $userId = self::$environ->createUser('someuser', 'someuser', 'Some User','some@example.com');
         $someUser = new UserModel($userId);
         $this->assertNotNull($someUser);
         $this->assertEquals(24, strlen($someUser->id->asString()));

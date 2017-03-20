@@ -38,9 +38,9 @@ class QuestionCommentDtoTest extends PHPUnit_Framework_TestCase
         $text->content = $usx;
         $textId = $text->write();
 
-        $user1Id = self::$environ->createUser("user1", "user1", "user1@email.com");
-        $user2Id = self::$environ->createUser("user2", "user2", "user2@email.com");
-        $user3Id = self::$environ->createUser("user3", "user3", "user3@email.com");
+        $user1Id = self::$environ->createUser("user1", "user1", "User 1", "user1@email.com");
+        $user2Id = self::$environ->createUser("user2", "user2", "User 2", "user2@email.com");
+        $user3Id = self::$environ->createUser("user3", "user3", "User 3", "user3@email.com");
 
         // Workflow is first to create a question
         $question = new QuestionModel($project);
@@ -98,8 +98,8 @@ class QuestionCommentDtoTest extends PHPUnit_Framework_TestCase
     {
         $project = self::$environ->createProject(SF_TESTPROJECT, SF_TESTPROJECTCODE);
 
-        $managerId = self::$environ->createUser("manager", "manager", "manager@email.com");
-        $contributorId = self::$environ->createUser("contributor1", "contributor1", "contributor1@email.com");
+        $managerId = self::$environ->createUser("manager", "manager", "Manager", "manager@email.com");
+        $contributorId = self::$environ->createUser("contributor1", "contributor1", "Contributor 1", "contributor1@email.com");
         $project->addUser($managerId, ProjectRoles::MANAGER);
         $project->addUser($contributorId, ProjectRoles::CONTRIBUTOR);
         $project->write();
@@ -144,8 +144,8 @@ class QuestionCommentDtoTest extends PHPUnit_Framework_TestCase
     {
         $project = self::$environ->createProject(SF_TESTPROJECT, SF_TESTPROJECTCODE);
 
-        $managerId = self::$environ->createUser("manager", "manager", "manager@email.com");
-        $contributorId = self::$environ->createUser("contributor1", "contributor1", "contributor1@email.com");
+        $managerId = self::$environ->createUser("manager", "manager", "manager", "manager@email.com");
+        $contributorId = self::$environ->createUser("contributor1", "contributor1", "contributor 1", "contributor1@email.com");
         $project->addUser($managerId, ProjectRoles::MANAGER);
         $project->addUser($contributorId, ProjectRoles::CONTRIBUTOR);
         $project->write();

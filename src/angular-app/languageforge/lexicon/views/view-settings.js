@@ -82,7 +82,7 @@ angular.module('lexicon.view.settings', ['ui.bootstrap', 'bellows.services', 'pa
       $scope.currentView = $scope.configDirty.userViews[userId];
       var user = $scope.usersWithSettings[userId];
       if (user) {
-        $scope.forWhom = user.name + ' (' + user.username + ')';
+        $scope.forWhom = user.name + ' (' + user.displayName + ')';
       } else {
         $scope.forWhom = '(unknown user)';
       }
@@ -110,7 +110,7 @@ angular.module('lexicon.view.settings', ['ui.bootstrap', 'bellows.services', 'pa
       if ($scope.typeahead.user) {
         var user = $scope.typeahead.user;
         var userView = angular.copy($scope.configDirty.roleViews[user.role]);
-        $scope.forWhom = user.name + ' (' + user.username + ')';
+        $scope.forWhom = user.name + ' (' + user.displayName + ')';
         deleteFromArray(user, 'id', $scope.usersWithoutSettings);
         $scope.usersWithSettings[user.id] = user;
         $scope.configDirty.userViews[user.id] = userView;
@@ -134,7 +134,7 @@ angular.module('lexicon.view.settings', ['ui.bootstrap', 'bellows.services', 'pa
         var user = $scope.typeahead.user;
         if (user) {
           // Existing user, so there was already a view
-          $scope.forWhom = user.name + ' (' + user.username + ')';
+          $scope.forWhom = user.name + ' (' + user.displayName + ')';
           $scope.currentView = $scope.configDirty.userViews[user.id];
         } else {
           // View will be created when addUser() is called

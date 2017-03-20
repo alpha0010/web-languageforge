@@ -37,7 +37,7 @@ class UserModelTest extends PHPUnit_Framework_TestCase
         $environ = new MongoTestEnvironment();
         $environ->clean();
 
-        $environ->createUser('someuser', 'Some User','user@example.com');
+        $environ->createUser('someuser', 'someuser', 'Some User','user@example.com');
 
         $model = new UserTypeaheadModel('', '', $environ->website);
         $model->read();
@@ -51,7 +51,7 @@ class UserModelTest extends PHPUnit_Framework_TestCase
     {
         $environ = new MongoTestEnvironment();
         $environ->clean();
-        $environ->createUser('someuser', 'Some User','user@example.com');
+        $environ->createUser('someuser', 'someuser', 'Some User','user@example.com');
 
         $model = new UserTypeaheadModel('', '', $environ->website);
         $model->read();
@@ -65,7 +65,7 @@ class UserModelTest extends PHPUnit_Framework_TestCase
     {
         $environ = new MongoTestEnvironment();
         $environ->clean();
-        $environ->createUser('someuser', 'Some User','user@example.com');
+        $environ->createUser('someuser', 'someuser', 'Some User','user@example.com');
 
         $model = new UserTypeaheadModel('Bogus', '', $environ->website);
         $model->read();
@@ -78,7 +78,7 @@ class UserModelTest extends PHPUnit_Framework_TestCase
     {
         $environ = new MongoTestEnvironment();
         $environ->clean();
-        $environ->createUser('someuser', 'Some User','user@example.com');
+        $environ->createUser('someuser', 'someuser', 'Some User','user@example.com');
 
         // Check no users exist on another website
         $website = new Website('languageforge.local', Website::LANGUAGEFORGE);
@@ -93,14 +93,14 @@ class UserModelTest extends PHPUnit_Framework_TestCase
     {
         $environ = new MongoTestEnvironment();
         $environ->clean();
-        $userId = $environ->createUser('projectuser', 'Project User','projectUser@example.com');
+        $userId = $environ->createUser('projectuser', 'projectuser', 'Project User','projectUser@example.com');
         $project = $environ->createProject(SF_TESTPROJECT, SF_TESTPROJECTCODE);
         $projectId = $project->id->asString();
         $user = new UserModel($userId);
         $user->addProject($projectId);
         $user->write();
-        $environ->createUser('someuser', 'Some User','user@example.com');
-        $environ->createUser('anotheruser', 'Another User','another@example.com');
+        $environ->createUser('someuser', 'some', 'Some User','user@example.com');
+        $environ->createUser('anotheruser', 'another', 'Another User','another@example.com');
 
         $model = new UserTypeaheadModel('', $projectId, $environ->website);
         $model->read();
@@ -123,7 +123,7 @@ class UserModelTest extends PHPUnit_Framework_TestCase
         $environ = new MongoTestEnvironment();
         $environ->clean();
 
-        $userId = $environ->createUser('jsmith', 'joe smith', 'joe@smith.com');
+        $userId = $environ->createUser('jsmith', 'joe', 'joe smith', 'joe@smith.com');
 
         $p1m = $environ->createProject('p1', 'p1Code');
         $p1m->appName = 'sfchecks';
@@ -181,7 +181,7 @@ class UserModelTest extends PHPUnit_Framework_TestCase
         $environ = new MongoTestEnvironment();
         $environ->clean();
 
-        $environ->createUser('jsmith', 'joe smith', 'joe@smith.com');
+        $environ->createUser('jsmith', 'joe', 'joe smith', 'joe@smith.com');
 
         $user = new UserModel();
         $this->assertTrue($user->userExists('jsmith'));
@@ -192,7 +192,7 @@ class UserModelTest extends PHPUnit_Framework_TestCase
         $environ = new MongoTestEnvironment();
         $environ->clean();
 
-        $environ->createUser('jsmith', 'joe smith', 'joe@smith.com');
+        $environ->createUser('jsmith', 'joe', 'joe smith', 'joe@smith.com');
 
         $user = new UserModel();
         $this->assertTrue($user->userExists('joe@smith.com'));
@@ -203,7 +203,7 @@ class UserModelTest extends PHPUnit_Framework_TestCase
         $environ = new MongoTestEnvironment();
         $environ->clean();
 
-        $environ->createUser('jsmith', 'joe smith', 'joe@smith.com');
+        $environ->createUser('jsmith', 'joe', 'joe smith', 'joe@smith.com');
 
         $user = new UserModel();
         $this->assertFalse($user->userExists('anotheruser'));
@@ -216,7 +216,7 @@ class UserModelTest extends PHPUnit_Framework_TestCase
         $environ->clean();
 
         $environmailAddress = 'joe@smith.com';
-        $environ->createUser('jsmith', 'joe smith', $environmailAddress);
+        $environ->createUser('jsmith', 'joe', 'joe smith', $environmailAddress);
 
         $user = new UserModel();
         $result = $user->readByUserName('jsmith');
@@ -229,7 +229,7 @@ class UserModelTest extends PHPUnit_Framework_TestCase
         $environ = new MongoTestEnvironment();
         $environ->clean();
 
-        $environ->createUser('jsmith', 'joe smith','joe@smith.com');
+        $environ->createUser('jsmith', 'joe', 'joe smith','joe@smith.com');
 
         $user = new UserModel();
         $result = $user->readByUserName('adam');
@@ -241,7 +241,7 @@ class UserModelTest extends PHPUnit_Framework_TestCase
     {
         $environ = new MongoTestEnvironment();
         $environ->clean();
-        $userId = $environ->createUser('user1', 'User1', 'user1@example.com');
+        $userId = $environ->createUser('user1', 'user1', 'User 1', 'user1@example.com');
         $user = new UserModel($userId);
         $params =
             ['username' => 'user2',
@@ -270,7 +270,7 @@ class UserModelTest extends PHPUnit_Framework_TestCase
     {
         $environ = new MongoTestEnvironment();
         $environ->clean();
-        $userId = $environ->createUser('user1', 'User1', 'user1@example.com');
+        $userId = $environ->createUser('user1', 'user1', 'User 1', 'user1@example.com');
         $user = new UserModel($userId);
         $params =
             ['avatar_color' => 'pink',
@@ -317,7 +317,7 @@ class UserModelTest extends PHPUnit_Framework_TestCase
     {
         $environ = new MongoTestEnvironment();
         $environ->clean();
-        $userId = $environ->createUser('user1', 'User1', 'user1@example.com');
+        $userId = $environ->createUser('user1', 'user1', 'User 1', 'user1@example.com');
         $user = new UserModel($userId);
         $params =
             ['username' => 'user2',
@@ -373,7 +373,7 @@ class UserModelTest extends PHPUnit_Framework_TestCase
     {
         $environ = new MongoTestEnvironment();
         $environ->clean();
-        $userId = $environ->createUser('user1', 'user1', 'user1@example.com');
+        $userId = $environ->createUser('user1', 'user1', 'User 1', 'user1@example.com');
         $user = new UserModel($userId);
         $project = $environ->createProject('testProject', 'testProjectCode');
         $project->addUser($userId, ProjectRoles::CONTRIBUTOR);
@@ -395,7 +395,7 @@ class UserModelTest extends PHPUnit_Framework_TestCase
     {
         $environ = new MongoTestEnvironment();
         $environ->clean();
-        $userId = $environ->createUser('user1', 'User1', 'user1@example.com');
+        $userId = $environ->createUser('user1', 'user1', 'User 1', 'user1@example.com');
         $user = new UserModel($userId);
 
         $hasForgottenPassword = $user->hasForgottenPassword(false);
@@ -409,7 +409,7 @@ class UserModelTest extends PHPUnit_Framework_TestCase
     {
         $environ = new MongoTestEnvironment();
         $environ->clean();
-        $userId = $environ->createUser('user1', 'User1', 'user1@example.com');
+        $userId = $environ->createUser('user1', 'user1', 'User 1', 'user1@example.com');
         $user = new UserModel($userId);
         $user->setForgotPassword(7);
         $user->write();
@@ -429,7 +429,7 @@ class UserModelTest extends PHPUnit_Framework_TestCase
     {
         $environ = new MongoTestEnvironment();
         $environ->clean();
-        $userId = $environ->createUser('user1', 'User1', 'user1@example.com');
+        $userId = $environ->createUser('user1', 'user1', 'User 1', 'user1@example.com');
         $user = new UserModel($userId);
         $user->setForgotPassword(7);
         $user->write();

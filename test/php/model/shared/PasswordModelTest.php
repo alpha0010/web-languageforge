@@ -10,7 +10,7 @@ class PasswordModelTest extends PHPUnit_Framework_TestCase
         // create  user with a random password
         $environ = new MongoTestEnvironment();
         $environ->clean();
-        $userId = $environ->createUser('test', 'test user', 'user@me.com');
+        $userId = $environ->createUser('test', 'test', 'test user', 'user@me.com');
         $passwordModel = new PasswordModel($userId);
         $someRandomPassword = '$2a$07$zLvg2ereYSEPMGoGttzxrenCCUykFpp6eNTAc.C/NDQPx7WkvUvWa'; // bcrypt for 'blahblah'
         $passwordModel->password = $someRandomPassword;
@@ -30,7 +30,7 @@ class PasswordModelTest extends PHPUnit_Framework_TestCase
     {
         $environ = new MongoTestEnvironment();
         $environ->clean();
-        $userId = $environ->createUser('test', 'test user', 'user@me.com');
+        $userId = $environ->createUser('test', 'test', 'test user', 'user@me.com');
         $passwordModel = new PasswordModel($userId);
         $passwordModel->write();
 
@@ -41,7 +41,7 @@ class PasswordModelTest extends PHPUnit_Framework_TestCase
     {
         $environ = new MongoTestEnvironment();
         $environ->clean();
-        $userId = $environ->createUser('test', 'test user', 'user@me.com');
+        $userId = $environ->createUser('test', 'test', 'test user', 'user@me.com');
         $passwordModel = new PasswordModel($userId);
         $someRandomPassword = '$2a$07$zLvg2ereYSEPMGoGttzxrenCCUykFpp6eNTAc.C/NDQPx7WkvUvWa'; // bcrypt for 'blahblah'
         $passwordModel->password = $someRandomPassword;

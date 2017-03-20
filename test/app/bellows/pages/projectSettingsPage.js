@@ -39,7 +39,7 @@ function BellowsProjectSettingsPage() {
   this.projectTab = {
     name: element(by.model('project.projectName')),
     code: element(by.model('project.projectCode')),
-    projectOwner: element(by.binding('project.ownerRef.username')),
+    projectOwner: element(by.binding('project.ownerRef.displayName')),
     saveButton: this.tabDivs.get(0).element(by.buttonText('Save'))
 
     //button: element(by.id('project_properties_save_button'))

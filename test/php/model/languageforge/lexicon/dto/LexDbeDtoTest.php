@@ -23,7 +23,7 @@ class LexDbeDtoTest extends PHPUnit_Framework_TestCase
     }
 
     function testEncode_NoEntries_Ok() {
-        $userId = self::$environ->createUser('User', 'Name', 'name@example.com');
+        $userId = self::$environ->createUser('User', 'Name', 'User Name', 'name@example.com');
         $user = new UserModel($userId);
         $user->role = SystemRoles::USER;
 
@@ -43,7 +43,7 @@ class LexDbeDtoTest extends PHPUnit_Framework_TestCase
     }
 
     function testEncode_Entries_SortsOk() {
-        $userId = self::$environ->createUser('User', 'Name', 'name@example.com');
+        $userId = self::$environ->createUser('User', 'Name', 'User Name', 'name@example.com');
         $user = new UserModel($userId);
         $user->role = SystemRoles::USER;
 
@@ -79,7 +79,7 @@ class LexDbeDtoTest extends PHPUnit_Framework_TestCase
     }
 
     function testEncode_EntriesAndLoadPartial_PartialOk() {
-        $userId = self::$environ->createUser('User', 'Name', 'name@example.com');
+        $userId = self::$environ->createUser('User', 'Name', 'User Name', 'name@example.com');
         $user = new UserModel($userId);
         $user->role = SystemRoles::USER;
 

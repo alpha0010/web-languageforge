@@ -34,7 +34,7 @@ class ProjectCommandsTest extends PHPUnit_Framework_TestCase
     public function testDeleteProjects_ProjectOwner_NoThrow()
     {
         self::$environ->clean();
-        $user1Id = self::$environ->createUser("user1name", "User1 Name", "user1@example.com");
+        $user1Id = self::$environ->createUser("user1name", "user1", "User1 Name", "user1@example.com");
         $user1 = new UserModel($user1Id);
 
         $projectId = ProjectCommands::createProject(SF_TESTPROJECT, SF_TESTPROJECTCODE, SfProjectModel::SFCHECKS_APP,
@@ -49,8 +49,8 @@ class ProjectCommandsTest extends PHPUnit_Framework_TestCase
     public function testDeleteProjects_NotProjectOwner_Throw()
     {
         self::$environ->clean();
-        $user1Id = self::$environ->createUser("user1name", "User1 Name", "user1@example.com");
-        $user2Id = self::$environ->createUser("user2name", "User2 Name", "user2@example.com");
+        $user1Id = self::$environ->createUser("user1name", "user1", "User1 Name", "user1@example.com");
+        $user2Id = self::$environ->createUser("user2name", "user2", "User2 Name", "user2@example.com");
         $user1 = new UserModel($user1Id);
         $user2 = new UserModel($user2Id);
 
@@ -125,7 +125,7 @@ class ProjectCommandsTest extends PHPUnit_Framework_TestCase
         self::$environ->clean();
 
         // setup parameters: user, project and params
-        $userId = self::$environ->createUser("existinguser", "Existing Name", "existing@example.com");
+        $userId = self::$environ->createUser("existinguser", "exisiting", "Existing Name", "existing@example.com");
         $user = new UserModel($userId);
         $project = self::$environ->createProject(SF_TESTPROJECT, SF_TESTPROJECTCODE);
         $projectId = $project->id->asString();
@@ -153,7 +153,7 @@ class ProjectCommandsTest extends PHPUnit_Framework_TestCase
         // setup user and project
         $project = self::$environ->createProject(SF_TESTPROJECT, SF_TESTPROJECTCODE);
         $projectId = $project->id->asString();
-        $userId = self::$environ->createUser("existinguser", "Existing Name", "existing@example.com");
+        $userId = self::$environ->createUser("existinguser", "exisiting", "Existing Name", "existing@example.com");
 
         // update user role in project once
         $updatedUserId = ProjectCommands::updateUserRole($projectId, $userId);
@@ -217,9 +217,9 @@ class ProjectCommandsTest extends PHPUnit_Framework_TestCase
         // setup project and users
         $project = self::$environ->createProject(SF_TESTPROJECT, SF_TESTPROJECTCODE);
         $projectId = $project->id->asString();
-        $user1Id = self::$environ->createUser("user1name", "User1 Name", "user1@example.com");
-        $user2Id = self::$environ->createUser("user2name", "User2 Name", "user2@example.com");
-        $user3Id = self::$environ->createUser("user3name", "User3 Name", "user3@example.com");
+        $user1Id = self::$environ->createUser("user1name", "user1", "User1 Name", "user1@example.com");
+        $user2Id = self::$environ->createUser("user2name", "user2", "User2 Name", "user2@example.com");
+        $user3Id = self::$environ->createUser("user3name", "user3", "User3 Name", "user3@example.com");
         $user1 = new UserModel($user1Id);
         $user2 = new UserModel($user2Id);
         $user3 = new UserModel($user3Id);
@@ -279,8 +279,8 @@ class ProjectCommandsTest extends PHPUnit_Framework_TestCase
         // setup project and users.  user1 is the project owner
         $project = self::$environ->createProject(SF_TESTPROJECT, SF_TESTPROJECTCODE);
         $projectId = $project->id->asString();
-        $user1Id = self::$environ->createUser("user1name", "User1 Name", "user1@example.com");
-        $user2Id = self::$environ->createUser("user2name", "User2 Name", "user2@example.com");
+        $user1Id = self::$environ->createUser("user1name", "user1", "User1 Name", "user1@example.com");
+        $user2Id = self::$environ->createUser("user2name", "user2", "User2 Name", "user2@example.com");
         $user1 = new UserModel($user1Id);
         $user2 = new UserModel($user2Id);
         $project->addUser($user1->id->asString(), ProjectRoles::CONTRIBUTOR);
@@ -347,7 +347,7 @@ class ProjectCommandsTest extends PHPUnit_Framework_TestCase
     public function testCreateProject_NewProject_ProjectOwnerSet()
     {
         self::$environ->clean();
-        $user1Id = self::$environ->createUser("user1name", "User1 Name", "user1@example.com");
+        $user1Id = self::$environ->createUser("user1name", "user1", "User1 Name", "user1@example.com");
         $user1 = new UserModel($user1Id);
 
         $projectId = ProjectCommands::createProject(SF_TESTPROJECT, SF_TESTPROJECTCODE, SfProjectModel::SFCHECKS_APP,
@@ -360,7 +360,7 @@ class ProjectCommandsTest extends PHPUnit_Framework_TestCase
     public function testCreateProject_SfChecksProject_IndexesCreated()
     {
         self::$environ->clean();
-        $user1Id = self::$environ->createUser("user1name", "User1 Name", "user1@example.com");
+        $user1Id = self::$environ->createUser("user1name", "user1", "User1 Name", "user1@example.com");
         $user1 = new UserModel($user1Id);
 
         $projectId = ProjectCommands::createProject(SF_TESTPROJECT, SF_TESTPROJECTCODE, SfProjectModel::SFCHECKS_APP,
@@ -380,7 +380,7 @@ class ProjectCommandsTest extends PHPUnit_Framework_TestCase
         // setup
         self::$environ = new LexiconMongoTestEnvironment();
         self::$environ->clean();
-        $user1Id = self::$environ->createUser("user1name", "User1 Name", "user1@example.com");
+        $user1Id = self::$environ->createUser("user1name", "user1", "User1 Name", "user1@example.com");
         $user1 = new UserModel($user1Id);
         $srProject = null;
         $projectId = ProjectCommands::createProject(SF_TESTPROJECT, SF_TESTPROJECTCODE,
@@ -423,7 +423,7 @@ class ProjectCommandsTest extends PHPUnit_Framework_TestCase
         // setup
         self::$environ = new LexiconMongoTestEnvironment();
         self::$environ->clean();
-        $user1Id = self::$environ->createUser("user1name", "User1 Name", "user1@example.com");
+        $user1Id = self::$environ->createUser("user1name", "user1", "User1 Name", "user1@example.com");
         $user1 = new UserModel($user1Id);
         $srProject = null;
         $projectId = ProjectCommands::createProject(SF_TESTPROJECT, SF_TESTPROJECTCODE,
@@ -476,7 +476,7 @@ class ProjectCommandsTest extends PHPUnit_Framework_TestCase
         // setup
         self::$environ = new LexiconMongoTestEnvironment();
         self::$environ->clean();
-        $user1Id = self::$environ->createUser("user1name", "User1 Name", "user1@example.com");
+        $user1Id = self::$environ->createUser("user1name", "user1", "User1 Name", "user1@example.com");
         $user1 = new UserModel($user1Id);
         $srProject = null;
         $projectId = ProjectCommands::createProject(SF_TESTPROJECT, SF_TESTPROJECTCODE,
@@ -523,7 +523,7 @@ class ProjectCommandsTest extends PHPUnit_Framework_TestCase
         // setup
         self::$environ = new LexiconMongoTestEnvironment();
         self::$environ->clean();
-        $user1Id = self::$environ->createUser("user1name", "User1 Name", "user1@example.com");
+        $user1Id = self::$environ->createUser("user1name", "user1", "User1 Name", "user1@example.com");
         $user1 = new UserModel($user1Id);
         $srProject = null;
         $projectId = ProjectCommands::createProject(SF_TESTPROJECT, SF_TESTPROJECTCODE,
@@ -552,7 +552,7 @@ class ProjectCommandsTest extends PHPUnit_Framework_TestCase
     {
         self::$environ = new LexiconMongoTestEnvironment();
         self::$environ->clean();
-        $user1Id = self::$environ->createUser("user1name", "User1 Name", "user1@example.com");
+        $user1Id = self::$environ->createUser("user1name", "user1", "User1 Name", "user1@example.com");
         $user1 = new UserModel($user1Id);
         $srProject = null;
 
@@ -577,7 +577,7 @@ class ProjectCommandsTest extends PHPUnit_Framework_TestCase
     {
         self::$environ = new LexiconMongoTestEnvironment();
         self::$environ->clean();
-        $user1Id = self::$environ->createUser("user1name", "User1 Name", "user1@example.com");
+        $user1Id = self::$environ->createUser("user1name", "user1", "User1 Name", "user1@example.com");
         $user1 = new UserModel($user1Id);
         $srProject = null;
 
@@ -600,7 +600,7 @@ class ProjectCommandsTest extends PHPUnit_Framework_TestCase
     {
         self::$environ = new LexiconMongoTestEnvironment();
         self::$environ->clean();
-        $user1Id = self::$environ->createUser("user1name", "User1 Name", "user1@example.com");
+        $user1Id = self::$environ->createUser("user1name", "user1", "User1 Name", "user1@example.com");
         $user1 = new UserModel($user1Id);
         $srProject = array(
             'identifier' => 'srIdentifier',
@@ -628,8 +628,8 @@ class ProjectCommandsTest extends PHPUnit_Framework_TestCase
         self::$environ->clean();
 
         // create two users and two projects
-        $user1Id = self::$environ->createUser("user1name", "User1 Name", "user1@example.com");
-        $user2Id = self::$environ->createUser("user2name", "User2 Name", "user2@example.com");
+        $user1Id = self::$environ->createUser("user1name", "user1", "User1 Name", "user1@example.com");
+        $user2Id = self::$environ->createUser("user2name", "user2", "User2 Name", "user2@example.com");
         $user1 = new UserModel($user1Id);
         $user2 = new UserModel($user2Id);
         $project1Id = ProjectCommands::createProject(SF_TESTPROJECT, SF_TESTPROJECTCODE, SfProjectModel::SFCHECKS_APP, $user1Id, self::$environ->website);

@@ -46,7 +46,7 @@ class ProjectModelTest extends PHPUnit_Framework_TestCase
         $environ = new MongoTestEnvironment();
 
         // setup user and projects
-        $userId = $environ->createUser('jsmith', 'joe smith', 'joe@email.com');
+        $userId = $environ->createUser('jsmith', 'joe', 'joe smith', 'joe@email.com');
         $userModel = new UserModel($userId);
         $projectModel = $environ->createProject('new project', 'newProjCode');
         $projectId = $projectModel->id->asString();
@@ -69,7 +69,7 @@ class ProjectModelTest extends PHPUnit_Framework_TestCase
         $environ = new MongoTestEnvironment();
 
         // setup user and projects
-        $userId = $environ->createUser('jsmith', 'joe smith', 'joe@email.com');
+        $userId = $environ->createUser('jsmith', 'joe', 'joe smith', 'joe@email.com');
         $userModel = new UserModel($userId);
         $projectModel = $environ->createProject('new project', 'newProjCode');
         $projectId = $projectModel->id->asString();
@@ -104,7 +104,7 @@ class ProjectModelTest extends PHPUnit_Framework_TestCase
         $environ = new MongoTestEnvironment();
 
         // setup user and projects
-        $userId = $environ->createUser('jsmith', 'joe smith', 'joe@email.com');
+        $userId = $environ->createUser('jsmith', 'joe', 'joe smith', 'joe@email.com');
         $projectModel = $environ->createProject('new project', 'newProjCode');
 
         $projectModel->addUser($userId, ProjectRoles::CONTRIBUTOR);
@@ -116,9 +116,9 @@ class ProjectModelTest extends PHPUnit_Framework_TestCase
     public function testProjectListUsers_TwoUsers_ListHasDetails()
     {
         $environ = new MongoTestEnvironment();
-        $userId1 = $environ->createUser('user1', 'User One', 'user1@example.com');
+        $userId1 = $environ->createUser('user1', 'user1', 'User One', 'user1@example.com');
         $um1 = new UserModel($userId1);
-        $userId2 = $environ->createUser('user2', 'User Two', 'user2@example.com');
+        $userId2 = $environ->createUser('user2', 'user2', 'User Two', 'user2@example.com');
         $um2 = new UserModel($userId2);
         $project = $environ->createProject(SF_TESTPROJECT, SF_TESTPROJECTCODE);
         $projectId = $project->id->asString();
@@ -145,6 +145,7 @@ class ProjectModelTest extends PHPUnit_Framework_TestCase
             [
                 [
                   'email' => 'user1@example.com',
+                  'displayName' => 'user1',
                   'name' => 'User One',
                   'username' => 'user1',
                   'id' => $userId1,
@@ -152,6 +153,7 @@ class ProjectModelTest extends PHPUnit_Framework_TestCase
                 ],
                 [
                   'email' => 'user2@example.com',
+                  'displayName' => 'user2',
                   'name' => 'User Two',
                   'username' => 'user2',
                   'id' => $userId2,
@@ -217,7 +219,7 @@ class ProjectModelTest extends PHPUnit_Framework_TestCase
         $userId = MongoTestEnvironment::mockId();
         $project = new ProjectModel();
         $project->addUser($userId, ProjectRoles::MANAGER);
-        
+
         // rolesClass undefined in base ProjectModel
         $project->getRightsArray($userId);
     }
@@ -226,7 +228,7 @@ class ProjectModelTest extends PHPUnit_Framework_TestCase
     {
         $environ = new MongoTestEnvironment();
         $environ->clean();
-        $userId = $environ->createUser('user1', 'user1', 'user1');
+        $userId = $environ->createUser('user1', 'user1', 'User 1', 'user1@example.com');
         $user = new UserModel($userId);
         $project = $environ->createProject('testProject', 'testProjCode');
         $project->addUser($userId, ProjectRoles::CONTRIBUTOR);

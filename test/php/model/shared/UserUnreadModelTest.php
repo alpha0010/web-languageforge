@@ -26,17 +26,17 @@ class UserUnreadModelTest extends PHPUnit_Framework_TestCase
     {
         $project = self::$environ->createProject("unread_test", "unreadCode");
 
-        $userId1 = self::$environ->createUser('user1', 'user1', 'user1');
+        $userId1 = self::$environ->createUser('user1', 'user1', 'User 1', 'user1@example.com');
         $user1 = new UserModel($userId1);
         $user1->addProject($project->id->asString());
         $user1->write();
 
-        $userId2 = self::$environ->createUser('user2', 'user2', 'user2');
+        $userId2 = self::$environ->createUser('user2', 'user2', 'User 2', 'user2@example.com');
         $user2 = new UserModel($userId2);
         $user2->addProject($project->id->asString());
         $user2->write();
 
-        $userId3 = self::$environ->createUser('user3', 'user3', 'user3');
+        $userId3 = self::$environ->createUser('user3', 'user3', 'User 3', 'user3@example.com');
         $user3 = new UserModel($userId3);
         $user3->addProject($project->id->asString());
         $user3->write();
@@ -58,7 +58,7 @@ class UserUnreadModelTest extends PHPUnit_Framework_TestCase
     public function testUnreadActivityModel_isUnread_markedUnread_true()
     {
         $project = self::$environ->createProject("unread_test", "unreadCode");
-        $userId1 = self::$environ->createUser('user1', 'user1', 'user1');
+        $userId1 = self::$environ->createUser('user1', 'user1', 'User 1', 'user1@example.com');
         $activityId = ActivityCommands::addUserToProject($project, $userId1);
 
         $unreadModel = new UnreadActivityModel($userId1, $project->id->asString());
@@ -73,7 +73,7 @@ class UserUnreadModelTest extends PHPUnit_Framework_TestCase
     public function testUnreadActivityModel_isUnread_markedRead_false()
     {
         $project = self::$environ->createProject("unread_test", "unreadCode");
-        $userId1 = self::$environ->createUser('user1', 'user1', 'user1');
+        $userId1 = self::$environ->createUser('user1', 'user1', 'User 1', 'user1@example.com');
         $activityId = ActivityCommands::addUserToProject($project, $userId1);
 
         $unreadModel = new UnreadActivityModel($userId1, $project->id->asString());
@@ -93,8 +93,8 @@ class UserUnreadModelTest extends PHPUnit_Framework_TestCase
     public function testUnreadActivityModel_markAllRead_unreadItems_noUnreadItems()
     {
         $project = self::$environ->createProject("unread_test", "unreadCode");
-        $userId1 = self::$environ->createUser('user1', 'user1', 'user1');
-        $userId2 = self::$environ->createUser('user2', 'user2', 'user2');
+        $userId1 = self::$environ->createUser('user1', 'user1', 'User 1', 'user1@example.com');
+        $userId2 = self::$environ->createUser('user2', 'user2', 'User 2', 'user2@example.com');
         $activityId1 = ActivityCommands::addUserToProject($project, $userId1);
         $activityId2 = ActivityCommands::addUserToProject($project, $userId2);
 
@@ -117,8 +117,8 @@ class UserUnreadModelTest extends PHPUnit_Framework_TestCase
     public function testUnreadActivityModel_unreadItems_itemsAreUnread_listsUnreadItems()
     {
         $project = self::$environ->createProject("unread_test", "unreadCode");
-        $userId1 = self::$environ->createUser('user1', 'user1', 'user1');
-        $userId2 = self::$environ->createUser('user2', 'user2', 'user2');
+        $userId1 = self::$environ->createUser('user1', 'user1', 'User 1', 'user1@example.com');
+        $userId2 = self::$environ->createUser('user2', 'user2', 'User 2', 'user2@example.com');
         $activityId1 = ActivityCommands::addUserToProject($project, $userId1);
         $activityId2 = ActivityCommands::addUserToProject($project, $userId2);
 
@@ -143,8 +143,8 @@ class UserUnreadModelTest extends PHPUnit_Framework_TestCase
     public function testUnreadQuestionModel_markAllRead_unreadItems_noUnreadItems()
     {
         $project = self::$environ->createProject("unread_test", "unreadCode");
-        $userId1 = self::$environ->createUser('user1', 'user1', 'user1');
-        self::$environ->createUser('user2', 'user2', 'user2');
+        $userId1 = self::$environ->createUser('user1', 'user1', 'User 1', 'user1@example.com');
+        self::$environ->createUser('user2', 'user2', 'User 2', 'user2@example.com');
         $q1 = new QuestionModel($project);
         $q1->title = "Question 1";
         $qId1 = $q1->write();
@@ -173,17 +173,17 @@ class UserUnreadModelTest extends PHPUnit_Framework_TestCase
         $project = self::$environ->createProject("unread_test", "unreadCode");
         $projectId = $project->id->asString();
 
-        $userId1 = self::$environ->createUser('user1', 'user1', 'user1');
+        $userId1 = self::$environ->createUser('user1', 'user1', 'User 1', 'user1@example.com');
         $user1 = new UserModel($userId1);
         $user1->addProject($project->id->asString());
         $user1->write();
 
-        $userId2 = self::$environ->createUser('user2', 'user2', 'user2');
+        $userId2 = self::$environ->createUser('user2', 'user2', 'User 2', 'user2@example.com');
         $user2 = new UserModel($userId2);
         $user2->addProject($project->id->asString());
         $user2->write();
 
-        $userId3 = self::$environ->createUser('user3', 'user3', 'user3');
+        $userId3 = self::$environ->createUser('user3', 'user3', 'User 3', 'user3@example.com');
         $user3 = new UserModel($userId3);
         $user3->addProject($project->id->asString());
         $user3->write();
@@ -219,17 +219,17 @@ class UserUnreadModelTest extends PHPUnit_Framework_TestCase
         $project = self::$environ->createProject("unread_test", "unreadCode");
         $projectId = $project->id->asString();
 
-        $userId1 = self::$environ->createUser('user1', 'user1', 'user1');
+        $userId1 = self::$environ->createUser('user1', 'user1', 'User 1', 'user1@example.com');
         $user1 = new UserModel($userId1);
         $user1->addProject($project->id->asString());
         $user1->write();
 
-        $userId2 = self::$environ->createUser('user2', 'user2', 'user2');
+        $userId2 = self::$environ->createUser('user2', 'user2', 'User 2', 'user2@example.com');
         $user2 = new UserModel($userId2);
         $user2->addProject($project->id->asString());
         $user2->write();
 
-        $userId3 = self::$environ->createUser('user3', 'user3', 'user3');
+        $userId3 = self::$environ->createUser('user3', 'user3', 'User 3', 'user3@example.com');
         $user3 = new UserModel($userId3);
         $user3->addProject($project->id->asString());
         $user3->write();

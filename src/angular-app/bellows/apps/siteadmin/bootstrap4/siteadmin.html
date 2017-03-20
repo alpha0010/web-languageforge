@@ -37,7 +37,7 @@
                         <tr data-ng-repeat="user in visibleUsers" data-ng-class="{active: isSelected(user)}" >
                             <td width="16px" align="center"><!--suppress HtmlFormInputWithoutLabel -->
                                 <input type="checkbox" data-ng-checked="isSelected(user)" data-ng-click="updateSelection($event, user)" /></td>
-                            <td class="username-styling"><a ng-style="!user.active && {'text-decoration': 'line-through', 'color':'grey'}" data-ng-click="selectRow($index, user)" title="Click to edit this user" class="username-styling">{{user.username}}</a></td>
+                            <td class="username-styling"><a ng-style="!user.active && {'text-decoration': 'line-through', 'color':'grey'}" data-ng-click="selectRow($index, user)" title="Click to edit this user" class="username-styling">{{user.displayName}}</a></td>
                             <td>{{user.email}}</td>
                             <td>{{user.name}} <span ng-show="user.role == 'system_admin'">(System Admin)</span></td>
                             <td><span style="font-weight: bold" ng-show="user.projects.length > 0">({{user.projects.length}} project<span ng-show="user.projects.length > 1">s</span>) </span>
@@ -114,7 +114,7 @@
                             <input data-ng-click="checkUniqueUser()" type="checkbox" data-ng-model="record.active"/> Is Active
                         </label>
                     </div>
-                    <a data-ng-show="vars.state == 'update'" href="" data-ng-click="togglePasswordForm(); vars.inputfocus = vars.showPasswordForm">Change {{record.username}}'s password</a>
+                    <a data-ng-show="vars.state == 'update'" href="" data-ng-click="togglePasswordForm(); vars.inputfocus = vars.showPasswordForm">Change {{record.displayName}}'s password</a>
                     <div data-ng-show="vars.showPasswordForm">
                         <label for="_password">Password</label>
                         <input id="_password" data-idle-validate="checkUniqueUser()"

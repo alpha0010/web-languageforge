@@ -19,7 +19,7 @@ class UserListProjectModel extends MapperListModel
         parent::__construct(
                 UserModelMongoMapper::instance(),
                 array('username' => array('$regex' => '\w'), 'projects' => array('$in' => array(MongoMapper::mongoID($projectId)))),
-                array('username', 'email', 'name')
+                array('username', 'email', 'displayName', 'name')
         );
     }
 }

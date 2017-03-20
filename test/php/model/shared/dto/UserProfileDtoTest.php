@@ -14,7 +14,7 @@ class UserProfileDtoTest extends PHPUnit_Framework_TestCase
         $environ = new MongoTestEnvironment();
         $environ->clean();
 
-        $userId = $environ->createUser("User", "Name", "name@example.com");
+        $userId = $environ->createUser("User", "Name", "User Name", "name@example.com");
         $user = new UserModel($userId);
         $user->role = SiteRoles::USER;
 
@@ -38,7 +38,8 @@ class UserProfileDtoTest extends PHPUnit_Framework_TestCase
 
         $this->assertInternalType('array', $dto['userProfile']);
         $this->assertEquals($userId, $dto['userProfile']['id']);
-        $this->assertEquals('Name', $dto['userProfile']['name']);
+        $this->assertEquals('Name', $dto['userProfile']['displayName']);
+        $this->assertEquals('User Name', $dto['userProfile']['name']);
         $this->assertEquals(SiteRoles::USER, $dto['userProfile']['role']);
         $this->assertArrayHasKey('avatar_shape', $dto['userProfile']);
         $this->assertArrayHasKey('avatar_color', $dto['userProfile']);
@@ -57,7 +58,7 @@ class UserProfileDtoTest extends PHPUnit_Framework_TestCase
         $environ = new MongoTestEnvironment();
         $environ->clean();
 
-        $userId = $environ->createUser("User", "Name", "name@example.com");
+        $userId = $environ->createUser("User", "Name", "User Name", "name@example.com");
         $user = new UserModel($userId);
         $user->role = SiteRoles::USER;
 
@@ -79,7 +80,8 @@ class UserProfileDtoTest extends PHPUnit_Framework_TestCase
 
         $this->assertInternalType('array', $dto['userProfile']);
         $this->assertEquals($userId, $dto['userProfile']['id']);
-        $this->assertEquals('Name', $dto['userProfile']['name']);
+        $this->assertEquals('Name', $dto['userProfile']['displayName']);
+        $this->assertEquals('User Name', $dto['userProfile']['name']);
         $this->assertEquals(SiteRoles::USER, $dto['userProfile']['role']);
         $this->assertArrayHasKey('avatar_shape', $dto['userProfile']);
         $this->assertArrayHasKey('avatar_color', $dto['userProfile']);

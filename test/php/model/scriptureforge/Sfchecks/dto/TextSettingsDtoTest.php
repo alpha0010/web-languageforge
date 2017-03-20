@@ -15,7 +15,7 @@ class TextSettingsDtoTest extends PHPUnit_Framework_TestCase
         $environ = new MongoTestEnvironment();
         $environ->clean();
 
-        $userId = $environ->createUser("User", "Name", "name@example.com");
+        $userId = $environ->createUser("User", "Name", "User Name", "name@example.com");
         $user = new UserModel($userId);
         $user->role = SystemRoles::USER;
 

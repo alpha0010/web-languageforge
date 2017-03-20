@@ -25,7 +25,7 @@ class ActivityListDtoTest extends PHPUnit_Framework_TestCase
         $textId = $text->write();
         ActivityCommands::addText($project, $textId, $text);
 
-        $userId = $environ->createUser("user1", "user1", "user1@email.com");
+        $userId = $environ->createUser("user1", "user1", "user 1", "user1@email.com");
         ActivityCommands::addUserToProject($project, $userId);
 
         // Workflow is first to create a question
@@ -75,7 +75,7 @@ class ActivityListDtoTest extends PHPUnit_Framework_TestCase
         $project1 = $environ->createProject(SF_TESTPROJECT, SF_TESTPROJECTCODE);
         $project2 = $environ->createProject(SF_TESTPROJECT2, SF_TESTPROJECTCODE2);
 
-        $userId = $environ->createUser("user1", "user1", "user1@email.com");
+        $userId = $environ->createUser("user1", "user1", "User 1", "user1@email.com");
         $project1->addUser($userId, ProjectRoles::CONTRIBUTOR);
         $project1->write();
 
@@ -126,7 +126,7 @@ class ActivityListDtoTest extends PHPUnit_Framework_TestCase
         $project2->siteName = 'languageforge.org';
         $project2->write();
 
-        $userId = $environ->createUser('joe', 'joe', 'joe');
+        $userId = $environ->createUser('joe', 'joe', 'joe', 'joe@example.com');
 
         $user = new UserModel($userId);
         $user->addProject($project1->id->asString());
@@ -165,7 +165,7 @@ class ActivityListDtoTest extends PHPUnit_Framework_TestCase
         $project2->siteName = 'languageforge.org';
         $project2->write();
 
-        $userId = $environ->createUser('joe', 'joe', 'joe');
+        $userId = $environ->createUser('joe', 'joe', 'joe', 'joe@example.com');
 
         $user = new UserModel($userId);
         $user->addProject($project1->id->asString());
@@ -206,9 +206,9 @@ class ActivityListDtoTest extends PHPUnit_Framework_TestCase
         $textId = $text->write();
         $a1 = ActivityCommands::addText($project, $textId, $text);
 
-        $user1Id = $environ->createUser("user1", "user1", "user1@email.com");
-        $user2Id = $environ->createUser("user2", "user2", "user2@email.com");
-        $user3Id = $environ->createUser("user3", "user3", "user3@email.com");
+        $user1Id = $environ->createUser("user1", "user1", "User 1", "user1@email.com");
+        $user2Id = $environ->createUser("user2", "user2", "User 2", "user2@email.com");
+        $user3Id = $environ->createUser("user3", "user3", "User 3", "user3@email.com");
         $a2 = ActivityCommands::addUserToProject($project, $user1Id);
         $a3 = ActivityCommands::addUserToProject($project, $user2Id);
         $a4 = ActivityCommands::addUserToProject($project, $user3Id);

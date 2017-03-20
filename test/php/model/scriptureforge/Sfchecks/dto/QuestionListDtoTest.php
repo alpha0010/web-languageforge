@@ -42,8 +42,8 @@ class QuestionListDtoTest extends PHPUnit_Framework_TestCase
         $textId = $text->write();
 
         // Answers are tied to specific users, so let's create some sample users
-        $user1Id = self::$environ->createUser('jcarter', 'John Carter', 'johncarter@example.com');
-        $user2Id = self::$environ->createUser('dthoris', 'Dejah Thoris', 'princess@example.com');
+        $user1Id = self::$environ->createUser('jcarter', 'John', 'John Carter', 'johncarter@example.com');
+        $user2Id = self::$environ->createUser('dthoris', 'Dejah', 'Dejah Thoris', 'princess@example.com');
 
         // Two questions, with different numbers of answers and different create dates
         $question1 = new QuestionModel($project);
@@ -135,8 +135,8 @@ class QuestionListDtoTest extends PHPUnit_Framework_TestCase
         $textId = $text->write();
 
         // Answers are tied to specific users, so let's create some sample users
-        $managerId = self::$environ->createUser('jcarter', 'John Carter', 'johncarter@example.com');
-        $contributorId = self::$environ->createUser('dthoris', 'Dejah Thoris', 'princess@example.com');
+        $managerId = self::$environ->createUser('jcarter', 'john', 'John Carter', 'johncarter@example.com');
+        $contributorId = self::$environ->createUser('dthoris', 'dejah', 'Dejah Thoris', 'princess@example.com');
         $project->addUser($managerId, ProjectRoles::MANAGER);
         $project->addUser($contributorId, ProjectRoles::CONTRIBUTOR);
         $project->write();

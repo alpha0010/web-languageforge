@@ -21,7 +21,7 @@ class LexCommentCommandsTest extends PHPUnit_Framework_TestCase
         $environ->clean();
 
         $project = $environ->createProject(SF_TESTPROJECT, SF_TESTPROJECTCODE);
-        $userId = $environ->createUser('joe', 'joe', 'joe');
+        $userId = $environ->createUser('joe', 'joe', 'joe', 'joe@example.com');
 
         $commentContent = "My first comment";
 
@@ -62,7 +62,7 @@ class LexCommentCommandsTest extends PHPUnit_Framework_TestCase
         $environ->clean();
 
         $project = $environ->createProject(SF_TESTPROJECT, SF_TESTPROJECTCODE);
-        $userId = $environ->createUser('joe', 'joe', 'joe');
+        $userId = $environ->createUser('joe', 'joe', 'joe', 'joe@example.com');
 
         $regarding = array(
             'field' => 'lexeme',
@@ -99,7 +99,7 @@ class LexCommentCommandsTest extends PHPUnit_Framework_TestCase
         $environ->clean();
 
         $project = $environ->createProject(SF_TESTPROJECT, SF_TESTPROJECTCODE);
-        $userId = $environ->createUser('joe', 'joe', 'joe');
+        $userId = $environ->createUser('joe', 'joe', 'joe', 'joe@example.com');
 
         $regarding = array(
             'field' => 'lexeme',
@@ -137,7 +137,7 @@ class LexCommentCommandsTest extends PHPUnit_Framework_TestCase
         $environ->clean();
 
         $project = $environ->createProject(SF_TESTPROJECT, SF_TESTPROJECTCODE);
-        $userId = $environ->createUser('joe', 'joe', 'joe');
+        $userId = $environ->createUser('joe', 'joe', 'joe', 'joe@example.com');
 
         $regarding = array(
             'field' => 'lexeme',
@@ -186,7 +186,7 @@ class LexCommentCommandsTest extends PHPUnit_Framework_TestCase
         $environ->clean();
 
         $project = $environ->createProject(SF_TESTPROJECT, SF_TESTPROJECTCODE);
-        $userId = $environ->createUser('joe', 'joe', 'joe');
+        $userId = $environ->createUser('joe', 'joe', 'joe', 'joe@example.com');
 
         $regarding = array(
             'field' => 'lexeme',
@@ -223,7 +223,7 @@ class LexCommentCommandsTest extends PHPUnit_Framework_TestCase
         $environ->clean();
 
         $project = $environ->createProject(SF_TESTPROJECT, SF_TESTPROJECTCODE);
-        $userId = $environ->createUser('joe', 'joe', 'joe');
+        $userId = $environ->createUser('joe', 'joe', 'joe', 'joe@example.com');
 
         $regarding = array(
             'field' => 'lexeme',
@@ -264,7 +264,7 @@ class LexCommentCommandsTest extends PHPUnit_Framework_TestCase
         $environ->clean();
 
         $project = $environ->createProject(SF_TESTPROJECT, SF_TESTPROJECTCODE);
-        $userId = $environ->createUser('joe', 'joe', 'joe');
+        $userId = $environ->createUser('joe', 'joe', 'joe', 'joe@example.com');
 
         $regarding = array(
             'field' => 'lexeme',
@@ -299,7 +299,7 @@ class LexCommentCommandsTest extends PHPUnit_Framework_TestCase
         $environ->clean();
 
         $project = $environ->createProject(SF_TESTPROJECT, SF_TESTPROJECTCODE);
-        $userId = $environ->createUser('joe', 'joe', 'joe');
+        $userId = $environ->createUser('joe', 'joe', 'joe', 'joe@example.com');
 
         $regarding = array(
             'field' => 'lexeme',
@@ -346,8 +346,8 @@ class LexCommentCommandsTest extends PHPUnit_Framework_TestCase
         $environ->clean();
 
         $project = $environ->createProject(SF_TESTPROJECT, SF_TESTPROJECTCODE);
-        $user1Id = $environ->createUser('joe', 'joe', 'joe');
-        $user2Id = $environ->createUser('jim', 'jim', 'jim');
+        $user1Id = $environ->createUser('joe', 'joe', 'joe', 'joe@example.com');
+        $user2Id = $environ->createUser('jim', 'jim', 'jim', 'jim@example.com');
 
         $regarding = array(
             'field' => 'lexeme',
@@ -378,7 +378,7 @@ class LexCommentCommandsTest extends PHPUnit_Framework_TestCase
         $environ->clean();
 
         $project = $environ->createProject(SF_TESTPROJECT, SF_TESTPROJECTCODE);
-        $user1Id = $environ->createUser('joe', 'joe', 'joe');
+        $user1Id = $environ->createUser('joe', 'joe', 'joe', 'joe@example.com');
 
         $regarding = array(
             'field' => 'lexeme',

@@ -14,11 +14,11 @@ class ProjectSettingsDtoTest extends PHPUnit_Framework_TestCase
         $environ = new MongoTestEnvironment();
         $environ->clean();
 
-        $user1Id = $environ->createUser('', '', '');
+        $user1Id = $environ->createUser('', '', '', '');
         $user1 = new UserModel($user1Id);
         $user1->role = SystemRoles::USER;
 
-        $user2Id = $environ->createUser('User', 'Name', 'name@example.com');
+        $user2Id = $environ->createUser('User', 'Name', 'User Name', 'name@example.com');
         $user2 = new UserModel($user2Id);
         $user2->role = SystemRoles::USER;
 
@@ -46,7 +46,8 @@ class ProjectSettingsDtoTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(1, $dto['count']);
         $this->assertInternalType('array', $dto['entries']);
         $this->assertEquals($user2Id, $dto['entries'][0]['id']);
-        $this->assertEquals('Name', $dto['entries'][0]['name']);
+        $this->assertEquals('Name', $dto['entries'][0]['displayName']);
+        $this->assertEquals('User Name', $dto['entries'][0]['name']);
         $this->assertEquals(ProjectRoles::CONTRIBUTOR, $dto['entries'][0]['role']);
         $this->assertCount(1, $dto['archivedTexts']);
         $this->assertEquals('Archived Title', $dto['archivedTexts'][0]['title']);

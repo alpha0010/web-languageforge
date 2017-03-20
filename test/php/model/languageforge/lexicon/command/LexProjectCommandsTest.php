@@ -18,7 +18,7 @@ class LexProjectCommandsTest extends PHPUnit_Framework_TestCase
         $environ = new LexiconMongoTestEnvironment();
         $environ->clean();
 
-        $userId = $environ->createUser('User', 'Name', 'name@example.com');
+        $userId = $environ->createUser('User', 'Name', 'User Name', 'name@example.com');
         $user = new UserModel($userId);
         $user->role = SystemRoles::USER;
 
@@ -58,11 +58,11 @@ class LexProjectCommandsTest extends PHPUnit_Framework_TestCase
         $environ = new LexiconMongoTestEnvironment();
         $environ->clean();
 
-        $userId = $environ->createUser('User', 'Name', 'name@example.com');
+        $userId = $environ->createUser('User', 'Name', 'User Name', 'name@example.com');
         $user = new UserModel($userId);
         $user->role = SystemRoles::USER;
 
-        $hackerId = $environ->createUser('Hacker', 'Hacker', 'hacker@example.com');
+        $hackerId = $environ->createUser('Hacker', 'Hacker', 'Hacker User', 'hacker@example.com');
         $hacker = new UserModel($hackerId);
         $hacker->role = SystemRoles::USER;
         $hacker->write();

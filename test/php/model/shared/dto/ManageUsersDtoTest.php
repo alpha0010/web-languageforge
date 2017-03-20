@@ -13,7 +13,7 @@ class ManageUsersDtoTest extends PHPUnit_Framework_TestCase
         $environ = new MongoTestEnvironment();
         $environ->clean();
 
-        $userId = $environ->createUser("User", "Name", "name@example.com");
+        $userId = $environ->createUser("User", "Name", "User Name", "name@example.com");
         $user = new UserModel($userId);
         $user->role = SystemRoles::USER;
 
@@ -30,7 +30,8 @@ class ManageUsersDtoTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(1, $dto['userCount']);
         $this->assertInternalType('array', $dto['users']);
         $this->assertEquals($userId, $dto['users'][0]['id']);
-        $this->assertEquals('Name', $dto['users'][0]['name']);
+        $this->assertEquals('Name', $dto['users'][0]['displayName']);
+        $this->assertEquals('User Name', $dto['users'][0]['name']);
         $this->assertEquals(ProjectRoles::CONTRIBUTOR, $dto['users'][0]['role']);
     }
 }

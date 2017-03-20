@@ -31,7 +31,7 @@ class RightsHelperTest extends PHPUnit_Framework_TestCase
      */
     public function testuserCanAccessMethod_unknownMethodName_Exception()
     {
-        $userId = self::$environ->createUser('user', 'user', 'user@user.com', SystemRoles::USER);
+        $userId = self::$environ->createUser('user', 'user', 'user', 'user@user.com', SystemRoles::USER);
         $rh = new RightsHelper($userId, null, self::$environ->website);
         self::$environ->inhibitErrorDisplay();
 
@@ -50,7 +50,7 @@ class RightsHelperTest extends PHPUnit_Framework_TestCase
 
     public function testUserCanAccessMethod_projectSettings_projectManager_true()
     {
-        $userId = self::$environ->createUser('user', 'user', 'user@user.com', SystemRoles::USER);
+        $userId = self::$environ->createUser('user', 'user', 'user', 'user@user.com', SystemRoles::USER);
         $user = new UserModel($userId);
         $project = self::$environ->createProject('projectForTest', 'projTestCode');
         $projectId = $project->id->asString();
@@ -67,7 +67,7 @@ class RightsHelperTest extends PHPUnit_Framework_TestCase
 
     public function testUserCanAccessMethod_projectSettings_projectMember_false()
     {
-        $userId = self::$environ->createUser('user', 'user', 'user@user.com', SystemRoles::USER);
+        $userId = self::$environ->createUser('user', 'user', 'user', 'user@user.com', SystemRoles::USER);
         $user = new UserModel($userId);
         $project = self::$environ->createProject('projectForTest', 'projTestCode');
         $projectId = $project->id->asString();
@@ -84,7 +84,7 @@ class RightsHelperTest extends PHPUnit_Framework_TestCase
 
     public function testUserCanAccessMethod_projectPageDto_NotAMember_false()
     {
-        $userId = self::$environ->createUser('user', 'user', 'user@user.com', SystemRoles::USER);
+        $userId = self::$environ->createUser('user', 'user', 'user', 'user@user.com', SystemRoles::USER);
         $project = self::$environ->createProject('projectForTest', 'projTestCode');
         $project->appName = 'sfchecks';
         $project->write();

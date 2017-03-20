@@ -20,7 +20,7 @@ class LexProjectDtoTest extends PHPUnit_Framework_TestCase
 
     public function testEncode_Project_DtoCorrect()
     {
-        $userId = self::$environ->createUser('User', 'Name', 'name@example.com');
+        $userId = self::$environ->createUser('User', 'Name', 'User Name', 'name@example.com');
         $user = new UserModel($userId);
         $user->role = SystemRoles::USER;
 
@@ -46,7 +46,7 @@ class LexProjectDtoTest extends PHPUnit_Framework_TestCase
 
     public function testEncode_ProjectWithSendReceive_DtoCorrect()
     {
-        $userId = self::$environ->createUser('User', 'Name', 'name@example.com');
+        $userId = self::$environ->createUser('User', 'Name', 'User Name', 'name@example.com');
         $user = new UserModel($userId);
         $user->role = SystemRoles::USER;
 

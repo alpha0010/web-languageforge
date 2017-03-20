@@ -9,7 +9,7 @@ class SemDomTransProjectModelTest extends PHPUnit_Framework_TestCase
     {
         $environ = new SemDomMongoTestEnvironment();
         $environ->cleanPreviousProject('es');
-        $user1Id = $environ->createUser('u', 'u', 'u');
+        $user1Id = $environ->createUser('u', 'u', 'u', 'u@example.com');
         $environ->getEnglishProjectAndCreateIfNecessary();
         $environ->createSemDomProject('es', 'Spanish', $user1Id);
     }
@@ -17,7 +17,7 @@ class SemDomTransProjectModelTest extends PHPUnit_Framework_TestCase
     public function testImportFromFile_nonEnglishProject_importsOk() {
         $environ = new SemDomMongoTestEnvironment();
         $environ->cleanPreviousProject('es');
-        $user1Id = $environ->createUser('u', 'u', 'u');
+        $user1Id = $environ->createUser('u', 'u', 'u', 'u@example.com');
         $environ->getEnglishProjectAndCreateIfNecessary();
         $project = $environ->createSemDomProject('es', 'Spanish', $user1Id);
 

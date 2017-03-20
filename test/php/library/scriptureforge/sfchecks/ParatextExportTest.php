@@ -28,9 +28,9 @@ class ParatextExportTest extends PHPUnit_Framework_TestCase
         $text->content = $usx;
         $textId = $text->write();
 
-        $user1Id = self::$environ->createUser('user1', 'user1', 'user1@email.com');
-        $user2Id = self::$environ->createUser('user2', 'user2', 'user2@email.com');
-        $user3Id = self::$environ->createUser('user3', 'user3', 'user3@email.com');
+        $user1Id = self::$environ->createUser('user1', 'user1', 'User 1', 'user1@email.com');
+        $user2Id = self::$environ->createUser('user2', 'user2', 'User 2', 'user2@email.com');
+        $user3Id = self::$environ->createUser('user3', 'user3', 'User 3', 'user3@email.com');
 
         // Workflow is first to create a question
         $question = new QuestionModel($project);
@@ -81,9 +81,9 @@ class ParatextExportTest extends PHPUnit_Framework_TestCase
         $text->content = $usx;
         $textId = $text->write();
 
-        $user1Id = self::$environ->createUser('user1', 'user1', 'user1@email.com');
-        $user2Id = self::$environ->createUser('user2', 'user2', 'user2@email.com');
-        $user3Id = self::$environ->createUser('user3', 'user3', 'user3@email.com');
+        $user1Id = self::$environ->createUser('user1', 'user1', 'User 1', 'user1@email.com');
+        $user2Id = self::$environ->createUser('user2', 'user2', 'User 2', 'user2@email.com');
+        $user3Id = self::$environ->createUser('user3', 'user3', 'User 3', 'user3@email.com');
 
         // Workflow is first to create a question
         $question = new QuestionModel($project);
@@ -142,9 +142,9 @@ class ParatextExportTest extends PHPUnit_Framework_TestCase
         $text->content = $usx;
         $textId = $text->write();
 
-        $user1Id = self::$environ->createUser('user1', 'user1', 'user1@email.com');
-        $user2Id = self::$environ->createUser('user2', 'user2', 'user2@email.com');
-        $user3Id = self::$environ->createUser('user3', 'user3', 'user3@email.com');
+        $user1Id = self::$environ->createUser('user1', 'user1', 'User 1', 'user1@email.com');
+        $user2Id = self::$environ->createUser('user2', 'user2', 'User 2', 'user2@email.com');
+        $user3Id = self::$environ->createUser('user3', 'user3', 'User 3', 'user3@email.com');
 
         // Workflow is first to create a question
         $question = new QuestionModel($project);

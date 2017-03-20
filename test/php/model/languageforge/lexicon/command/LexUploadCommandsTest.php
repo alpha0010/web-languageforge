@@ -294,7 +294,7 @@ class LexUploadCommandsTest extends PHPUnit_Framework_TestCase
         $projectId = $project->id->asString();
         $fileName = 'TestLangProj.7z';  // Ken Zook's test data
         $tmpFilePath = self::$environ->uploadFile(TestCommonPath . "$fileName", $fileName);
-        $userId = self::$environ->createUser('bob', 'bob', 'bob@example.com');
+        $userId = self::$environ->createUser('bob', 'bob', 'bob', 'bob@example.com');
         $project->addUser($userId, LexRoles::OBSERVER);
         $project->config->userViews[$userId] = clone $project->config->roleViews[LexRoles::OBSERVER];
         $project->write();

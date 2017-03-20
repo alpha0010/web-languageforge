@@ -53,7 +53,7 @@ class UserCommandsTest extends PHPUnit_Framework_TestCase
     {
         self::$environ->clean();
 
-        $userId = self::$environ->createUser('somename', 'Some Name', 'somename@example.com');
+        $userId = self::$environ->createUser('somename', 'some', 'Some Name', 'somename@example.com');
 
         UserCommands::deleteUsers(array($userId));
     }
@@ -63,7 +63,7 @@ class UserCommandsTest extends PHPUnit_Framework_TestCase
         self::$environ->clean();
 
         // setup parameters
-        $userId = self::$environ->createUser('username', 'name', 'name@example.com');
+        $userId = self::$environ->createUser('username', 'name', 'name', 'name@example.com');
         $params = array(
             'id' => '',
             'interfaceLanguageCode' => 'th'
@@ -89,7 +89,7 @@ class UserCommandsTest extends PHPUnit_Framework_TestCase
     {
         self::$environ->clean();
 
-        $userId = self::$environ->createUser('jsmith', 'joe smith','');
+        $userId = self::$environ->createUser('jsmith', 'joe','joe smith', '');
         $joeUser = new UserModel($userId);
 
         $identityCheck = UserCommands::checkUniqueIdentity($joeUser, 'jsmith', '', self::$environ->website);
@@ -107,7 +107,7 @@ class UserCommandsTest extends PHPUnit_Framework_TestCase
     {
         self::$environ->clean();
 
-        $userId = self::$environ->createUser('jsmith', 'joe smith','joe@smith.com');
+        $userId = self::$environ->createUser('jsmith', 'joe', 'joe smith','joe@smith.com');
         $joeUser = new UserModel($userId);
 
         $identityCheck = UserCommands::checkUniqueIdentity($joeUser, 'jsmith', 'joe@smith.com', null);
@@ -124,11 +124,11 @@ class UserCommandsTest extends PHPUnit_Framework_TestCase
     {
         self::$environ->clean();
 
-        $user1Id = self::$environ->createUser('zedUser', 'zed user','zed@example.com');
+        $user1Id = self::$environ->createUser('zedUser', 'zed', 'zed user','zed@example.com');
         $zedUser = new UserModel($user1Id);
         $originalWebsite = clone self::$environ->website;
         self::$environ->website->domain = 'default.local';
-        self::$environ->createUser('jsmith', 'joe smith','joe@smith.com');
+        self::$environ->createUser('jsmith', 'joe', 'joe smith','joe@smith.com');
 
         $identityCheck = UserCommands::checkUniqueIdentity($zedUser, 'jsmith', 'zed@example.com', $originalWebsite);
 
@@ -147,7 +147,7 @@ class UserCommandsTest extends PHPUnit_Framework_TestCase
     {
         self::$environ->clean();
 
-        $userId = self::$environ->createUser('jsmith', 'joe smith','joe@smith.com');
+        $userId = self::$environ->createUser('jsmith', 'joe', 'joe smith','joe@smith.com');
         $joeUser = new UserModel($userId);
 
         $identityCheck = UserCommands::checkUniqueIdentity($joeUser, 'jsmith', '', self::$environ->website);
@@ -164,7 +164,7 @@ class UserCommandsTest extends PHPUnit_Framework_TestCase
     {
         self::$environ->clean();
 
-        $userId = self::$environ->createUser('jsmith', 'joe smith','joe@smith.com');
+        $userId = self::$environ->createUser('jsmith', 'joe', 'joe smith','joe@smith.com');
         $joeUser = new UserModel($userId);
 
         $identityCheck = UserCommands::checkUniqueIdentity($joeUser, 'zedUser', 'zed@example.com', self::$environ->website);
@@ -180,7 +180,7 @@ class UserCommandsTest extends PHPUnit_Framework_TestCase
     {
         self::$environ->clean();
 
-        $userId = self::$environ->createUser('jsmith', 'joe smith','joe@smith.com');
+        $userId = self::$environ->createUser('jsmith', 'joe', 'joe smith','joe@smith.com');
         $joeUser = new UserModel($userId);
 
         $identityCheck = UserCommands::checkUniqueIdentity($joeUser, 'zedUser', 'joe@smith.com', self::$environ->website);
@@ -197,9 +197,9 @@ class UserCommandsTest extends PHPUnit_Framework_TestCase
     {
         self::$environ->clean();
 
-        $user1Id = self::$environ->createUser('jsmith', 'joe smith','joe@smith.com');
+        $user1Id = self::$environ->createUser('jsmith', 'joe', 'joe smith','joe@smith.com');
         $joeUser = new UserModel($user1Id);
-        $user2Id = self::$environ->createUser('zedUser', 'zed user','zed@example.com');
+        $user2Id = self::$environ->createUser('zedUser', 'zed', 'zed user','zed@example.com');
         $zedUser = new UserModel($user2Id);
 
         $identityCheck = UserCommands::checkUniqueIdentity($zedUser, 'jsmith', 'joe@smith.com', self::$environ->website);
@@ -216,9 +216,9 @@ class UserCommandsTest extends PHPUnit_Framework_TestCase
     {
         self::$environ->clean();
 
-        $user1Id = self::$environ->createUser('jsmith', 'joe smith','joe@smith.com');
+        $user1Id = self::$environ->createUser('jsmith', 'joe', 'joe smith','joe@smith.com');
         $joeUser = new UserModel($user1Id);
-        $user2Id = self::$environ->createUser('zedUser', 'zed user','zed@example.com');
+        $user2Id = self::$environ->createUser('zedUser', 'zed', 'zed user','zed@example.com');
         $zedUser = new UserModel($user2Id);
 
         $identityCheck = UserCommands::checkUniqueIdentity($zedUser, 'jsmith', 'ZED@example.com', self::$environ->website);
@@ -240,7 +240,7 @@ class UserCommandsTest extends PHPUnit_Framework_TestCase
         $project = self::$environ->createProject(SF_TESTPROJECT, SF_TESTPROJECTCODE);
         $projectId = $project->id->asString();
 
-        $currentUserId = self::$environ->createUser('test1', 'test1', 'test@test.com');
+        $currentUserId = self::$environ->createUser('test1', 'test1', 'Test 1', 'test@test.com');
 
         // create user
         $dto = UserCommands::createSimple($userName, $projectId, $currentUserId, self::$environ->website);
@@ -270,7 +270,7 @@ class UserCommandsTest extends PHPUnit_Framework_TestCase
         $project = self::$environ->createProject(SF_TESTPROJECT, SF_TESTPROJECTCODE);
         $projectId = $project->id->asString();
 
-        $currentUserId = self::$environ->createUser('test1', 'test1', 'test@test.com');
+        $currentUserId = self::$environ->createUser('test1', 'test1', 'Test 1', 'test@test.com');
 
         // create user
         $dto = UserCommands::createSimple($name, $projectId, $currentUserId, self::$environ->website);
@@ -292,6 +292,7 @@ class UserCommandsTest extends PHPUnit_Framework_TestCase
         $params = array(
                 'id' => '',
                 'username' => 'someusername',
+                'displayName' => 'someusername',
                 'name' => 'Some Name',
                 'email' => 'someone@example.com',
                 'password' => 'somepassword',
@@ -319,6 +320,7 @@ class UserCommandsTest extends PHPUnit_Framework_TestCase
         $params = array(
             'id' => '',
             'username' => 'someusername',
+            'displayName' => 'someusername',
             'name' => 'Some Name',
             'email' => 'someone@example.com',
             'password' => 'somepassword',
@@ -340,7 +342,7 @@ class UserCommandsTest extends PHPUnit_Framework_TestCase
         $userName = 'username';
         $project = self::$environ->createProject(SF_TESTPROJECT, SF_TESTPROJECTCODE);
         $projectId = $project->id->asString();
-        $currentUserId = self::$environ->createUser('test1', 'test1', 'test@test.com');
+        $currentUserId = self::$environ->createUser('test1', 'test1', 'Test 1', 'test@test.com');
 
         // create user 'username' with password, and assign an email address
         $dto = UserCommands::createSimple($userName, $projectId, $currentUserId, self::$environ->website);
@@ -353,6 +355,7 @@ class UserCommandsTest extends PHPUnit_Framework_TestCase
         $params = array(
             'id' => '',
             'username' => 'someusername',
+            'displayName' => 'someusername',
             'name' => 'Some Name',
             'email' => $takenEmail,
             'password' => 'somepassword',
@@ -373,12 +376,13 @@ class UserCommandsTest extends PHPUnit_Framework_TestCase
 
         // setup parameters: user 'test1'
         $takenEmail = 'test@test.com';
-        $currentUserId = self::$environ->createUser('test1', 'test1', $takenEmail);
+        $currentUserId = self::$environ->createUser('test1', 'test1', 'Test 1', $takenEmail);
 
         $validCode = 'validCode';
         $params = array(
             'id' => '',
             'username' => 'someusername',
+            'displayName' => 'someusername',
             'name' => 'Some Name',
             'email' => $takenEmail,
             'password' => 'somepassword',
@@ -401,13 +405,14 @@ class UserCommandsTest extends PHPUnit_Framework_TestCase
         $params = array(
             'id' => '',
             'username' => 'anotherusername',
+            'displayName' => 'anotherusername',
             'name' => 'Another Name',
             'email' => 'another@example.com',
             'password' => 'anotherpassword',
             'captcha' => $validCode
         );
         $captcha_info = array('code' => $validCode);
-        $userId = self::$environ->createUser('someusername', 'Some Name', 'someone@example.com');
+        $userId = self::$environ->createUser('someusername', 'some', 'Some Name', 'someone@example.com');
 
         $delivery = new MockUserCommandsDelivery();
         $result = UserCommands::register($params, self::$environ->website, $captcha_info, $delivery);
@@ -423,6 +428,7 @@ class UserCommandsTest extends PHPUnit_Framework_TestCase
         $params = array(
             'id' => '',
             'username' => 'jsmith',
+            'displayname' => 'joe',
             'name' => 'joe smith',
             'email' => 'joe@smith.com',
             'password' => 'somepassword',
@@ -449,7 +455,7 @@ class UserCommandsTest extends PHPUnit_Framework_TestCase
     {
         self::$environ->clean();
 
-        $inviterUserId = self::$environ->createUser("inviteruser", "Inviter Name", "inviter@example.com");
+        $inviterUserId = self::$environ->createUser("inviteruser", "inviter", "Inviter Name", "inviter@example.com");
         $project = self::$environ->createProject(SF_TESTPROJECT, SF_TESTPROJECTCODE);
         $project->projectCode = 'someProjectCode';
         $project->write();
@@ -460,6 +466,7 @@ class UserCommandsTest extends PHPUnit_Framework_TestCase
         $params = array(
             'id' => '',
             'username' => 'jsmith',
+            'displayName' => 'joe',
             'name' => 'joe smith',
             'email' => 'joe@smith.com',
             'password' => 'somepassword',
@@ -481,7 +488,7 @@ class UserCommandsTest extends PHPUnit_Framework_TestCase
     {
         self::$environ->clean();
 
-        $inviterUserId = self::$environ->createUser("inviteruser", "Inviter Name", "inviter@example.com");
+        $inviterUserId = self::$environ->createUser("inviteruser", "inviter", "Inviter Name", "inviter@example.com");
         $toEmail = 'someone@example.com';
         $project = self::$environ->createProject(SF_TESTPROJECT, SF_TESTPROJECTCODE);
         $project->projectCode = 'someProjectCode';
@@ -498,7 +505,7 @@ class UserCommandsTest extends PHPUnit_Framework_TestCase
         $expectedTo = array($toUser->emailPending => $toUser->name);
         $this->assertEquals($expectedFrom, $delivery->from);
         $this->assertEquals($expectedTo, $delivery->to);
-        $this->assertRegExp('/Inviter Name/', $delivery->content);
+        $this->assertRegExp('/inviter/', $delivery->content);
         $this->assertRegExp('/Test Project/', $delivery->content);
         $this->assertRegExp('/' . self::$environ->website->domain . '\/public\/signup/', $delivery->content);
     }

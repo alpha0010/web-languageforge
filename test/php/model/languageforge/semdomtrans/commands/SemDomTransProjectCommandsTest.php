@@ -10,7 +10,7 @@ class SemDomTransProjectCommandsTest extends PHPUnit_Framework_TestCase
     {
         $environ = new SemDomMongoTestEnvironment();
         $environ->cleanPreviousProject('es');
-        $user1Id = $environ->createUser('u', 'u', 'u');
+        $user1Id = $environ->createUser('u', 'u', 'u', 'u@example.com');
         $englishProject = $environ->getEnglishProjectAndCreateIfNecessary();
         $newProject = $environ->createSemDomProject('es', 'Spanish', $user1Id);
 

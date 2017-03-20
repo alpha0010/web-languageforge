@@ -26,7 +26,7 @@ class SemDomTransEditDtoTest extends PHPUnit_Framework_TestCase
         self::$environ->clean();
         self::$environ->getEnglishProjectAndCreateIfNecessary();
         self::$environ->cleanPreviousProject('es');
-        $user1Id = self::$environ->createUser('u', 'u', 'u');
+        $user1Id = self::$environ->createUser('u', 'u', 'u', 'u@example.com');
         $targetProject = self::$environ->createSemDomProject('es', 'Spanish', $user1Id);
         $result = SemDomTransEditDto::encode($targetProject->id->asString(), null);
         $this->assertNotNull($result['entries']);
@@ -43,7 +43,7 @@ class SemDomTransEditDtoTest extends PHPUnit_Framework_TestCase
 
         /** @noinspection PhpUnusedLocalVariableInspection */
         $sourceProject = self::$environ->getEnglishProjectAndCreateIfNecessary();
-        $user1Id = self::$environ->createUser('u', 'u', 'u');
+        $user1Id = self::$environ->createUser('u', 'u', 'u', 'u@example.com');
         $targetProject = self::$environ->createSemDomProject('es', 'Spanish', $user1Id);
 
         /*
@@ -62,7 +62,7 @@ class SemDomTransEditDtoTest extends PHPUnit_Framework_TestCase
         $targetItemsModel = new SemDomTransItemListModel($targetProject);
         $targetItemsModel->read();
         $targetItems = $targetItemsModel->entries;
-        
+
         $targetItemModel = new SemDomTransItemModel($targetProject);
         $targetItemModel->readByProperty('xmlGuid', $targetItems[0]['xmlGuid']);
         $targetItemModel->key = '1';
@@ -74,7 +74,7 @@ class SemDomTransEditDtoTest extends PHPUnit_Framework_TestCase
         });
         $targetItemModel->questions[] = $tq;
         $targetItemModel->write();
-        
+
         // call dto
         //$loadTargetProject = new SemDomTransProjectModel($prId->asString());
         //$loadSourceProject = new SemDomTransProjectModel($loadTargetProject->sourceLanguageProjectId);

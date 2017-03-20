@@ -39,7 +39,7 @@ class SessionTestEnvironment
         $this->question = new QuestionModel($this->project);
         $this->question->write();
 
-        $this->userId = $environ->createUser('test_user', 'Test User', 'test_user@example.com');
+        $this->userId = $environ->createUser('test_user', 'test', 'Test User', 'test_user@example.com');
         $this->projectId = $this->project->id->asString();
         $this->questionId = $this->question->id->asString();
     }

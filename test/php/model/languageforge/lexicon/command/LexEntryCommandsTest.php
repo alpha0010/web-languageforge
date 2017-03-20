@@ -28,7 +28,7 @@ class LexEntryCommandsTest extends PHPUnit_Framework_TestCase
         $projectId = $project->id->asString();
 
         // create an user and add to the project
-        $userId = self::$environ->getProjectMember($projectId, 'user1');
+        $userId = self::$environ->getProjectMember($projectId, 'user1', 'user1', 'User 1');
 
         $entry = new LexEntryModel($project);
         $entry->lexeme->form('th', 'SomeEntry');
@@ -125,7 +125,7 @@ class LexEntryCommandsTest extends PHPUnit_Framework_TestCase
         $project = self::$environ->createProject(SF_TESTPROJECT, SF_TESTPROJECTCODE);
         $projectId = $project->id->asString();
 
-        $userId = self::$environ->createUser('john', 'john', 'john');
+        $userId = self::$environ->createUser('john', 'john', 'john', 'john@example.com');
 
         $exampleGuid = Guid::create();
         $example = new LexExample($exampleGuid, $exampleGuid);
@@ -181,7 +181,7 @@ class LexEntryCommandsTest extends PHPUnit_Framework_TestCase
         $params = json_decode(json_encode(LexEntryCommands::readEntry($projectId, $entryId)), true);
         $params['lexeme']['th']['value'] = '';
 
-        $userId = self::$environ->createUser('john', 'john', 'john');
+        $userId = self::$environ->createUser('john', 'john', 'john', 'john@example.com');
 
         LexEntryCommands::updateEntry($projectId, $params, $userId);
 

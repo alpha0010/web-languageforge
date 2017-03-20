@@ -28,6 +28,7 @@ class Base
         $this->data['projects'] = array();
         $this->data['smallAvatarUrl'] = '';
         $this->data['userName'] = '';
+        $this->data['displayName'] = '';
         $this->data['version'] = VERSION;
         $this->data['useMinifiedJs'] = USE_MINIFIED_JS;
         $this->data['http_host'] = $_SERVER['HTTP_HOST'];
@@ -149,6 +150,7 @@ class Base
                 $this->data['isAdmin'] = SystemRoles::hasRight($this->_user->role, Domain::USERS + Operation::CREATE);
             }
             $this->data['userName'] = $this->_user->username;
+            $this->data['displayName'] = $this->_user->displayName;
             $this->data['smallAvatarUrl'] = '/Site/views/shared/image/avatar/'.$this->_user->avatar_ref;
             $projects = $this->_user->listProjects($this->website->domain);
             $this->data['projects_count'] = $projects->count;

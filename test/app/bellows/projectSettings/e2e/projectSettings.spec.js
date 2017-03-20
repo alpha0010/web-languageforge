@@ -42,7 +42,7 @@ describe('Bellows E2E Project Settings App', function () {
     settingsPage.tabs.project.click();
     expect(settingsPage.projectTab.projectOwner.isDisplayed()).toBe(true);
     expect(settingsPage.projectTab.projectOwner.getText())
-      .not.toContain(constants.managerUsername);
+      .not.toContain(constants.managerDisplayname);
   });
 
   it('Manager cannot view archive tab if not owner', function () {
@@ -59,7 +59,7 @@ describe('Bellows E2E Project Settings App', function () {
     settingsPage.tabs.project.click();
     expect(settingsPage.projectTab.projectOwner.isDisplayed()).toBe(true);
     expect(settingsPage.projectTab.projectOwner.getText())
-      .toContain(constants.managerUsername);
+      .toContain(constants.managerDisplayName);
   });
 
   // For Jamaican Psalms, only system admins can delete projects.

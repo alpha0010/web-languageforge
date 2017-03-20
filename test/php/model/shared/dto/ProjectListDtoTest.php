@@ -20,7 +20,7 @@ class ProjectListDtoTest extends PHPUnit_Framework_TestCase
 
     public function testEncode_ProjectWithTexts_DtoReturnsTextCount2()
     {
-        $userId = self::$environ->createUser("User", "Name", "name@example.com");
+        $userId = self::$environ->createUser("User", "Name", "User Name", "name@example.com");
         $user = new UserModel($userId);
         $user->role = SystemRoles::SYSTEM_ADMIN;
         $user->write();
@@ -51,7 +51,7 @@ class ProjectListDtoTest extends PHPUnit_Framework_TestCase
 
     public function testEncode_SystemAdmin2Projects_DtoReturnsProjectCount2()
     {
-        $userId = self::$environ->createUser("User", "Name", "name@example.com");
+        $userId = self::$environ->createUser("User", "Name", "User Name", "name@example.com");
         $user = new UserModel($userId);
         $user->role = SystemRoles::SYSTEM_ADMIN;
         $user->write();
@@ -81,7 +81,7 @@ class ProjectListDtoTest extends PHPUnit_Framework_TestCase
 
     public function testEncode_SystemAdmin2Projects1Archived_DtoReturnsProjectCount1()
     {
-        $userId = self::$environ->createUser("User", "Name", "name@example.com");
+        $userId = self::$environ->createUser("User", "Name", "User Name", "name@example.com");
         $user = new UserModel($userId);
         $user->role = SystemRoles::SYSTEM_ADMIN;
         $user->write();
@@ -116,7 +116,7 @@ class ProjectListDtoTest extends PHPUnit_Framework_TestCase
 
     public function testEncode_UserOf1Project2Projects_DtoReturnsProjectCount1()
     {
-        $userId = self::$environ->createUser("User", "Name", "name@example.com");
+        $userId = self::$environ->createUser("User", "Name", "User Name", "name@example.com");
         $user = new UserModel($userId);
         $user->role = SystemRoles::USER;
         $user->write();

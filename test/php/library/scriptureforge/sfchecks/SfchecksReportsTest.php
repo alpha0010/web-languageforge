@@ -23,9 +23,9 @@ class SfchecksReportsTest extends PHPUnit_Framework_TestCase
         $text->content = $usx;
         $textId = $text->write();
 
-        $user1Id = $environ->createUser("user1", "user1", "user1@email.com");
-        $user2Id = $environ->createUser("user2", "user2", "user2@email.com");
-        $user3Id = $environ->createUser("user3", "user3", "user3@email.com");
+        $user1Id = $environ->createUser("user1", "user1", "User 1", "user1@email.com");
+        $user2Id = $environ->createUser("user2", "user2", "User 2", "user2@email.com");
+        $user3Id = $environ->createUser("user3", "user3", "User 3", "user3@email.com");
 
         ProjectCommands::updateUserRole($project->id->asString(), $user1Id);
         ProjectCommands::updateUserRole($project->id->asString(), $user2Id);
