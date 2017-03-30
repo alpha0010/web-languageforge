@@ -3,28 +3,23 @@
 namespace Site\Controller;
 
 use Api\Library\Shared\Palaso\JsonRpcServer;
+use Api\Service\Sf;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
 
 class Api
 {
-    public function service(Request $request, Application $app, $apiName) {
-        $fileBase = str_replace(' ', '', ucwords(preg_replace('/[\s_]+/', ' ', $apiName)));
-        $serviceFileName = $fileBase.'.php';
-        $serviceClassName = '\\Api\\Service\\'.$fileBase;
-        $filePath = 'Api/Service/' . $serviceFileName;
+    public function service(Request $request, Application $app, $apiName, $args = '') {
 
-        if (! file_exists($filePath)) {
-            throw new \Exception(sprintf("File not found '%s' for api '%s'", $filePath, $apiName));
-        }
-        if (! class_exists($serviceClassName)) {
-            throw new \Exception(sprintf("Service class '%s' not found in file '%s'", $serviceClassName, $filePath));
+        $service = new Sf($app);
+
+        // TODO: rename sf to jsonrpc
+        if ($apiName == 'sf') {
+            return $app->json(JsonRpcServer::handle($request, $service), 200);
+        } else {
+            return $app->json(RestServer::handle($request, $service, $args), 200);
         }
 
-        require_once $filePath;
-        $service = new $serviceClassName($app);
-
-        return $app->json(JsonRpcServer::handle($request, $service), 200);
     }
 
 }

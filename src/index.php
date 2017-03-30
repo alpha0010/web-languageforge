@@ -219,6 +219,7 @@ $app->get('/script',  'Site\Controller\Script::run');
 
 //public
 $app->post('/api/{apiName}',    'Site\Controller\Api::service');
+$app->match('/api/{apiName}/{args}',    'Site\Controller\Api::service')->assert('args', '.*');
 
 $app->get('/public/{appName}/{projectId}/', 'Site\Controller\App::view');
 $app->get('/public/{appName}/{projectId}', 'Site\Controller\App::view');
