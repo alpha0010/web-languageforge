@@ -72,6 +72,7 @@ angular.module('semdomtrans.services', ['jsonRpc'])
   function ($q, editorDataService, api, ss, semdomCache) {
 
     editorDataService.registerEntryApi(api);
+    console.log("TODO: registerUtilityLibrary here for semdomtrans app - similar to lexUtils");
     var workingSets = [];
     var itemsTree = {};
     var loadingDto = false;

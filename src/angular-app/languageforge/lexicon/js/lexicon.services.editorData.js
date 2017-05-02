@@ -3,10 +3,11 @@
 angular.module('lexicon.services')
 
 // Lexicon Entry Service
-.factory('lexEditorDataService', ['$q', 'editorDataService', 'lexEntryApiService',
-function ($q, editorDataService, api) {
+.factory('lexEditorDataService', ['$q', 'editorDataService', 'lexEntryApiService', 'lexUtils',
+function ($q, editorDataService, api, utils) {
 
   editorDataService.registerEntryApi(api);
+  editorDataService.registerUtilityLibrary(utils);
 
   return {
     loadEditorData: editorDataService.loadEditorData,
@@ -17,6 +18,7 @@ function ($q, editorDataService, api) {
     getIndexInVisibleEntries: editorDataService.getIndexInVisibleEntries,
     entries: editorDataService.entries,
     visibleEntries: editorDataService.visibleEntries,
+    visibleSimpleEntriesForCompactList: editorDataService.visibleSimpleEntriesForCompactList,
     showInitialEntries: editorDataService.showInitialEntries,
     showMoreEntries: editorDataService.showMoreEntries
   };

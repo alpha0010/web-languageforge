@@ -54,6 +54,7 @@ angular.module('lexicon.editor', ['ui.router', 'ui.bootstrap', 'bellows.services
     $scope.configService = lexConfig;
     $scope.entries = editorService.entries;
     $scope.visibleEntries = editorService.visibleEntries;
+    $scope.visibleSimpleEntriesForCompactList = editorService.visibleSimpleEntriesForCompactList;
     $scope.show = {
       more: editorService.showMoreEntries,
       emptyFields: false
@@ -119,7 +120,7 @@ angular.module('lexicon.editor', ['ui.router', 'ui.bootstrap', 'bellows.services
     function warnOfUnsavedEdits(entry) {
       warnOfUnsavedEditsId = notice.push(notice.WARN, 'A synchronize has been started by another ' +
         'user. When the synchronize has finished, please check your recent edits in entry "' +
-        $scope.getWordForDisplay(entry) + '".');
+        utils.getWordForDisplay($scope.config, entry) + '".');
     }
 
     $scope.saveCurrentEntry = function saveCurrentEntry(doSetEntry, successCallback, failCallback) {
@@ -215,15 +216,6 @@ angular.module('lexicon.editor', ['ui.router', 'ui.bootstrap', 'bellows.services
       return entryForUpdate;
     }
 
-    $scope.getWordForDisplay = function getWordForDisplay(entry) {
-      var lexeme = utils.getLexeme($scope.config.entry, entry);
-      if (!lexeme) {
-        return '[Empty]';
-      }
-
-      return lexeme;
-    };
-
     $scope.lexemeAlign = function lexemeAlign(listEntry) {
       if ($scope.config && $scope.config.entry && listEntry.lexeme) {
         var inputSystem = $scope.config.entry.fields.lexeme.inputSystems[0];
@@ -231,19 +223,6 @@ angular.module('lexicon.editor', ['ui.router', 'ui.bootstrap', 'bellows.services
       } else {
         return 'left';
       }
-    };
-
-    $scope.getMeaningForDisplay = function getMeaningForDisplay(entry) {
-      var meaning = '';
-      if (entry.senses && entry.senses[0]) {
-        meaning = utils.getMeaning($scope.config.entry.fields.senses, entry.senses[0]);
-      }
-
-      if (!meaning) {
-        return '[Empty]';
-      }
-
-      return meaning;
     };
 
     $scope.definitionOrGlossAlign = function definitionOrGlossAlign(listEntry) {
@@ -576,18 +555,6 @@ angular.module('lexicon.editor', ['ui.router', 'ui.bootstrap', 'bellows.services
           });
         }
       });
-    };
-
-    $scope.getCompactItemListOverlay = function getCompactItemListOverlay(entry) {
-      var title;
-      var subtitle;
-      title = $scope.getWordForDisplay(entry);
-      subtitle = $scope.getMeaningForDisplay(entry);
-      if (title.length > 19 || subtitle.length > 25) {
-        return title + '         ' + subtitle;
-      } else {
-        return '';
-      }
     };
 
     function evaluateState(skipLoadingEditorData) {

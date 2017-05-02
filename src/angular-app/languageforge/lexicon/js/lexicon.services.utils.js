@@ -23,6 +23,24 @@ angular.module('lexicon.services')
       return result;
     }
 
+    function getFirstFieldWritingSystem(config, node, fieldName) {
+      var result = '';
+      var ws;
+      var field;
+      if (node[fieldName] && config && config.fields && config.fields[fieldName] &&
+        config.fields[fieldName].inputSystems) {
+        for (var i = 0; i < config.fields[fieldName].inputSystems.length; i++) {
+          ws = config.fields[fieldName].inputSystems[i];
+          field = node[fieldName][ws];
+          if (angular.isDefined(field) && angular.isDefined(field.value) && field.value != '') {
+            result = ws;
+            break;
+          }
+        }
+      }
+      return result;
+    }
+
     function getFields(config, node, fieldName, delimiter) {
       var result = '';
       if (typeof (delimiter) === 'undefined') delimiter = ' ';
@@ -174,6 +192,53 @@ angular.module('lexicon.services')
     this.isAudio = function isAudio(tag) {
       var tagAudioPattern = /^\w{2,3}-Zxxx-x(-\w{2,3})*-[aA][uU][dD][iI][oO]$/;
       return tagAudioPattern.test(tag);
+    };
+
+    this.getWordForDisplay = function getWordForDisplay(config, entry) {
+      var lexeme = this.getLexeme(config.entry, entry);
+      if (!lexeme) {
+        return '[Empty]';
+      }
+
+      return lexeme;
+    };
+
+    this.getMeaningForDisplay = function getMeaningForDisplay(config, entry) {
+      var meaning = '';
+      if (entry.senses && entry.senses[0]) {
+        meaning = this.getMeaning(config.entry.fields.senses, entry.senses[0]);
+      }
+
+      if (!meaning) {
+        return '[Empty]';
+      }
+
+      return meaning;
+    };
+
+    this.getCompactItemListOverlay = function getCompactItemListOverlay(config, entry) {
+      var title;
+      var subtitle;
+      title = this.getWordForDisplay(config, entry);
+      subtitle = this.getMeaningForDisplay(config, entry);
+      if (title.length > 19 || subtitle.length > 25) {
+        return title + '         ' + subtitle;
+      } else {
+        return '';
+      }
+    };
+
+    this.getSimpleEntry = function getSimpleEntry(config, entry) {
+      var simpleEntry = {
+        id: entry.id,
+        word: this.getWordForDisplay(config, entry),
+        wordWritingSystem: getFirstFieldWritingSystem(config.entry, entry, 'lexeme'),
+        meaning: this.getMeaningForDisplay(config, entry),
+        compactTitle: this.getCompactItemListOverlay(config, entry),
+        sortKey: 'unknown'
+      };
+      return simpleEntry;
+
     };
 
   }]);

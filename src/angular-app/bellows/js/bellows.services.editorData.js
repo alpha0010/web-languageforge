@@ -9,13 +9,31 @@ function ($q, sessionService, cache, commentsCache,
           notice, commentService) {
   var entries = [];
   var visibleEntries = [];
+
+  /**
+   *
+   * @type {Array}
+   *
+   * VisibleEntriesSimpleForCompactList is an array of an object with the following properties:
+   * - id
+   * - word
+   * - meaning
+   * - compactTitle
+   * - sortKey
+   */
+  var visibleSimpleEntriesForCompactList = [];
+
   var browserInstanceId = Math.floor(Math.random() * 1000);
   var api = undefined;
+  var utils = undefined;
 
   var showInitialEntries = function showInitialEntries() {
     sortList(entries);
     visibleEntries.length = 0; // clear out the array
     visibleEntries.push.apply(visibleEntries, entries.slice(0, 50));
+
+    visibleSimpleEntriesForCompactList.length = 0; // clear out the array
+    pushSimpleEntries(visibleSimpleEntriesForCompactList, entries.slice(0, 50));
   };
 
   var showMoreEntries = function showMoreEntries() {
@@ -24,12 +42,31 @@ function ($q, sessionService, cache, commentsCache,
       var currentLength = visibleEntries.length;
       visibleEntries.length = 0;
       visibleEntries.push.apply(visibleEntries, entries.slice(0, currentLength + increment));
+      visibleSimpleEntriesForCompactList.length = 0;
+      pushSimpleEntries(visibleSimpleEntriesForCompactList, entries.slice(0, currentLength + increment));
     }
   };
 
   var registerEntryApi = function registerEntryApi(a) {
     api = a;
   };
+
+  var registerUtilityLibrary = function registerUtilityLibrary(u) {
+    utils = u;
+  };
+
+  /**
+   *
+   * @param list - list of simple entries to add to
+   * @param entriesToAdd - list of full entries to be added to list in first param
+   */
+  var pushSimpleEntries = function pushSimpleEntries(list, entriesToAdd) {
+    var config = sessionService.session.projectSettings.config;
+    angular.forEach(entriesToAdd, function(entryToAdd) {
+      list.push(utils.getSimpleEntry(config, entryToAdd));
+    });
+  };
+
 
   /**
    * Called when loading the controller
@@ -157,6 +194,10 @@ function ($q, sessionService, cache, commentsCache,
     if (angular.isDefined(iShowList)) {
       visibleEntries.splice(iShowList, 1);
     }
+    var iShowList = getIndexInList(id, visibleSimpleEntriesForCompactList);
+    if (angular.isDefined(iShowList)) {
+      visibleSimpleEntriesForCompactList.splice(iShowList, 1);
+    }
 
     return cache.deleteEntry(id);
   };
@@ -246,6 +287,13 @@ function ($q, sessionService, cache, commentsCache,
           if (angular.isDefined(i)) {
             visibleEntries[i] = entry;
           }
+
+          // splice into simple entries compact list
+          i = getIndexInList(entry.id, visibleSimpleEntriesForCompactList);
+          if (angular.isDefined(i)) {
+            var config = sessionService.session.projectSettings.config;
+            visibleSimpleEntriesForCompactList[i] = utils.getSimpleEntry(config, entry);
+          }
         });
 
         // splice comment updates into comments list
@@ -265,6 +313,7 @@ function ($q, sessionService, cache, commentsCache,
 
         sortList(entries);
         sortList(visibleEntries);
+        sortVisibleSimpleEntriesForCompactList();
       }
 
       if (result.data.itemCount &&
@@ -329,6 +378,13 @@ function ($q, sessionService, cache, commentsCache,
     });
   }
 
+  function sortVisibleSimpleEntriesForCompactList() {
+    visibleSimpleEntriesForCompactList.sort(function (a, b) {
+      return Intl.Collator(a.wordWritingSystem).compare(a, b);
+    });
+
+  }
+
   //noinspection JSUnusedLocalSymbols
   /**
    * A function useful for debugging (prints out to the console the lexeme values)
@@ -352,6 +408,7 @@ function ($q, sessionService, cache, commentsCache,
     storeDataInOfflineCache: storeDataInOfflineCache,
     processEditorDto: processEditorDto,
     registerEntryApi: registerEntryApi,
+    registerUtilityLibrary: registerUtilityLibrary,
     loadEditorData: loadEditorData,
     refreshEditorData: refreshEditorData,
     removeEntryFromLists: removeEntryFromLists,
@@ -360,6 +417,7 @@ function ($q, sessionService, cache, commentsCache,
     getIndexInVisibleEntries: getIndexInVisibleEntries,
     entries: entries,
     visibleEntries: visibleEntries,
+    visibleSimpleEntriesForCompactList: visibleSimpleEntriesForCompactList,
     showInitialEntries: showInitialEntries,
     showMoreEntries: showMoreEntries
   };
