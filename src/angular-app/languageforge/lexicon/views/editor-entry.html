@@ -22,12 +22,12 @@
                 <h5>{{ 'Words in dictionary' | translate }}</h5>
             </div>
             <div id="compactEntryListContainer" class="lexiconItemListContainer" data-pui-when-scrolled="show.more()">
-                <div id="entryId_{{entry.id}}" class="list-group-item"
+                <div id="entryId_{{::entry.id}}" class="list-group-item"
                      data-ng-class="{selected: entry.id == currentEntry.id, listItemHasComment: commentService.getEntryCommentCount(entry.id) > 0}"
-                     title="{{getCompactItemListOverlay(entry)}}" class="lexiconListItemCompact"
-                     data-ng-repeat="entry in visibleEntries track by entry.id" data-ng-click="editEntry(entry.id)">
-                    <div dir="auto" class="listItemPrimary" data-ng-bind-html="getWordForDisplay(entry)"></div>
-                    <div dir="auto" class="listItemSecondary" data-ng-bind-html="getMeaningForDisplay(entry)"></div>
+                     title="{{::entry.compactTitle}}" class="lexiconListItemCompact"
+                     data-ng-repeat="entry in ::visibleSimpleEntriesForCompactList track by entry.id" data-ng-click="editEntry(entry.id)">
+                    <div dir="auto" class="listItemPrimary" data-ng-bind-html="::entry.word"></div>
+                    <div dir="auto" class="listItemSecondary" data-ng-bind-html="::entry.meaning"></div>
                 </div>
             </div>
         </div>
@@ -39,7 +39,7 @@
         </div>
         <div>
             <div class="entryItemView" data-ng-if="entryLoaded()">
-                <dc-entry config="config.entry" model="currentEntry" control="control"></dc-entry>
+                <dc-entry config="::config.entry" model="currentEntry" control="control"></dc-entry>
             </div>
         </div>
     </div>
