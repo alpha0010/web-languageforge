@@ -19,6 +19,8 @@ use Palaso\Utilities\FileUtilities;
 
 class SendReceiveCommands
 {
+    const BASE_URL = 'https://api.qa.languagedepot.org';
+
     const MERGE_QUEUE_PATH = '/var/lib/languageforge/lexicon/sendreceive/mergequeue';
     const RECEIVE_QUEUE_PATH = '/var/lib/languageforge/lexicon/sendreceive/receivequeue';
     const SEND_QUEUE_PATH = '/var/lib/languageforge/lexicon/sendreceive/sendqueue';
@@ -43,7 +45,7 @@ class SendReceiveCommands
 
     /**
      * @param string $projectId
-     * @param string $srProject
+     * @param array $srProject
      * @return string $projectId
      */
     public static function updateSRProject($projectId, $srProject)
@@ -65,7 +67,7 @@ class SendReceiveCommands
      * @param string $username
      * @param string $password
      * @param ClientInterface|null $client
-     * @return SendReceiveGetUserProjectResult
+     * @return array<SendReceiveGetUserProjectResult>
      */
     public static function getUserProjects($username, $password, ClientInterface $client = null)
     {
@@ -76,7 +78,7 @@ class SendReceiveCommands
 
         self::mockE2ETestingData($username, $password, $client);
 
-        $url = 'https://admin.languagedepot.org/api/user/'.$username.'/projects';
+        $url = self::BASE_URL.'/api/user/'.$username.'/projects';
         $postData = ['json' => ['password' => $password]];
 
         $tryCounter = 1;
@@ -96,7 +98,7 @@ class SendReceiveCommands
             }
         }
 
-        if ($response->getStatusCode() == 200) {
+        if (isset($response) && $response->getStatusCode() == 200) {
             $result->hasValidCredentials = true;
             foreach ($response->json() as $index => $srProject) {
                 $result->projects[] = new SendReceiveProjectModelWithIdentifier(
