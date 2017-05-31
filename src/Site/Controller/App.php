@@ -42,7 +42,7 @@ class App extends Base
         }
 
         $this->_appName = $appName;
-        $this->data['isAngular2'] = $appModel->isAppAngular2();
+        $this->data['isAngularTypescript'] = $appModel->isAngularTypescript;
         $this->data['isBootstrap4'] = $appModel->isBootstrap4;
         $this->data['appName'] = $appName;
         $this->data['appFolder'] = $appModel->appFolder;
@@ -68,23 +68,25 @@ class App extends Base
             $this->_showHelp = true;
         }
 
-        $this->addJavascriptFiles($appModel->siteFolder . '/js', array('vendor', 'assets'));
 
-        if ($this->data['isAngular2']) {
-            $this->addJavascriptFiles($appModel->appFolder . '/dist');
+
+
+        if ($appModel->isAngularTypescript) {
+            //$this->addJavascriptFiles($appModel->appFolder . '/dist');
         } else {
+            $this->addJavascriptFiles($appModel->siteFolder . '/js', array('vendor', 'assets'));
             $this->addJavascriptFiles($appModel->appFolder, array('js/vendor', 'js/assets'));
+            if ($appModel->parentAppFolder) {
+                $this->addJavascriptFiles($appModel->parentAppFolder, array('js/vendor', 'js/assets'));
+            }
+            if ($appName == 'semdomtrans' || $appName == 'semdomtrans-new-project') {
+                // special case for semdomtrans app
+                // add lexicon JS files since the semdomtrans app depends upon these JS files
+                $this->addJavascriptFiles($appModel->siteFolder . '/lexicon', array('js/vendor', 'js/assets'));
+            }
         }
 
-        if ($appModel->parentAppFolder) {
-            $this->addJavascriptFiles($appModel->parentAppFolder, array('js/vendor', 'js/assets'));
-        }
 
-        if ($appName == 'semdomtrans' || $appName == 'semdomtrans-new-project') {
-            // special case for semdomtrans app
-            // add lexicon JS files since the semdomtrans app depends upon these JS files
-            $this->addJavascriptFiles($appModel->siteFolder . '/lexicon', array('js/vendor', 'js/assets'));
-        }
 
         if ($appModel->isBootstrap4) {
             $this->addCssFiles(NG_BASE_FOLDER . 'bellows/cssBootstrap4');
@@ -150,6 +152,11 @@ class AppModel {
      * @var bool
      */
     public $requireProject;
+
+    /**
+     * @var bool
+     */
+    public $isAngularTypescript;
 
     /**
      * AppModel constructor
@@ -233,6 +240,7 @@ class AppModel {
         $this->isBellows = $isBellows;
         $this->bellowsFolder = $bellowsFolder;
         $this->requireProject = $this->isProjectContextRequired($appName);
+        $this->isAngularTypescript = $this->isTypescript();
     }
 
     private function isProjectContextRequired($appName) {
@@ -248,12 +256,8 @@ class AppModel {
         }
     }
 
-    public function isAppAngular2() {
-        $siteAppsInAngular2 = array(
-            "rapid-words",
-            "review-suggest"
-        );
-        return in_array($this->appName, $siteAppsInAngular2);
+    private function isTypescript() {
+        return file_exists($this->appFolder . "/main.ts");
     }
 
     private function isAppBootstrap4($appName, $website) {
@@ -278,7 +282,8 @@ class AppModel {
             "scriptureforge" => array("sfchecks"),
             "languageforge" => array(
                 "rapid-words",
-                "lexicon"
+                "lexicon",
+                "translate"
             ),
             "waaqwiinaagiwritings" => array(),
             "jamaicanpsalms.scriptureforge" => array(),

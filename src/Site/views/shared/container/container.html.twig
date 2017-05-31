@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 {# manifest disabled because it's not yet very functional #}
-{% if false and app.website.name == "Language Forge" %}
+{% if false and app.website.domain == "languageforge.org" %}
 <html lang="en" manifest="/cache.manifest">
 {% else %}
 <html lang="en">
@@ -32,7 +32,7 @@
         <script src="/vendor_bower/angular-bootstrap/ui-bootstrap-tpls.min.js?v={{ version }}"></script>
 
         {% for filename in vendorFilesMinJs %}
-        <script src="/{{ filename }}?v={{ version }}"></script>
+            <script src="/{{ filename }}?v={{ version }}"></script>
         {% endfor %}
 
         <script src="/js/lib/{{ app.website.base }}.min.js?v={{ version }}"></script>
