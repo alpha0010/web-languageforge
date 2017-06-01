@@ -656,35 +656,36 @@ gulp.task('sass:watch', function () {
 
 // endregion
 
-function webpack (watch) {
+function webpack(isWatch) {
   return new Promise(function (resolve, reject) {
-    glob('**/webpack.config.js', {}, function(err, files) {
-      if(err) return reject(err);
+    glob('src/angular-app/**/webpack.config.js', {}, function (err, files) {
+      if (err) return reject(err);
 
-      gutil.log('Building the followig webpack configs:');
-      files.forEach(function(fileName) {
+      gutil.log('Building the following webpack configs:');
+      files.forEach(function (fileName) {
         gutil.log('    ' + fileName);
       });
 
-      files.forEach(function(fileName) {
+      files.forEach(function (fileName) {
         gutil.log('Processing ' + fileName);
-        watch = watch ? ' --watch' : '';
-        execute('$(npm bin)/webpack' + watch, {cwd: path.dirname(fileName)}, function(err) {
-          if(err) throw err;
+        var watch = isWatch ? ' --watch' : '';
+        execute('$(npm bin)/webpack' + watch, { cwd: path.dirname(fileName) }, function (err) {
+          if (err) throw err;
         });
       });
+
       resolve();
     });
   });
 }
 
-gulp.task('webpack', function() {
+gulp.task('webpack', function () {
   return webpack();
 });
 
-gulp.task('webpack:watch', function() {
+gulp.task('webpack:watch', function () {
   return webpack(true);
-})
+});
 
 //region build
 
