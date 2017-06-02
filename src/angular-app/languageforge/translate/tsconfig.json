@@ -11,6 +11,8 @@
     "typeRoots": [
       "../../../../node_modules/@types"
     ],
+    "noImplicitAny": true,
+    "suppressImplicitAnyIndexErrors": true,
     "lib": ["es6", "dom"]
   },
   "exclude": [
