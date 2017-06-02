@@ -1,31 +1,35 @@
 var webpack = require('webpack');
 var path = require('path');
 var webpackMerge = require('webpack-merge');
+var LiveReloadPlugin = require('webpack-livereload-plugin');
 
 // Webpack Config
 var webpackConfig = {
   entry: {
-    'main': './main.ts',
+    main: './main.ts'
   },
 
   output: {
     publicPath: '',
-    path: path.resolve(__dirname, './dist'),
+    path: path.resolve(__dirname, './dist')
   },
 
   plugins: [
+    new LiveReloadPlugin(),
     new webpack.ContextReplacementPlugin(
-      // The (\\|\/) piece accounts for path separators in *nix and Windows
-      /angular(\\|\/)core(\\|\/)src(\\|\/)linker/,
+
+      // The ([\\/]) piece accounts for path separators in *nix and Windows
+      /angular([\\/])core([\\/])@angular/,
       path.resolve(__dirname, './src'),
-      {
-        // your Angular Async Route paths relative to this root directory
-      }
-    ),
+
+      // your Angular Async Route paths relative to this root directory
+      {}
+    )
   ],
 
   module: {
     loaders: [
+
       // .ts files for TypeScript
       {
         test: /\.ts$/,
@@ -42,7 +46,6 @@ var webpackConfig = {
 
 };
 
-
 // Our Webpack Defaults
 var defaultConfig = {
   devtool: 'source-map',
@@ -54,17 +57,17 @@ var defaultConfig = {
   },
 
   resolve: {
-    extensions: [ '.ts', '.js' ],
-    modules: [ path.resolve(__dirname, '..', '..', '..', '..', 'node_modules') ]
+    extensions: ['.ts', '.js'],
+    modules: [path.resolve(__dirname, '..', '..', '..', '..', 'node_modules')]
   },
 
   devServer: {
     historyApiFallback: true,
     watchOptions: { aggregateTimeout: 300, poll: 1000 },
     headers: {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
-      "Access-Control-Allow-Headers": "X-Requested-With, content-type, Authorization"
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
+      'Access-Control-Allow-Headers': 'X-Requested-With, content-type, Authorization'
     }
   },
 
@@ -79,6 +82,5 @@ var defaultConfig = {
     setImmediate: false
   }
 };
-
 
 module.exports = webpackMerge(defaultConfig, webpackConfig);
