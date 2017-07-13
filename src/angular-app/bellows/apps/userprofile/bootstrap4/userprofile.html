@@ -16,7 +16,7 @@
                                     <div class="card bg-faded col-md-6">
                                         <div class="card-block">
                                             <div class="form-group row">
-                                                <label class="control-label col-md-4 text-md-right" for="email" translate="Email Address"></label>
+                                                <label class="control-label col-md-4 text-md-right" for="email" data-translate="Email Address"></label>
                                                 <div class="controls col-md-8">
                                                     <div class="input-group">
                                                         <input class="form-control" id="email" autofocus
@@ -29,7 +29,7 @@
                                                 </div>
                                             </div>
                                             <div class="form-group row">
-                                                <label class="control-label col-md-4 text-md-right" for="username" translate="Username"></label>
+                                                <label class="control-label col-md-4 text-md-right" for="username" data-translate="Username"></label>
                                                 <div class="controls col-md-8">
                                                     <div class="input-group">
                                                         <input class="form-control" id="username"
@@ -42,7 +42,7 @@
                                                 </div>
                                             </div>
                                             <div class="form-group row">
-                                                <label class="col-md-4 text-md-right" translate="Last Login"></label>
+                                                <label class="col-md-4 text-md-right" data-translate="Last Login"></label>
                                                 <div class="controls col-md-8">
                                                     {{user.last_login * 1000 | date:shortDate}}
                                                 </div>
@@ -59,15 +59,19 @@
                                         <div class="card-block">
                                             <div class="form-group row">
                                                 <div class="col-md-4">
-                                                    <label class="control-label text-md-right" for="avatarRef" translate="Avatar"></label>
+                                                    <label class="control-label text-md-right" for="avatarRef" data-translate="Avatar"></label>
                                                     <div class="controls" style="margin-bottom:10px">
                                                         <img class="img-polaroid" width="100px" height="100px" id="avatarRef" data-ng-src="{{getAvatarUrl(user.avatar_ref)}}" title="Use the dropdown selections below to change your avatar's color and shape" />
                                                     </div>
                                                 </div>
                                                 <div class="col-md-8">
-                                                    <select data-ng-model="user.avatar_color" class="form-control" data-ng-options="c.value as c.label for c in dropdown.avatarColors"><option value="">Select a Color...</option></select>
+                                                    <select data-ng-model="user.avatar_color" class="form-control"
+                                                            data-ng-options="c.value as c.label for c in dropdown.avatarColors">
+                                                        <option value="">Select a Color...</option></select>
                                                     <br/>
-                                                    <select data-ng-model="user.avatar_shape" class="form-control" data-ng-options="s.value as s.label for s in dropdown.avatarShapes"><option value="">Choose an animal...</option></select>
+                                                    <select data-ng-model="user.avatar_shape" class="form-control"
+                                                            data-ng-options="s.value as s.label for s in dropdown.avatarShapes">
+                                                        <option value="">Choose an animal...</option></select>
                                                 </div>
                                             </div>
                                         </div>
@@ -77,13 +81,13 @@
                                     <div class="card bg-faded col-md-6">
                                         <div class="card-block">
                                             <div class="form-group row">
-                                                <label class="control-label col-md-4 text-md-right" for="mobile_phone" translate="Mobile Phone Number"></label>
+                                                <label class="control-label col-md-4 text-md-right" for="mobile_phone" data-translate="Mobile Phone Number"></label>
                                                 <div class="controls col-md-8">
                                                     <input type="tel" data-pui-intl-tel-input id="mobile_phone" placeholder="###-####" class="form-control" data-ng-model="user.mobile_phone"/>
                                                 </div>
                                             </div>
                                             <div class="form-group row">
-                                                <label class="control-label col-md-4 text-md-right" translate="Receive updates via"></label>
+                                                <label class="control-label col-md-4 text-md-right" data-translate="Receive updates via"></label>
                                                 <div class="btn-group btn-group-justified" role="group">
                                                     <button type="button" class="btn btn-secondary" data-ng-model="user.communicate_via" uib-btn-radio="'email'" id="EmailButton">
                                                         <i class="fa fa-envelope-o iconPadding"></i>Email
@@ -107,7 +111,7 @@
                                         <div class="card-block">
                                             <h5>Tell us about yourself...</h5>
                                             <div class="form-group row">
-                                                <label class="control-label col-md-4 text-md-right" for="fullname" translate="Full Name"></label>
+                                                <label class="control-label col-md-4 text-md-right" for="fullname" data-translate="Full Name"></label>
                                                 <div class="controls col-md-8">
                                                     <input class="form-control" id="fullname" autofocus
                                                            type="text" name="fullname"
@@ -116,7 +120,7 @@
                                                 </div>
                                             </div>
                                             <div class="form-group row">
-                                                <label class="control-label col-md-4 text-md-right" for="age" translate="Age"></label>
+                                                <label class="control-label col-md-4 text-md-right" for="age" data-translate="Age"></label>
                                                 <div class="controls col-md-8">
                                                     <input class="form-control" id="age"
                                                            type="text" name="age"
@@ -125,7 +129,7 @@
                                                 </div>
                                             </div>
                                             <div class="form-group row">
-                                                <label class="control-label col-md-4 text-md-right" for="gender" translate="Gender"></label>
+                                                <label class="control-label col-md-4 text-md-right" for="gender" data-translate="Gender"></label>
                                                 <div class="col-md-8">
                                                     <select class="form-control" id="gender" data-ng-model="user.gender">
                                                         <option>Male</option>
