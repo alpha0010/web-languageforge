@@ -208,6 +208,36 @@
                     </div>
                 </div>
 
+                <div ng-switch-when="add_lex_comment_reply-project" class="col-sm-12 activity-row">
+                    <hr>
+                    <div class="col-sm-12" ng-class="{unread: isUnread(item.id)}">
+                        <div class="col-sm-1 activity-icon">
+                            <img width="50px" height="50px" ng-src="{{getAvatarUrl(item.userRef.avatar_ref)}}" />
+                        </div>
+                        <div class="col-sm-2 activity-date">
+                            {{item.date|relativetime}}
+                        </div>
+                        <div class="col-sm-9 activity-content">
+                            <span>{{item.userRef.username}} replied &ldquo;<em>{{item.content.comment_reply}}</em>&rdquo; to {{item.userRef2.username}}'s <a href="{{item.entryCommentsHref}}">comment</a> &ldquo;<em>{{item.content.comment}}</em>&rdquo; <span ng-show="item.content.comment_regarding">regarding the <em>{{item.content.comment_regarding}}</em> </span> on entry &ldquo;<a href="{{item.entryHref}}">{{item.content.entry}}</a>&rdquo; in <a href="{{item.projectHref}}">{{item.content.project}}</a></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div ng-switch-when="add_lex_comment-project" class="col-sm-12 activity-row">
+                    <hr>
+                    <div class="col-sm-12" ng-class="{unread: isUnread(item.id)}">
+                        <div class="col-sm-1 activity-icon">
+                            <img width="50px" height="50px" ng-src="{{getAvatarUrl(item.userRef.avatar_ref)}}" />
+                        </div>
+                        <div class="col-sm-2 activity-date">
+                            {{item.date|relativetime}}
+                        </div>
+                        <div class="col-sm-9 activity-content">
+                            <span>{{item.userRef.username}} <a href="{{item.entryCommentsHref}}">commented</a> &ldquo;<em>{{item.content.comment}}</em>&rdquo; <span ng-show="item.content.comment_regarding">regarding the <em>{{item.content.comment_regarding}}</em> </span> on entry &ldquo;<a href="{{item.entryHref}}">{{item.content.entry}}</a>&rdquo; in <a href="{{item.projectHref}}">{{item.content.project}}</a></span>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="col-sm-12" ng-switch-default>
                     <hr>
                     The {{item.action + '-' + item.type}} activity type is unimplemented

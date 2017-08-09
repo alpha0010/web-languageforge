@@ -15,6 +15,7 @@ use Api\Model\Shared\ProjectList_UserModel;
 use Api\Model\Shared\ProjectModel;
 use Api\Model\Shared\UserModel;
 use Api\Model\Shared\UnreadActivityModel;
+use MongoDB\BSON\UTCDateTime;
 
 class ActivityListDto
 {
@@ -22,9 +23,9 @@ class ActivityListDto
      * @param ProjectModel $projectModel
      * @return array - the DTO array
      */
-    public static function getActivityForProject($projectModel)
+    public static function getActivityForProject($projectModel, $newerThanTimestamp = null, $limit = 0, $skip = 0)
     {
-        $activityList = new ActivityListModel($projectModel);
+        $activityList = new ActivityListModel($projectModel, $newerThanTimestamp, $limit, $skip);
         $activityList->readAsModels();
         $dto = ActivityListDtoEncoder::encodeModel($activityList, $projectModel);
         self::prepareDto($dto);
@@ -179,13 +180,21 @@ class ActivityListModel extends MapperListModel
      * ActivityListModel constructor.
      * @param ProjectModel $projectModel
      */
-    public function __construct($projectModel)
+    public function __construct($projectModel, $newerThanTimestamp = null, $limit = 0, $skip = 0)
     {
-        // hardcoded to limit 100.  TODO implement paging
         $this->entries = new MapOf(function () use ($projectModel) { return new ActivityModel($projectModel); });
-        parent::__construct(
-            ActivityModelMongoMapper::connect($projectModel->databaseName()),
-            array('action' => array('$regex' => '')), array(), array('dateCreated' => -1), 100
-        );
+        if (!is_null($newerThanTimestamp)) {
+            $startDate = new UTCDateTime($newerThanTimestamp*1000);
+            parent::__construct(
+                ActivityModelMongoMapper::connect($projectModel->databaseName()),
+                array('action' => array('$regex' => ''), 'dateModified'=> array('$gte' => $startDate)),
+                array(), array('dateCreated' => -1), $limit, $skip
+            );
+        } else {
+            parent::__construct(
+                ActivityModelMongoMapper::connect($projectModel->databaseName()),
+                array('action' => array('$regex' => '')), array(), array('dateCreated' => -1), $limit, $skip
+            );
+        }
     }
 }

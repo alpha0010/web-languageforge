@@ -16,7 +16,7 @@ use Palaso\Utilities\CodeGuard;
 
 class LexEntryCommands
 {
-    // Note: this is not actually used anymore...but we'll keep it around just in case - cjh 2014-07
+    // Note: only used in tests
     public static function readEntry($projectId, $entryId)
     {
         $project = new LexProjectModel($projectId);
@@ -25,16 +25,6 @@ class LexEntryCommands
         return JsonEncoder::encode($entry);
     }
 
-    /*
-    public static function addEntry($projectId, $params)
-    {
-        CodeGuard::checkTypeAndThrow($params, 'array');
-        $project = new LexProjectModel($projectId);
-        $entry = new LexEntryModel($project);
-        JsonDecoder::decode($entry, $params);
-        return $entry->write();
-    }
-    */
 
     /**
      * Updates the given LexEntry in $projectId
@@ -56,6 +46,7 @@ class LexEntryCommands
         if (array_key_exists('id', $params) && $params['id'] != '') {
             $entry = new LexEntryModel($project, $params['id']);
             $action = 'update';
+            $oldEntry = $entry;
         } else {
             $entry = new LexEntryModel($project);
             $entry->authorInfo->createdByUserRef->id = $userId;
@@ -79,11 +70,11 @@ class LexEntryCommands
 
         $entry->write();
         $project->write();
-        ActivityCommands::writeEntry($project, $userId, $entry, $action);
-
-//        SendReceiveCommands::queueProjectForUpdate($project, $mergeQueuePath);
-//        SendReceiveCommands::startLFMergeIfRequired($projectId, 'merge', $pidFilePath, $command);
-
+        if ($action == 'create') {
+            ActivityCommands::addEntry($project, $userId, $entry);
+        } else {
+            ActivityCommands::updateEntry($project, $userId, $entry, $oldEntry);
+        }
         return JsonEncoder::encode($entry);
     }
 
@@ -107,6 +98,8 @@ class LexEntryCommands
         $project = new ProjectModel($projectId);
         $entry = new LexEntryModel($project, $entryId);
         $entry->isDeleted = true;
+        $entry->authorInfo->modifiedDate = UniversalTimestamp::now();
+        $entry->authorInfo->modifiedByUserRef->id = $userId;
         $entry->write();
         ActivityCommands::deleteEntry($project, $userId, $entryId);
         return true;
@@ -126,6 +119,6 @@ class LexEntryCommands
                 return $entry->lexeme[$inputSystem]->value;
             }
         }
-        return ''; // TODO: Decide what to return for "not found", if empty string is not suitable.
+        return '[Empty]';
     }
 }

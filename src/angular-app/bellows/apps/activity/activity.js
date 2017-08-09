@@ -10,9 +10,9 @@ angular.module('activity',
      'sgw.ui.breadcrumb',
     ])
   .controller('ActivityCtrl', ['$scope', '$sce', 'activityPageService', 'sfchecksLinkService',
-    'sessionService', 'utilService', 'breadcrumbService',
+    'sessionService', 'utilService', 'breadcrumbService', 'silNoticeService',
   function ($scope, $sce, activityService, sfchecksLinkService,
-            sessionService, util, breadcrumbService) {
+            sessionService, util, breadcrumbService, notice) {
     $scope.getAvatarUrl = util.getAvatarUrl;
 
     breadcrumbService.set('top', [
@@ -51,6 +51,7 @@ angular.module('activity',
 
         if ('entryRef' in items[i]) {
           items[i].entryHref = sfchecksLinkService.entry(items[i].entryRef, items[i].projectRef.id);
+          items[i].entryCommentsHref = sfchecksLinkService.entry(items[i].entryRef, items[i].projectRef.id) + '/comments';
         }
 
         if ('content' in items[i]) {
@@ -62,6 +63,7 @@ angular.module('activity',
       }
     };
 
+    notice.setLoading("Loading Activity List...");
     activityService.list_activity(0, 50, function (result) {
       if (result.ok) {
         $scope.activities = [];
@@ -74,6 +76,7 @@ angular.module('activity',
 
         $scope.decodeActivityList($scope.activities);
         $scope.filteredActivities = $scope.activities;
+        notice.cancelLoading();
       }
     });
 

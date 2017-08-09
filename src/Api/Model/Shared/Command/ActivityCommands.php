@@ -3,6 +3,7 @@
 namespace Api\Model\Shared\Command;
 
 use Api\Model\Languageforge\Lexicon\Command\LexEntryCommands;
+use Api\Model\Languageforge\Lexicon\LexCommentModel;
 use Api\Model\Languageforge\Lexicon\LexEntryModel;
 use Api\Model\Scriptureforge\Sfchecks\AnswerModel;
 use Api\Model\Scriptureforge\Sfchecks\QuestionModel;
@@ -197,28 +198,45 @@ class ActivityCommands
      * @param string $action
      * @return string activity id
      */
-    public static function writeEntry($projectModel, $userId, $entry, $action)
+    public static function addEntry($projectModel, $userId, $entry)
     {
         $activity = new ActivityModel($projectModel);
         $activity->entryRef->id = $entry->id->asString();
         $user = new UserModel($userId);
         $activity->userRef->id = $userId;
-        if ($action == 'update') {
-            $activity->action = ActivityModel::UPDATE_ENTRY;
+        $activity->action = ActivityModel::ADD_ENTRY;
+        try {
             $title = LexEntryCommands::getEntryLexeme($projectModel->id->asString(), $entry->id->asString());
-        } else {
-            $activity->action = ActivityModel::ADD_ENTRY;
-            try {
-                $title = LexEntryCommands::getEntryLexeme($projectModel->id->asString(), $entry->id->asString());
-            } catch (\Exception $ex) {
-                $title = '';
-            }
+        } catch (\Exception $ex) {
+            $title = '';
         }
+        $activity->addContent(ActivityModel::ENTRY, $title);
+        $activity->addContent(ActivityModel::USER, $user->username);
+        $activityId = $activity->write();
+        UnreadActivityModel::markUnreadForProjectMembers($activityId, $projectModel);
+        return $activityId;
+    }
 
+    public static function updateEntry($projectModel, $userId, $updatedEntry, $oldEntry)
+    {
+        $activity = new ActivityModel($projectModel);
+        $activity->entryRef->id = $updatedEntry->id->asString();
+        $user = new UserModel($userId);
+        $activity->userRef->id = $userId;
+        $activity->action = ActivityModel::UPDATE_ENTRY;
+        try {
+            $title = LexEntryCommands::getEntryLexeme($projectModel->id->asString(), $updatedEntry->id->asString());
+        } catch (\Exception $ex) {
+            $title = '';
+        }
         $activity->addContent(ActivityModel::ENTRY, $title);
         $activity->addContent(ActivityModel::USER, $user->username);
 
-        return $activity->write();
+        // todo: determine what changed between updatedEntry and oldEntry
+
+        $activityId = $activity->write();
+        UnreadActivityModel::markUnreadForProjectMembers($activityId, $projectModel);
+        return $activityId;
     }
 
     /**
@@ -232,11 +250,53 @@ class ActivityCommands
     {
         $activity = new ActivityModel($projectModel);
         $activity->userRef->id = $userId;
+        $activity->entryRef->id = $id;
         $activity->action = ActivityModel::DELETE_ENTRY;
 
         $lexeme = LexEntryCommands::getEntryLexeme($projectModel->id->asString(), $id);
         $activity->addContent(ActivityModel::ENTRY, $lexeme);
 
-        return $activity->write();
+        $activityId = $activity->write();
+        UnreadActivityModel::markUnreadForProjectMembers($activityId, $projectModel);
+        return $activityId;
+    }
+
+    public static function lexComment($projectModel, $commentId) {
+        $comment = new LexCommentModel($projectModel, $commentId);
+        $activity = new ActivityModel($projectModel);
+        $entryId = $comment->entryRef->asString();
+        $activity->entryRef->id = $entryId;
+        $activity->userRef->id = $comment->authorInfo->createdByUserRef->asString();
+        $activity->action = ActivityModel::LEX_COMMENT;
+        $lexeme = LexEntryCommands::getEntryLexeme($projectModel->id->asString(), $entryId);
+        $activity->addContent(ActivityModel::ENTRY, $lexeme);
+        $activity->addContent(ActivityModel::COMMENT, $comment->content);
+        if ($comment->regarding->fieldNameForDisplay) {
+            $activity->addContent(ActivityModel::COMMENT_REGARDING, $comment->regarding->fieldNameForDisplay);
+        }
+        $activityId = $activity->write();
+        UnreadActivityModel::markUnreadForProjectMembers($activityId, $projectModel);
+        return $activityId;
+    }
+
+    public static function lexCommentReply($projectModel, $commentId, $replyId) {
+        $comment = new LexCommentModel($projectModel, $commentId);
+        $reply = $comment->getReply($replyId);
+        $activity = new ActivityModel($projectModel);
+        $entryId = $comment->entryRef->asString();
+        $activity->entryRef->id = $entryId;
+        $activity->userRef->id = $reply->authorInfo->createdByUserRef->asString();
+        $activity->userRef2->id = $comment->authorInfo->createdByUserRef->asString();
+        $activity->action = ActivityModel::LEX_REPLY;
+        $lexeme = LexEntryCommands::getEntryLexeme($projectModel->id->asString(), $entryId);
+        $activity->addContent(ActivityModel::ENTRY, $lexeme);
+        $activity->addContent(ActivityModel::COMMENT, $comment->content);
+        $activity->addContent(ActivityModel::REPLY, $reply->content);
+        if ($comment->regarding->fieldNameForDisplay) {
+            $activity->addContent(ActivityModel::COMMENT_REGARDING, $comment->regarding->fieldNameForDisplay);
+        }
+        $activityId = $activity->write();
+        UnreadActivityModel::markUnreadForProjectMembers($activityId, $projectModel);
+        return $activityId;
     }
 }

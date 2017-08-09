@@ -25,6 +25,9 @@ class ActivityModel extends MapperModel
     const ADD_ENTRY = 'add_entry';
     const UPDATE_ENTRY = 'update_entry';
     const DELETE_ENTRY = 'delete_entry';
+    const LEX_COMMENT = 'add_lex_comment';
+    const LEX_REPLY = 'add_lex_comment_reply';
+    const UPDATE_LEX_CONFIGURATION = 'update_lex_configuration';
 
     // content types for use with the addContent method
     const PROJECT = 'project';
@@ -32,6 +35,8 @@ class ActivityModel extends MapperModel
     const QUESTION = 'question';
     const ANSWER = 'answer';
     const COMMENT = 'comment';
+    const REPLY = 'comment_reply';
+    const COMMENT_REGARDING = 'comment_regarding';
     const USER = 'user';
     const USER2 = 'user2';
     const ENTRY = 'entry';

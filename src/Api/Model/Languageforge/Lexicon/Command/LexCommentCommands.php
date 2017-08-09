@@ -2,6 +2,7 @@
 
 namespace Api\Model\Languageforge\Lexicon\Command;
 
+use Api\Model\Shared\Command\ActivityCommands;
 use Litipk\Jiffy\UniversalTimestamp;
 use Palaso\Utilities\CodeGuard;
 use Api\Model\Languageforge\Lexicon\LexCommentModel;
@@ -45,7 +46,11 @@ class LexCommentCommands
         $comment->authorInfo->modifiedByUserRef->id = $userId;
         $comment->authorInfo->modifiedDate = UniversalTimestamp::now();
 
-        return $comment->write();
+        $commentId = $comment->write();
+        if ($isNew) {
+            ActivityCommands::lexComment($project, $commentId);
+        }
+        return $commentId;
     }
 
     public static function updateReply($projectId, $userId, $website, $commentId, $params)
@@ -57,7 +62,8 @@ class LexCommentCommands
         $comment = new LexCommentModel($project, $commentId);
         $rightsHelper = new RightsHelper($userId, $project, $website);
         $replyId = $params['id'];
-        if (array_key_exists('id', $params) && $replyId != '') {
+        $isExistingReply = array_key_exists('id', $params) && $replyId != '';
+        if ($isExistingReply) {
             $reply = $comment->getReply($replyId);
             if ($reply->authorInfo->createdByUserRef->asString() != $userId && !$rightsHelper->userHasProjectRight(Domain::COMMENTS + Operation::EDIT)) {
                 throw new \Exception("No permission to update other people's lex comment replies!");
@@ -80,6 +86,9 @@ class LexCommentCommands
         }
         $comment->write();
 
+        if (!$isExistingReply) {
+            ActivityCommands::lexCommentReply($project, $commentId, $replyId);
+        }
         return $replyId;
     }
 
