@@ -4,11 +4,11 @@ angular.module('sfchecks.questions', ['ui.bootstrap', 'bellows.services', 'sgw.u
   'sfchecks.services', 'ngFileUpload', 'ngSanitize', 'ngRoute', 'sgw.soundmanager',
   'palaso.ui.listview', 'palaso.ui.typeahead', 'palaso.ui.notice'])
   .controller('QuestionsCtrl', ['$scope', 'questionService', 'questionTemplateService',
-    '$routeParams', 'sessionService', 'sfchecksLinkService', 'breadcrumbService',
-    'silNoticeService', 'modalService', '$q',
+    '$routeParams', 'sessionService', 'linkService', 'breadcrumbService',
+    'listviewSortingService', 'silNoticeService', 'modalService', '$q',
   function ($scope, questionService, qts,
-            $routeParams, ss, sfchecksLinkService, breadcrumbService,
-            notice, modalService, $q) {
+            $routeParams, ss, linkService, breadcrumbService,
+            sorting, notice, modalService, $q) {
     var Q_TITLE_LIMIT = 70;
     var textId = $routeParams.textId;
     $scope.textId = textId;
@@ -97,6 +97,23 @@ angular.module('sfchecks.questions', ['ui.bootstrap', 'bellows.services', 'sgw.u
       return false;
     };
 
+    // Listview Sorting
+
+    $scope.sortdata = { sortColumn: '', direction: '' };
+
+    $scope.sortIconClass = function (columnName) { return sorting.sortIconClass($scope.sortdata, columnName); };
+
+    $scope.setSortColumn = function (columnName) { return sorting.setSortColumn($scope.sortdata, columnName); };
+
+    $scope.doSort = function () {
+      sorting.sortDataByColumn($scope.questions, $scope.sortdata.sortColumn, $scope.sortdata.direction);
+    };
+
+    $scope.doSortByColumn = function (columnName) {
+      $scope.setSortColumn(columnName);
+      $scope.doSort();
+    };
+
     // Listview Data
     $scope.questions = [];
     $scope.queryQuestions = function () {
@@ -117,7 +134,7 @@ angular.module('sfchecks.questions', ['ui.bootstrap', 'bellows.services', 'sgw.u
           $scope.audioDownloadUrl = '/download' + $scope.audioPlayUrl;
         }
 
-        $scope.text.url = sfchecksLinkService.text(textId);
+        $scope.text.url = linkService.text(textId);
 
         //console.log($scope.project.name);
         //console.log($scope.text.title);
@@ -126,8 +143,8 @@ angular.module('sfchecks.questions', ['ui.bootstrap', 'bellows.services', 'sgw.u
         breadcrumbService.set('top',
           [
             { href: '/app/projects', label: 'My Projects' },
-            { href: sfchecksLinkService.project(), label: $scope.project.name },
-            { href: sfchecksLinkService.text($routeParams.textId), label: $scope.text.title }
+            { href: linkService.project(), label: $scope.project.name },
+            { href: linkService.text($routeParams.textId), label: $scope.text.title }
           ]
         );
 
@@ -244,7 +261,7 @@ angular.module('sfchecks.questions', ['ui.bootstrap', 'bellows.services', 'sgw.u
 
     $scope.enhanceDto = function (items) {
       angular.forEach(items, function (item) {
-        item.url = sfchecksLinkService.question(textId, item.id);
+        item.url = linkService.question(textId, item.id);
         item.calculatedTitle = questionService.util.calculateTitle(item.title, item.description,
           Q_TITLE_LIMIT);
       });
@@ -252,11 +269,11 @@ angular.module('sfchecks.questions', ['ui.bootstrap', 'bellows.services', 'sgw.u
 
   }])
   .controller('QuestionsSettingsCtrl', ['$scope', 'Upload', 'sessionService', '$routeParams',
-    'breadcrumbService', 'silNoticeService', 'textService', 'questionService',
-    'sfchecksLinkService', 'modalService', '$q',
+    'breadcrumbService', 'silNoticeService', 'textService', 'questionService', 'utilService',
+    'linkService', 'modalService', '$q',
   function ($scope, Upload, ss, $routeParams,
-            breadcrumbService, notice, textService, questionService,
-            sfchecksLinkService, modalService, $q) {
+            breadcrumbService, notice, textService, questionService, util,
+            linkService, modalService, $q) {
     var Q_TITLE_LIMIT = 50;
     var textId = $routeParams.textId;
     $scope.textId = textId;
@@ -281,7 +298,7 @@ angular.module('sfchecks.questions', ['ui.bootstrap', 'bellows.services', 'sgw.u
         $scope.editedText.fontfamily = $scope.dto.text.fontfamily;
         $scope.settings.archivedQuestions = result.data.archivedQuestions;
         for (var i = 0; i < $scope.settings.archivedQuestions.length; i++) {
-          $scope.settings.archivedQuestions[i].url = sfchecksLinkService.question($scope.textId,
+          $scope.settings.archivedQuestions[i].url = linkService.question($scope.textId,
             $scope.settings.archivedQuestions[i].id);
           $scope.settings.archivedQuestions[i].calculatedTitle =
             questionService.util.calculateTitle($scope.settings.archivedQuestions[i].title,
@@ -301,9 +318,9 @@ angular.module('sfchecks.questions', ['ui.bootstrap', 'bellows.services', 'sgw.u
         breadcrumbService.set('top',
           [
             { href: '/app/projects', label: 'My Projects' },
-            { href: sfchecksLinkService.project(), label: $scope.dto.bcs.project.crumb },
-            { href: sfchecksLinkService.text($routeParams.textId), label: $scope.dto.text.title },
-            { href: sfchecksLinkService.text($routeParams.textId) + '/Settings',
+            { href: linkService.project(), label: $scope.dto.bcs.project.crumb },
+            { href: linkService.text($routeParams.textId), label: $scope.dto.text.title },
+            { href: linkService.text($routeParams.textId) + '/Settings',
               label: 'Settings' }
           ]
         );
@@ -358,28 +375,16 @@ angular.module('sfchecks.questions', ['ui.bootstrap', 'bellows.services', 'sgw.u
     };
 
     $scope.readUsx = function readUsx(file) {
-      if (!file || file.$error) return;
-
-      var reader = new FileReader();
-      reader.addEventListener('loadend', function () {
-        // Basic sanity check: make sure what was uploaded is USX
-        // First few characters should be optional BOM, optional <?xml ..., then <usx ...
-        var startOfText = reader.result.slice(0, 1000);
-        var usxIndex = startOfText.indexOf('<usx');
-        if (usxIndex !== -1) {
-          $scope.$apply(function () {
-            $scope.editedText.content = reader.result;
-          });
-        } else {
-          notice.push(notice.ERROR, 'Error loading USX file. The file doesn\'t appear to be ' +
-            'valid USX.');
-          $scope.$apply(function () {
-            $scope.editedText.content = '';
-          });
-        }
+      util.readUsxFile(file).then(function (usx) {
+        $scope.$applyAsync(function () {
+          $scope.editedText.content = usx;
+        });
+      }).catch(function (errorMessage) {
+        $scope.$applyAsync(function () {
+          notice.push(notice.ERROR, errorMessage);
+          $scope.editedText.content = '';
+        });
       });
-
-      reader.readAsText(file);
     };
 
     $scope.uploadAudio = function uploadAudio(file) {

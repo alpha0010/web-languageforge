@@ -4,11 +4,11 @@ angular.module('sfchecks.project', ['ui.bootstrap', 'sgw.ui.breadcrumb', 'bellow
   'sfchecks.services', 'palaso.ui.listview', 'palaso.ui.typeahead', 'palaso.ui.notice',
   'palaso.ui.textdrop', 'palaso.ui.jqte', 'ngFileUpload', 'ngRoute'])
   .controller('ProjectCtrl', ['$scope', 'textService', 'sessionService', 'breadcrumbService',
-    'sfchecksLinkService', 'silNoticeService', 'sfchecksProjectService', 'messageService',
-    'modalService', '$q',
+    'linkService', 'listviewSortingService', 'silNoticeService', 'sfchecksProjectService',
+    'messageService', 'utilService', 'modalService', '$q',
   function ($scope, textService, ss, breadcrumbService,
-            sfchecksLinkService, notice, sfchecksProjectService, messageService,
-            modalService, $q) {
+            linkService, sorting, notice, sfchecksProjectService,
+            messageService, util, modalService, $q) {
     $scope.finishedLoading = false;
 
     // Rights
@@ -59,6 +59,23 @@ angular.module('sfchecks.project', ['ui.bootstrap', 'sgw.ui.breadcrumb', 'bellow
 
     $scope.texts = [];
 
+    // Listview Sorting
+
+    $scope.sortdata = { sortColumn: '', direction: '' };
+
+    $scope.sortIconClass = function (columnName) { return sorting.sortIconClass($scope.sortdata, columnName); };
+
+    $scope.setSortColumn = function (columnName) { return sorting.setSortColumn($scope.sortdata, columnName); };
+
+    $scope.doSort = function () {
+      sorting.sortDataByColumn($scope.texts, $scope.sortdata.sortColumn, $scope.sortdata.direction);
+    };
+
+    $scope.doSortByColumn = function (columnName) {
+      $scope.setSortColumn(columnName);
+      $scope.doSort();
+    };
+
     // Page Dto
     // Page Dto
     $scope.getPageDto = function () {
@@ -77,13 +94,13 @@ angular.module('sfchecks.project', ['ui.bootstrap', 'sgw.ui.breadcrumb', 'bellow
         $scope.members = result.data.members;
 
         $scope.project = result.data.project;
-        $scope.project.url = sfchecksLinkService.project();
+        $scope.project.url = linkService.project();
 
         // Breadcrumb
         breadcrumbService.set('top',
         [
         { href: '/app/projects', label: 'My Projects' },
-        { href: sfchecksLinkService.project(), label: $scope.project.name }
+        { href: linkService.project(), label: $scope.project.name }
         ]
         );
 
@@ -166,34 +183,22 @@ angular.module('sfchecks.project', ['ui.bootstrap', 'sgw.ui.breadcrumb', 'bellow
     $scope.enhanceDto = function (items) {
       for (var i in items) {
         if (items.hasOwnProperty(i)) {
-          items[i].url = sfchecksLinkService.text(items[i].id);
+          items[i].url = linkService.text(items[i].id);
         }
       }
     };
 
     $scope.readUsx = function readUsx(file) {
-      if (!file || file.$error) return;
-
-      var reader = new FileReader();
-      reader.addEventListener('loadend', function () {
-        // Basic sanity check: make sure what was uploaded is USX
-        // First few characters should be optional BOM, optional <?xml ..., then <usx ...
-        var startOfText = reader.result.slice(0, 1000);
-        var usxIndex = startOfText.indexOf('<usx');
-        if (usxIndex !== -1) {
-          $scope.$apply(function () {
-            $scope.content = reader.result;
-          });
-        } else {
-          notice.push(notice.ERROR,
-            'Error loading USX file. The file doesn\'t appear to be valid USX.');
-          $scope.$apply(function () {
-            $scope.content = '';
-          });
-        }
+      util.readUsxFile(file).then(function (usx) {
+        $scope.$applyAsync(function () {
+          $scope.content = usx;
+        });
+      }).catch(function (errorMessage) {
+        $scope.$applyAsync(function () {
+          notice.push(notice.ERROR, errorMessage);
+          $scope.content = '';
+        });
       });
-
-      reader.readAsText(file);
     };
 
     $scope.getPageDto();
