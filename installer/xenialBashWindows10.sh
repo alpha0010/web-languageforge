@@ -1,3 +1,4 @@
+#!/bin/bash -x
 echo -e "
 Notice: This installer assumes the following:\n\n
 - it is being run on a fresh Ubuntu Xenial on Windows installation.\n
@@ -13,20 +14,21 @@ lxrun /install \n
 \n\n"
 
 read -n 1 -s -r -p "Press any key to start the xForge developer environment install process"
-echo -e "\n\n"
+sudo echo -e "\n\n"
 
 echo "Updating / Upgrading with apt"
 wget -O- http://linux.lsdev.sil.org/downloads/sil-testing.gpg | sudo apt-key add -
-sudo add-apt-repository 'deb http://linux.lsdev.sil.org/ubuntu xenial main'
-sudo add-apt-repository 'deb http://linux.lsdev.sil.org/ubuntu xenial-experimental main'
-sudo add-apt-repository ppa:ansible/ansible
-sudo apt update && sudo apt upgrade
+sudo add-apt-repository -y 'deb http://linux.lsdev.sil.org/ubuntu xenial main'
+sudo add-apt-repository -y 'deb http://linux.lsdev.sil.org/ubuntu xenial-experimental main'
+sudo add-apt-repository -y ppa:ansible/ansible
+sudo apt update && sudo apt -y upgrade
+
+echo "Install NodeJS 8.X and latest npm"
+curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
+sudo apt-get install -y nodejs
 
 echo "Installing packages"
-sudo apt install git ansible npm php7.0-cli libapache2-mod-php mongodb-server p7zip-full php7.0-dev php7.0-gd php7.0-intl php7.0-mbstring php-pear php-xdebug postfix unzip lfmerge
-
-echo "Updating NodeJS"
-sudo npm install -g n && sudo n 6.9.3
+sudo apt install -y git ansible php7.0-cli libapache2-mod-php mongodb-server p7zip-full php7.0-dev php7.0-gd php7.0-intl php7.0-mbstring php-pear php-xdebug postfix unzip lfmerge
 
 echo "Cloning web-languageforge repo into the current directory... Is this what you want to do?  (If not, Ctrl-C and change this script)"
 read -n 1 -s -r -p "Press any key to continue"
@@ -41,8 +43,13 @@ echo "Refreshing xForge dependencies"
 cd ..
 ./refreshDeps.sh
 
+echo "Modifying windows hosts file"
+echo -e "\n127.0.0.1\tlanguageforge.local\n" >> /mnt/c/Windows/System32/drivers/etc/hosts
+echo -e "\n127.0.0.1\tscriptureforge.local\n" >> /mnt/c/Windows/System32/drivers/etc/hosts
+echo -e "\n127.0.0.1\tjamaicanpsalms.scriptureforge.local\n" >> /mnt/c/Windows/System32/drivers/etc/hosts
+
 echo "Factory Reset the database"
 cd scripts/tools
 php FactoryReset.php run
 
-echo "You should now be able to access Language Forge locally at http://languageforge.local (make sure you add the lines to your hosts file)"
+echo "You should now be able to access Language Forge locally at http://languageforge.local"
