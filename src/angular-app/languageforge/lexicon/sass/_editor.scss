@@ -1,6 +1,8 @@
 @import '../../scss/_variables.scss';
-@import '../../../../../node_modules/bootstrap/scss/_variables';
-@import '../../../../../node_modules/bootstrap/scss/_mixins';
+//@import '../../../../../node_modules/bootstrap/scss/_variables';
+//@import '../../../../../node_modules/bootstrap/scss/_mixins';
+@import '../../../../vendor/twbs/bootstrap/scss/_variables';
+@import '../../../../vendor/twbs/bootstrap/scss/_mixins';
 @import '../views/_editor.scss';
 @import '../directive/_dc-audio';
 @import '../directive/_dc-formattedtext';
