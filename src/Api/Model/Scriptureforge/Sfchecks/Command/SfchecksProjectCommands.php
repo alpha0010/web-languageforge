@@ -33,6 +33,12 @@ class SfchecksProjectCommands
 
         $object['id'] = $projectId;
         JsonDecoder::decode($project, $object);
+        if (array_key_exists('userProperties', $object) &&
+            array_key_exists('userProfilePropertiesEnabled', $object['userProperties'])
+        ) {
+            $project->userProperties->userProfilePropertiesEnabled->exchangeArray($object['userProperties']['userProfilePropertiesEnabled']);
+        }
+
         $newDBName = $project->databaseName();
         if (($oldDBName != '') && ($oldDBName != $newDBName)) {
             if (MongoStore::hasDB($newDBName)) {
