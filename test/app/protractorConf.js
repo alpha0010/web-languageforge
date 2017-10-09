@@ -17,7 +17,7 @@ exports.config = {
     }
   },
 
-  framework: 'jasmine2',
+  framework: 'jasmine',
 
   // To run tests in multiple browsers, uncomment the following
   // multiCapabilities: [{
@@ -38,9 +38,7 @@ exports.config = {
   jasmineNodeOpts: {
     showColors: true,
     defaultTimeoutInterval: 120000,
-    print: function() {}
-
-    //isVerbose: true,
+    print: function () {}
   },
 
   onPrepare: function () {
@@ -51,8 +49,7 @@ exports.config = {
     if (process.env.TEAMCITY_VERSION) {
       var jasmineReporters = require('jasmine-reporters');
       jasmine.getEnv().addReporter(new jasmineReporters.TeamCityReporter());
-    }
-    else {
+    } else {
       var SpecReporter = require('jasmine-spec-reporter').SpecReporter;
       jasmine.getEnv().addReporter(new SpecReporter({
         spec: {
@@ -72,7 +69,8 @@ exports.config = {
             browser.pause();
           }
         }
-      }
+      };
+
       // Uncomment to pause tests on first failure
       // jasmine.getEnv().addReporter(pauseOnFailure);
     }
