@@ -1,3 +1,5 @@
+import { ParatextProject } from '../../../../bellows/shared/model/paratext-user-info.model';
+
 export class TranslateProject {
   config?: TranslateConfig;
 
@@ -32,6 +34,7 @@ export class TranslateConfig {
 export class TranslateConfigDocType {
   /** @var InputSystem */
   inputSystem: any;
+  paratextProject?: ParatextProject;
 }
 
 export class TranslateConfigDocumentSets {

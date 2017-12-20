@@ -7,6 +7,7 @@ import { NoticeService } from '../../../bellows/core/notice/notice.service';
 import { SessionCallback, SessionService } from '../../../bellows/core/session.service';
 import { ParatextProject, ParatextUserInfo } from '../../../bellows/shared/model/paratext-user-info.model';
 import { JsonRpcCallback, TranslateProjectService } from '../core/translate-project.service';
+import { TranslateSendReceiveService } from '../core/translate-send-receive.service';
 import { TranslateConfig, TranslateProject } from '../shared/model/translate-project.model';
 
 export class InterfaceConfig {
@@ -64,14 +65,16 @@ export class TranslateNewProjectController implements angular.IController {
     '$state', 'sessionService',
     'silNoticeService', 'inputSystems',
     'translateProjectApi', 'linkService',
-    'userRestApiService'
+    'userRestApiService',
+    'translateSendReceiveService'
   ];
   constructor(private $scope: angular.IScope, private $q: angular.IQService,
               private $filter: angular.IFilterService, private $window: angular.IWindowService,
               private $state: angular.ui.IStateService, private sessionService: SessionService,
               private notice: NoticeService, private inputSystems: InputSystemsService,
               private projectApi: TranslateProjectService, private linkService: LinkService,
-              private userRestApiService: UserRestApiService) {}
+              private userRestApiService: UserRestApiService,
+              private translateSendReceiveService: TranslateSendReceiveService) {}
 
   $onInit() {
     this.interfaceConfig = new InterfaceConfig();
@@ -334,11 +337,16 @@ export class TranslateNewProjectController implements angular.IController {
         this.show.cloning = true;
         this.show.nextButton = false;
         this.resetValidateProjectForm();
-        this.createProject().then(success => {
-          if (success) {
-            // TODO: start send/receive here
-          }
-        });
+
+        this.newProject.config.source.paratextProject = this.sourceProject;
+        this.newProject.config.target.paratextProject = this.targetProject;
+        this.createProject()
+          .then(success => success ? this.updateConfig() : false)
+          .then(success => {
+            if (success) {
+              return this.translateSendReceiveService.startJob(this.newProject.id);
+            }
+          });
         break;
       case 'newProject.sendReceiveClone':
         // TODO: go to translation project when send/receive completes
